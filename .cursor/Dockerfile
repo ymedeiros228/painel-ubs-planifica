@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     git \
     gnupg \
     xvfb \
+    dbus \
+    dbus-x11 \
     libgtk-3-0 \
     libnotify4 \
     libnss3 \

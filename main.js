@@ -1,6 +1,13 @@
 const { app, BrowserWindow, Menu, shell } = require('electron');
 const path = require('path');
 
+// Em containers / remote desktop a GPU acelerada costuma falhar
+// ("Exiting GPU process due to errors during initialization").
+// Este app é UI HTML local — software raster é suficiente e evita o crash.
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-gpu-compositing');
+
 let mainWindow = null;
 
 function createWindow() {
