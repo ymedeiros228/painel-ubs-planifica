@@ -1,0 +1,62 @@
+{
+  "name": "painel-ubs-planifica",
+  "version": "2.0.0",
+  "description": "Painel de Ações das UBS — PlanificaSUS Passagem Franca (MA)",
+  "main": "main.js",
+  "author": "UBS Passagem Franca",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win"
+  },
+  "build": {
+    "appId": "br.ma.passagemfranca.painelubsplanifica",
+    "productName": "Painel UBS Planifica",
+    "copyright": "UBS Passagem Franca — PlanificaSUS",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Painel UBS Planifica",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "language": "1046",
+      "displayLanguageSelector": false,
+      "deleteAppDataOnUninstall": false
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Portable.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
+  }
+}

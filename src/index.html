@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel de Ações — UBS Passagem Franca</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Sora:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Azul profissional — rodada v4 */
+    --ink:#0F172A;
+    --ink-soft:#334155;
+    --paper:#E8EEF8;
+    --paper-dim:#D9E3F2;
+    --surface:#FFFFFF;
+    --navy:#1D4ED8;
+    --navy-2:#1E40AF;
+    --navy-3:#1E3A8A;
+    --accent:#2563EB;
+    --accent-2:#1D4ED8;
+    --blue-soft:#DBEAFE;
+    --blue-tint:#EFF6FF;
+    --mist:#F1F5FB;
+    --sage:#059669;
+    --sage-dim:#D1FAE5;
+    --amber:#D97706;
+    --amber-dim:#FEF3C7;
+    --orange:#EA580C;
+    --orange-dim:#FFEDD5;
+    --alert:#DC2626;
+    --alert-dim:#FEE2E2;
+    --stone:#64748B;
+    --line:#D0DBEE;
+    --line-strong:#A8B9D6;
+    --display: "Sora", "Segoe UI Semibold", sans-serif;
+    --body: "DM Sans", "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow-card: 0 8px 24px rgba(30,58,138,0.08);
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;color:var(--ink);font-family:var(--body);font-size:15px;
+    -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(900px 480px at 0% -10%, rgba(37,99,235,0.20), transparent 55%),
+      radial-gradient(700px 400px at 100% 0%, rgba(30,64,175,0.12), transparent 50%),
+      linear-gradient(180deg, #D6E2F5 0%, var(--paper) 40%, #E9EEF7 100%);
+    background-attachment: fixed;
+  }
+  .app-shell{min-height:100%; position:relative;}
+  .app-shell::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(rgba(37,99,235,0.045) 1px, transparent 1px);background-size:20px 20px;}
+
+  .app-topbar{
+    position:relative;z-index:2;color:#fff;padding:18px 24px 20px;
+    background:linear-gradient(110deg, #172554 0%, #1E3A8A 42%, #1D4ED8 100%);
+    box-shadow:0 12px 30px rgba(30,58,138,0.35);
+  }
+  .app-topbar .wrap-top{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .brand-row{display:flex;align-items:center;gap:14px;margin:0;}
+  .brand-mark{flex-shrink:0;line-height:0;}
+  .brand-mark svg circle{fill:#60A5FA;}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#BFDBFE;margin:0 0 4px;font-weight:600;}
+  h1{font-family:var(--display);font-weight:750;font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;color:#fff;letter-spacing:-.02em;}
+  .topbar-badge{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+    background:rgba(255,255,255,0.12);border:1px solid rgba(191,219,254,0.35);padding:8px 12px;border-radius:10px;color:#DBEAFE;}
+  .wrap{max-width:1200px;margin:0 auto;padding:22px 24px 72px;position:relative;z-index:1;}
+  .page-sub{color:var(--stone);font-size:14.5px;margin:10px 0 20px;max-width:860px;line-height:1.6;}
+  h2{font-family:var(--display);font-weight:700;font-size:18px;color:var(--navy-3);margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+  h2 .h-ico{width:18px;height:18px;color:var(--accent);}
+
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-card);}
+  .card-head{background:linear-gradient(180deg,#F8FBFF,#EFF6FF);color:var(--navy-3);padding:13px 16px;
+    font-family:var(--display);font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border-bottom:1px solid var(--line);border-left:4px solid var(--accent);}
+  .card-head .head-left{display:flex;align-items:center;gap:8px;}
+  .card-head .head-ico{width:17px;height:17px;color:var(--accent);}
+  .card-head small{font-family:var(--mono);font-size:10px;color:var(--stone);text-transform:uppercase;letter-spacing:.07em;}
+
+  .chat-body{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:260px;max-height:360px;overflow-y:auto;background:#F8FAFC;}
+  .msg{max-width:90%;padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.5;white-space:pre-wrap;}
+  .msg.bot{background:#fff;color:var(--ink-soft);align-self:flex-start;border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .msg.user{background:var(--navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+  .chat-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:#EEF3FB;}
+  .chat-input input,.ot-add-row input,.detail-select select{
+    flex:1;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
+    font-family:var(--body);background:#fff;color:var(--ink);
+  }
+  .chat-input input:focus,.ot-add-row input:focus,.detail-select select:focus{
+    outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);
+  }
+  .chat-input button{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:0 18px;font-size:14px;cursor:pointer;font-family:var(--display);font-weight:700;}
+  .chat-input button:hover{background:var(--navy-2);}
+
+  /* chips — lista limpa, sem “caixinha” pesada */
+  .chip-row{display:flex;flex-direction:column;gap:4px;padding:0 14px 14px;max-height:220px;overflow-y:auto;}
+  .chip-row.horizontal{flex-direction:row;flex-wrap:wrap;max-height:none;}
+  .chip{
+    border:none;background:transparent;border-radius:8px;padding:9px 11px;font-size:13.5px;cursor:pointer;
+    color:var(--ink-soft);font-weight:600;text-align:left;font-family:var(--body);
+    border-left:3px solid transparent;transition:background .12s, border-color .12s, color .12s;
+  }
+  .chip:hover{background:var(--blue-tint);border-left-color:var(--accent);color:var(--navy-3);}
+  .chip.status-ok,.chip.status-partial,.chip.status-pend{display:inline-flex;width:auto;border:1px solid var(--line);background:#fff;border-left-width:3px;padding:8px 12px;}
+  .chip.status-ok{border-left-color:var(--sage);color:var(--sage);background:var(--sage-dim);}
+  .chip.status-partial{border-left-color:var(--amber);color:var(--amber);background:var(--amber-dim);}
+  .chip.status-pend{border-left-color:var(--alert);color:var(--alert);background:var(--alert-dim);}
+  .chip.chip-wide{width:100%;white-space:normal;line-height:1.4;font-weight:500;}
+  .empty-note{color:var(--stone);font-size:13.5px;font-style:italic;padding:4px 2px;}
+
+  .ot-manager-body{padding:14px 14px 16px;}
+  .ot-add-row{display:flex;gap:8px;margin-bottom:10px;}
+  .ot-add-row button{background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .ot-add-row button:hover{background:var(--navy-2);}
+  .ot-list{display:flex;flex-direction:column;max-height:520px;overflow-y:auto;}
+  .ot-item{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+    background:transparent;border:none;border-bottom:1px solid var(--line);
+    border-radius:0;padding:11px 6px;font-size:13px;
+  }
+  .ot-item:hover{background:var(--blue-tint);}
+  .ot-item .ot-main{flex:1;min-width:0;}
+  .ot-item .ot-code{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.04em;display:block;margin-bottom:2px;}
+  .ot-item .ot-name{color:var(--ink-soft);line-height:1.35;display:block;}
+  .ot-item .ot-meta{font-size:11.5px;color:var(--stone);margin-top:3px;display:block;}
+  .ot-item .del-btn{background:none;border:none;color:var(--stone);cursor:pointer;font-size:14px;padding:2px 4px;opacity:.7;}
+  .ot-item .del-btn:hover{color:var(--alert);opacity:1;}
+
+  .stat-row{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+  .stat{flex:1;min-width:120px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;box-shadow:var(--shadow-card);position:relative;}
+  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:12px 0 0 12px;}
+  .stat .stat-ico{width:17px;height:17px;margin:0 auto 6px;display:block;color:var(--accent);}
+  .stat .num{font-family:var(--display);font-size:26px;font-weight:750;color:var(--navy-3);display:block;line-height:1;}
+  .stat .lbl{font-size:10px;color:var(--stone);text-transform:uppercase;letter-spacing:.06em;margin-top:6px;font-weight:700;display:block;}
+  .stat .hint{font-size:10px;color:var(--stone);margin-top:4px;line-height:1.3;text-transform:none;letter-spacing:0;font-weight:500;display:block;}
+  .stat.alert .num,.stat.alert .stat-ico{color:var(--alert);} .stat.alert::before{background:var(--alert);}
+  .stat.warn .num,.stat.warn .stat-ico{color:var(--amber);} .stat.warn::before{background:var(--amber);}
+  .stat.orange .num,.stat.orange .stat-ico{color:var(--orange);} .stat.orange::before{background:var(--orange);}
+
+  .chart-card{padding:18px 16px;}
+  .bar-row{display:grid;grid-template-columns:150px 1fr 44px;align-items:center;gap:10px;margin-bottom:10px;}
+  .bar-row .label{font-size:13px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .bar-track{background:var(--paper-dim);border-radius:999px;height:9px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;}
+  .bar-fill.sage{background:var(--sage);} .bar-fill.amber{background:var(--amber);} .bar-fill.alert{background:var(--alert);}
+  .bar-pct{font-family:var(--mono);font-size:11.5px;text-align:right;color:var(--stone);}
+  .bar-sub{font-size:11px;color:var(--stone);margin-top:-4px;margin-bottom:10px;padding-left:160px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
+  @media (max-width:900px){.two-col{grid-template-columns:1fr;}}
+  .detail-select{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .detail-select select{min-width:180px;}
+
+  .table-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;}
+  .toggle,.export{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;font-weight:650;color:var(--ink-soft);}
+  .toggle:hover,.export:hover{background:var(--blue-tint);border-color:var(--accent);}
+  .toggle.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .export{color:var(--navy-2);border-color:#93C5FD;}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-card);}
+  thead th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--stone);padding:11px 12px;border-bottom:1px solid var(--line);background:var(--mist);font-weight:750;}
+  tbody td{padding:11px 12px;font-size:13.5px;border-bottom:1px solid var(--line);}
+  tbody tr:hover td{background:var(--blue-tint);}
+  tbody tr:last-child td{border-bottom:none;}
+  .date-cell{font-family:var(--mono);font-size:12px;color:var(--stone);}
+  .ot-tag{display:inline-block;font-size:11px;background:var(--blue-soft);color:var(--navy-2);padding:3px 8px;border-radius:6px;font-weight:700;}
+  .stamp{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;font-weight:650;padding:4px 8px;border-radius:6px;border:1px solid;}
+  .stamp svg{width:11px;height:11px;}
+  .stamp.done{color:var(--sage);border-color:#6EE7B7;background:var(--sage-dim);}
+  .stamp.partial{color:var(--amber);border-color:#FCD34D;background:var(--amber-dim);}
+  .stamp.pending{color:var(--alert);border-color:#FCA5A5;background:var(--alert-dim);}
+
+  .gap-ot-header{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px;padding-bottom:7px;border-bottom:2px solid var(--blue-soft);font-weight:700;color:var(--navy-3);font-size:14px;font-family:var(--display);}
+  .gap-ot-header:first-of-type{margin-top:0;}
+  .gap-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .gap-item:last-child{border-bottom:none;}
+  .gap-action{flex:1;line-height:1.4;color:var(--ink-soft);}
+  .gap-tag{flex-shrink:0;font-family:var(--mono);font-size:10px;font-weight:650;padding:3px 8px;border-radius:6px;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px;}
+  .gap-tag svg{width:11px;height:11px;}
+  .gap-tag.concluida{background:var(--sage-dim);color:var(--sage);}
+  .gap-tag.nao_concluida{background:var(--amber-dim);color:var(--amber);}
+  .gap-tag.nao_inserida{background:var(--orange-dim);color:var(--orange);}
+  .gap-tag.atrasada{background:var(--alert-dim);color:var(--alert);}
+  .gap-item-clickable{cursor:pointer;border-radius:8px;}
+  .gap-item-clickable:hover{background:var(--blue-tint);}
+  .del-btn{background:none;border:none;color:var(--stone);cursor:pointer;}
+  .del-btn:hover{color:var(--alert);}
+  footer{margin-top:18px;font-size:12.5px;color:var(--stone);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  footer .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--blue-soft);}
+  .persist-ok{display:none;background:var(--blue-soft);border:1px solid #93C5FD;color:var(--navy-2);border-radius:var(--radius-sm);padding:10px 13px;font-size:13px;margin:10px 0 16px;align-items:center;gap:8px;font-weight:600;}
+  .persist-ok.show{display:flex;}
+  .persist-ok svg{width:16px;height:16px;flex-shrink:0;}
+
+  .chat-toolbar{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:#EEF3FB;flex-wrap:wrap;}
+  .nav-btn{font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:7px 11px;cursor:pointer;color:var(--navy-2);font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+  .nav-btn:hover{background:var(--blue-tint);border-color:var(--accent);}
+  .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
+  .nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .nav-btn.primary:hover{background:var(--navy-2);}
+  .nav-btn svg{width:13px;height:13px;}
+
+  .action-panel{padding:0 14px 12px;max-height:400px;overflow-y:auto;}
+  .action-panel-hint{font-size:12.5px;color:var(--stone);margin:0 0 10px;line-height:1.4;}
+  .action-check{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border:none;border-bottom:1px solid var(--line);border-radius:0;margin:0;background:transparent;cursor:pointer;}
+  .action-check:hover{background:var(--blue-tint);}
+  .action-check.checked{background:var(--blue-soft);}
+  .action-check.classified{background:#E0E7FF;}
+  .action-check input{margin-top:3px;accent-color:var(--accent);}
+  .action-check .ac-text{flex:1;font-size:13.5px;line-height:1.4;}
+  .action-check .ac-status{font-family:var(--mono);font-size:10px;font-weight:650;padding:2px 7px;border-radius:6px;text-transform:uppercase;}
+  .action-check .ac-status.concluida{background:var(--sage-dim);color:var(--sage);}
+  .action-check .ac-status.nao_concluida{background:var(--amber-dim);color:var(--amber);}
+  .action-check .ac-status.atrasada{background:var(--alert-dim);color:var(--alert);}
+  .action-check .ac-status.none{background:var(--mist);color:var(--stone);}
+  .action-check.st-concluida{border-left:3px solid var(--sage);}
+  .action-check.st-nao_concluida{border-left:3px solid var(--amber);}
+  .action-check.st-atrasada{border-left:3px solid var(--alert);}
+  .class-summary{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:8px 10px;background:var(--blue-tint);border:1px solid var(--line);border-radius:8px;}
+  .class-summary .cs{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .class-summary .cs b{font-family:var(--mono);}
+  .class-summary .cs-ok{color:var(--sage);}
+  .class-summary .cs-partial{color:var(--amber);}
+  .class-summary .cs-pend{color:var(--alert);}
+  .class-summary .cs-total{margin-left:auto;color:var(--navy-2);}
+  .status-btn.clear{border-color:var(--line-strong);color:var(--stone);}
+  .status-btn.clear:hover{background:var(--mist);}
+  .classify-bar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px 14px;align-items:center;border-top:1px solid var(--line);}
+  .classify-bar .lbl{font-size:12.5px;color:var(--stone);font-weight:700;}
+  .status-btn{border:1px solid;border-radius:var(--radius-sm);padding:7px 11px;font-size:12.5px;font-weight:750;cursor:pointer;background:#fff;}
+  .status-btn.ok{border-color:#6EE7B7;color:var(--sage);} .status-btn.ok:hover{background:var(--sage-dim);}
+  .status-btn.partial{border-color:#FCD34D;color:var(--amber);} .status-btn.partial:hover{background:var(--amber-dim);}
+  .status-btn.pend{border-color:#FCA5A5;color:var(--alert);} .status-btn.pend:hover{background:var(--alert-dim);}
+
+  .row-actions{display:flex;gap:6px;justify-content:flex-end;}
+  .edit-btn,.del-btn-tbl{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 9px;cursor:pointer;font-weight:700;}
+  .edit-btn{color:var(--navy-2);} .edit-btn:hover{background:var(--blue-tint);}
+  .del-btn-tbl{color:var(--alert);} .del-btn-tbl:hover{background:var(--alert-dim);}
+  .ot-item .ot-actions{display:flex;gap:2px;flex-shrink:0;}
+  .ot-item .edit-ot{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;font-weight:700;padding:2px 5px;}
+
+  .top-nav{display:flex;gap:4px;margin:0 0 8px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-card);width:fit-content;flex-wrap:wrap;}
+  .page-tab{border:none;background:transparent;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:750;font-family:var(--display);color:var(--stone);cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  .page-tab svg{width:15px;height:15px;}
+  .page-tab:hover{color:var(--navy);background:var(--blue-tint);}
+  .page-tab.active{background:var(--navy);color:#fff;}
+  .page{display:none;} .page.active{display:block;}
+  .dash-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+</style>
+
+
+</head>
+<body>
+<div class="app-shell">
+<div class="app-topbar">
+  <div class="wrap-top">
+    <div class="brand-row">
+      <div class="brand-mark">
+        <svg width="34" height="34" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="13" cy="13" r="13" fill="#60A5FA"/>
+          <path d="M13 6.5V19.5M6.5 13H19.5" stroke="#E8EEF4" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">PlanificaSUS · Passagem Franca (MA)</p>
+        <h1>Painel de Ações das UBS</h1>
+      </div>
+    </div>
+    <div class="topbar-badge">Paleta azul · APS</div>
+  </div>
+</div>
+<div class="wrap">
+  <nav class="top-nav" aria-label="Navegação principal">
+    <button type="button" class="page-tab active" data-page="cadastro" id="tabCadastro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Cadastro
+    </button>
+    <button type="button" class="page-tab" data-page="dashboard" id="tabDashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M8 19v-8M12 19v-5M16 19V8M20 19v-3"/></svg>
+      Dashboard
+    </button>
+  </nav>
+
+  <div id="storageNotice" class="persist-ok"></div>
+
+  <!-- ========== PÁGINA: CADASTRO ========== -->
+  <section id="page-cadastro" class="page active">
+  <p class="page-sub">Escolha a UBS e o eixo (OT), marque quantas ações quiser e classifique como Concluída, Não concluída ou Atrasada. O que não for classificado fica como <b>Não inserida</b>. Acompanhe indicadores na aba <b>Dashboard</b>.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-head">
+        <span class="head-left">
+          <svg class="head-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+          Cadastro de ações
+        </span>
+        <small>UBS · OT · multi-seleção</small>
+      </div>
+      <div class="chat-toolbar" id="chatToolbar">
+        <button type="button" class="nav-btn" id="btnBack" title="Voltar uma etapa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          Voltar
+        </button>
+        <button type="button" class="nav-btn primary" id="btnNew" title="Começar novo cadastro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Novo cadastro
+        </button>
+        <button type="button" class="nav-btn" id="btnEditMode" title="Editar um registro do histórico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Editar
+        </button>
+        <button type="button" class="nav-btn" id="btnGoDash" title="Ver indicadores">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M8 19v-8M12 19v-5M16 19V8M20 19v-3"/></svg>
+          Ver dashboard
+        </button>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div id="actionPanel" class="action-panel" style="display:none;"></div>
+      <div id="classifyBar" class="classify-bar" style="display:none;"></div>
+      <div class="chip-row" id="chipRow"></div>
+      <div class="chat-input">
+        <input id="chatInput" type="text" placeholder="Digite sua resposta ou ação personalizada..." autocomplete="off"/>
+        <button id="sendBtn">Enviar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="head-left">
+          <svg class="head-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="17" r="3"/></svg>
+          Gerenciar Eixos (OTs)
+        </span>
+        <small>fora do chat</small>
+      </div>
+      <div class="ot-manager-body">
+        <div class="ot-add-row">
+          <input id="otInput" type="text" placeholder="Ex: OT 1 EVENTOS AGUDOS" />
+          <button id="otAddBtn">Adicionar Eixo</button>
+        </div>
+        <div class="ot-list" id="otList"></div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- ========== PÁGINA: DASHBOARD ========== -->
+  <section id="page-dashboard" class="page">
+  <div class="dash-toolbar">
+    <p class="page-sub" style="margin:0;flex:1;">Indicadores, pendências e histórico dos cadastros. Exporte em CSV compatível com Excel (separador ; e acentos corretos).</p>
+    <button type="button" class="nav-btn primary" id="btnGoCadastro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Novo cadastro
+    </button>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6"/></svg>
+      <span class="num" id="statUbs">0</span><span class="lbl">UBS com ações</span>
+    </div>
+    <div class="stat">
+      <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      <span class="num" id="statOt">0</span><span class="lbl">Eixos (OTs)</span>
+    </div>
+    <div class="stat">
+      <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="num" id="statTotal">0</span><span class="lbl">Ações no total</span>
+    </div>
+    <div class="stat">
+      <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+      <span class="num" id="statDone">0</span><span class="lbl">Concluídas</span>
+    </div>
+    <div class="stat warn" style="border-color:var(--amber);">
+      <svg class="stat-ico" style="color:var(--amber)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <span class="num" id="statPartial" style="color:var(--amber);">0</span><span class="lbl">Não concluídas</span>
+    </div>
+    <div class="stat orange" style="border-color:var(--orange);" title="Ações do plano-modelo ainda sem cadastro nas UBS que já têm pelo menos um registro. Assim o número não explode somando todas as UBS vazias.">
+      <svg class="stat-ico" style="color:var(--orange)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v10M8 9l4 4 4-4"/><path d="M5 17h14v4H5z"/></svg>
+      <span class="num" id="statNaoInserida" style="color:var(--orange);">0</span>
+      <span class="lbl">Faltam no plano</span>
+      <span class="hint">sem cadastro nas UBS ativas</span>
+    </div>
+    <div class="stat alert">
+      <svg class="stat-ico" style="color:var(--alert)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>
+      <span class="num" id="statPend">0</span><span class="lbl">Atrasadas</span>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card chart-card">
+      <h2>
+        <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M8 19v-8M12 19v-5M16 19V8M20 19v-3"/></svg>
+        Desempenho por OT
+      </h2>
+      <div id="otChart"><p class="empty-note">Nenhuma ação registrada ainda.</p></div>
+    </div>
+    <div class="card chart-card">
+      <h2>
+        <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-4 7 4v13"/></svg>
+        Desempenho por UBS
+      </h2>
+      <div id="ubsChart"><p class="empty-note">Nenhuma ação registrada ainda.</p></div>
+    </div>
+  </div>
+
+  <div class="card chart-card" style="margin-bottom:26px;">
+    <h2>
+      <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      Pendências por UBS, vistas por OT
+    </h2>
+    <p style="font-size:13px;color:var(--stone);margin:-6px 0 14px;">Selecione a UBS: o painel mostra o que ainda <b>não está concluído</b> — <b style="color:var(--amber);">não concluída</b>, <b style="color:var(--alert);">atrasada</b> ou <b style="color:var(--orange);">não inserida</b>. Toque em uma ação para editar no Cadastro.</p>
+    <div class="detail-select">
+      <label for="ubsSelect" style="font-size:13.5px;color:var(--stone);">UBS:</label>
+      <select id="ubsSelect"><option value="">— selecione —</option></select>
+      <label for="ubsGapOtFilter" style="font-size:13.5px;color:var(--stone);">Filtrar por OT:</label>
+      <select id="ubsGapOtFilter"><option value="">Todos os OTs</option></select>
+      <button class="toggle" id="gapShowDoneToggle">Mostrar concluídas também</button>
+    </div>
+    <div id="ubsOtDetail"><p class="empty-note">Selecione uma UBS para ver as pendências por eixo.</p></div>
+  </div>
+
+  <div class="table-head-row">
+    <h2>Histórico de ações</h2>
+    <div class="controls">
+      <button class="toggle" id="filterToggle">Mostrar só não concluídas</button>
+      <button class="export" id="exportBtn">Exportar CSV (Excel)</button>
+      <button class="export" id="exportFullBtn" title="Inclui também as não inseridas do plano-modelo">Exportar completo</button>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>UBS</th><th>OT</th><th>Ação</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <footer>
+    <span class="dot" aria-hidden="true"></span>
+    <span>Dados salvos neste computador. Use “Exportar CSV (Excel)” para abrir corretamente no Excel com acentos.</span>
+  </footer>
+  </section>
+</div>
+</div>
+
+<script>
+const OT_PREFIX = 'ot:';
+
+// Persistência local (app desktop / navegador) — mesma API do artefato, via localStorage
+(function ensureStorage(){
+  if (typeof window !== 'undefined' && window.storage) return;
+  window.storage = {
+    async set(key, value){
+      try{ localStorage.setItem(key, String(value)); return true; }catch(e){ return null; }
+    },
+    async get(key){
+      try{
+        const v = localStorage.getItem(key);
+        return v === null ? null : { value: v };
+      }catch(e){ return null; }
+    },
+    async delete(key){
+      try{ localStorage.removeItem(key); return true; }catch(e){ return null; }
+    },
+    async list(prefix){
+      try{
+        const keys = [];
+        for(let i = 0; i < localStorage.length; i++){
+          const k = localStorage.key(i);
+          if(k && k.startsWith(prefix)) keys.push(k);
+        }
+        return { keys };
+      }catch(e){ return { keys: [] }; }
+    }
+  };
+})();
+
+const hasStorage = (typeof window !== 'undefined') && !!window.storage;
+async function safeSet(key, value, shared=false){
+  if(!hasStorage) return null;
+  try{ return await window.storage.set(key, value, shared); }catch(e){ return null; }
+}
+async function safeGet(key, shared=false){
+  if(!hasStorage) return null;
+  try{ return await window.storage.get(key, shared); }catch(e){ return null; }
+}
+async function safeDelete(key, shared=false){
+  if(!hasStorage) return null;
+  try{ return await window.storage.delete(key, shared); }catch(e){ return null; }
+}
+async function safeList(prefix, shared=false){
+  if(!hasStorage) return null;
+  try{ return await window.storage.list(prefix, shared); }catch(e){ return null; }
+}
+const ACTION_PREFIX = 'action:';
+let ots = [];       // {key, name}
+let actions = [];   // {key, ubs, otKey, otName, action, status, date}
+let showOnlyPending = false;
+
+const knownUbs = [
+  "UBS ALTA LEITE","UBS LÁZARO BANDEIRA","Unidade Básica de Saúde Aeroporto",
+  "UNIDADE BASICA DE SAUDE CENTRO","Unidade Básica de Saúde Cohab","Unidade Básica de Saúde Gato",
+  "Unidade Básica de Saúde Isabel Maria de Jesus","Unidade Básica de Saúde Mutirão","Unidade Básica de Saúde Nazaré"
+];
+
+// ---------- OT reference bank (extracted from the tutor action-plan base document) ----------
+const OT_BANK = [{"label": "OT I", "name": "Macroprocesso dos Eventos Agudos", "actions": ["Definir tutor e suplente UBS", "Definir horário protegido da equipe", "Assegurar o horário protegido para educação permanente dos profisisonais", "Definir o guardião do plano de ação UBS", "Elaborar Plano de Ação customizando com a equipe e monitorar durante as reuniões. (Toda UBS deve ter seu plano de ação).", "Implantar e/ou Atualizar o Mapa Dinâmico do território em todas as UBS", "Relação de profisisonais que compõe a ESF, ESF-SB, NASF e Equipes de Apoio, com dados sobre categoria profissional, formação específica em saúde da família, tempo de atuação na APS e na UBS, tipo de contrato, carag horária semanal e horário de atendimento.", "Resgatar e/ou implantar os fluxos internos da unidade (para atendimento agendado, demanda espontânea e serviços específicos) desenhados, apropriados pela equipe e de conhecimento da população", "Avaliar os macroprocessos da APS e traçar estratégias para as ações que estão de forma parcial ou não implantados", "Capacitar os profissionais da recepção sobre a identificação dos usuários com um evento agudo;", "Qualificar e/ou implantar o Acolhimento com Classificação de Risco na UBS", "Implantar/implementar Fluxo com a RUE de forma pactuada, deixando esse fluxograma de fácil acesso com todas as equipes.", "Implantar Time de Resposta Rápida (TRR) formalizado", "Realizar curso sobre manejo da Dengue", "Implantar sala de hidratação oral/venosa", "Implantar e/ou Revisar a caixa de emergência e definir responsável para sua manutenção", "Capacitar os profissionais e implantar o POP de manejo de hipoglicemia", "Replicar a OT 1 para os profissionais da UBS", "Apresentar o fluxo da Rede de Urgência e Emergência para os profissionais da UBS (após a definição e pactuação da gestão)", "Inserir ações e atualizar plano de ação na plataforma e-planifica."], "fullLabel": "OT I — Macroprocesso dos Eventos Agudos"}, {"label": "OT II", "name": "Macroprocesso Qualidade e Segurança do Paciente", "actions": ["Implantar o roteiro da Visita Domiciliar dos ACS,após revisão do coordenador da APS e profissionais das equipes", "Capacitar os ACS com o POP e roteiro de visita domiciliar", "Realizar o estudo e implantar com os profissionais das equipes as 06 metas de Segurança do Paciente, conforme proposto no guia orientador", "Definir e implantar o time de segurança do paciente.", "Checar as questões disparadoras, que estão no Guia Orientador(Apendice 8 da pag. 62 a 66), sobre a Segurança do Paciente, implementando as ações necessárias", "Organizar a agenda para atenção à demanda espontânea e programada por meio do bloco de horas, possibilitando o acesso do usuário em todos os turnos de funcionamento da UBS", "Replicar a OT para os profissionais da UBS"], "fullLabel": "OT II — Macroprocesso Qualidade e Segurança do Paciente"}, {"label": "OT III", "name": "Macroprocessos Básicos da APS", "actions": ["Replicar a OT para os profissionais da UBS", "Atualizar o Território da UBS (área e microárea), caso seja necessário", "Cadastrar 100% das pessoas e domicílios no e-SUS", "Capacitar os ACS utilizando a escala de Coelho Savassi para estratificação de risco familiar", "Estratificar o risco familiar de 100% das famílias, cadastradas no e-SUS", "Implantar e/ou implementar o plano de cuidado para famílias estratificadas com R3", "Incluir 100% das gestantes no instrumento de Registro Coletivo", "Implantar 100% POP’s dos Microprocessos Básicos conforme orientação do guia III", "Capacitar 100% da equipe sobre os POPs elaborados/atualizados", "Implantar 100% dos Microprocessos Básicos", "Implantar/Implementar 100% do Macroprocesso Segurança do Paciente na APS - Meta - 1.", "Trabalhar as atividades: Atividade 1 - Sherlock Holmes em Ação e Atividade 2 – O Drone está filmando, que estão no caderno de atividades integrativas da oficina III", "Inserir as atividades propostas nas Oficinas Tutoriais no Plano de Ação do e-Planifica", "Realizar a autoavaliação (checklist) dos Macros e Microprocessos no e-Planifica"], "fullLabel": "OT III — Macroprocessos Básicos da APS"}, {"label": "OT IV", "name": "Cuidados Paliativos I", "actions": ["Replicar a oficina para os profissionais da UBS,", "Identificar as subpopulações elegíveis para cuidados paliativos", "Identificas as pessoas usuárias que necessitam de abordagem paliativa completa", "Resgatar as metas 1 e 2 de segurança do paciente e verificar como estão sendo realizadas", "Registrar as pessoas usuárias que necessitam de abordagem paliativa completa - por meio de registro e acompanhamento dos usuários elegíveis", "Realizar o curso de atualização em Cuidados Paliativos fundamentos para aprática na plataforma EAD.", "Preencher o instrumento de levantamento dos usuários elegíveis, no território, para abordagem paliativa", "Escolher um caso clínico SPICT-BR positivo, ou seja, uma pessoa elegível para abordagem paliativa completa de seu território, para ter o caso trabalhado nas oficinas tutoriais subsequentes"], "fullLabel": "OT IV — Cuidados Paliativos I"}, {"label": "OT V", "name": "Resgate dos Macroprocessos", "actions": ["Atividades não concluidas nas OT I,II, III e IV.", "Preencher o instrumento de autoavaliação dos macroprocessos da APS - Checklist na plataforma e-Planifica (para as UBS dos municípios que não realizaram em 2024", "- Inserir e/ou atualizar o plano de ação dos tutores de UBS na plataforma e-Planifica", "- Realizar o curso Educa DTN-VE: Módulo Emergencial de Enfrentamento da Dengue Módulo Emergencial de Enfrentamento da Dengue (EAD) – 100% dos profissionais;", "Organizar Sala de Hidratação oral/venosa (de acordo com cenário epidemiológico);", "- Implantar e/ou revisar a Caixa de Emergência, definindo responsável pela manutenção;", "- Atualizar o Plano de Ação na plataforma e-Planifica;"], "fullLabel": "OT V — Resgate dos Macroprocessos"}, {"label": "OT VI", "name": "Cuidados Paliativos II", "actions": ["Replicar a OT para os profissionais da UBS", "Completar a Abordagem Paliativa do caso SPICT-BR positivo de acordo com a ficha escolhida para seguimento nas Ots de CP na APS", "Realizar e/ou finalizar curso EaD Cuidados Paliativos: fundamentos para a prática, que apresenta as ferramentas.", "Preencher planilhas de registro dos casos elegíveis para Abordagem Paliativa Completa:", "Realizar a pergunta surpresa em 100% dos caos registrados na Planilha: Abordagem Paliativa completa", "Atualizar o Plano de Ação na Plataforma e-Planifica", "Realizar a autoavaliação (checklist) dos Macros e Microprocessos no e-Planifica até 30 de maio."], "fullLabel": "OT VI — Cuidados Paliativos II"}, {"label": "OT VII", "name": "Cuidados Paliativos III", "actions": ["Replicar a oficina VII para todos os profissionais da UBS", "Implantar a abordagem paliativa às pessoas elegíveis de forma sistemática, integrada à rotina das equipes de saúde, com foco na continuidade do cuidado e respeito às necessidades e desejos dos usuários e suas famílias;", "Sensibilizar ao menos 80% dos participantes sobre a viabilidade e os benefícios do falecimento no domicílio em situações elegíveis, promovendo conforto e respeito à história de vida do usuário.", "Preencher o instrumento de Abordagem Paliativa para os casos elegíveis para Cuidados Paliativos com SPICT BR +;", "Preencher planilha de registro dos casos elegíveis para Abordagem Paliativa Completa ( SPICT BR +) : Abordagem Paliativa Completa - Registro e Acompanhamento dos Usuários Elegíveis", "Realizar a pergunta surpresa em 100% dos casos registados na Planilha: Abordagem Paliativa Completa - Registro e Acompanhamento dos Usuários Elegíveis;", "Realizar e/ou Finalizar o curso EAD “Cuidados Paliativos: fundamentos para a prática, que apresenta as ferramentas”.", "Inserir as atividades propostas no Plano de Ação na plataforma e-Planifica, grupo OT VII - Cuidados Paliativos III, revisitar os outros grupos e atualizar datas, se necessário.", "Apresentar à equipe de saúde o fluxo para óbito no domicílio pactuado pela gestão", "Atualizar o plano de ação de todas as Oficinas Tutorias na plataforma e-planifica na aba de ciclo de planificação até o dia 15/07/25"], "fullLabel": "OT VII — Cuidados Paliativos III"}, {"label": "OT VIII", "name": "Macroprocesso de Atenção às Condições Crônicas", "actions": ["Replicar a Oficina Tutorial VIII para os profissionais da UBS.", "Identificar as pessoas usuárias com condições crônicas na linha de cuidado priorizada e realizar a estratificação de risco (seguindo as metas propostas – gestante: 100%, crianças: 30%, pessoa com hipertensão e diabetes – 20%) conforme critérios definidos na Nota Técnica de Referência (NTR).", "Realizar um ciclo completo de Atenção Contínua (AC) às pessoas usuárias com condições crônicas na linha de cuidado priorizada, com participação ativa da equipe multiprofissional da unidade para construção compartilhada de metas e acompanhamento.", "Atualizar e/ou instituir o registro coletivo para monitoramento e manejo das pessoas usuárias com condições crônicas conforme NTR (gestantes, crianças, pessoas com hipertensão e diabetes)."], "fullLabel": "OT VIII — Macroprocesso de Atenção às Condições Crônicas"}, {"label": "OT IX", "name": "", "actions": ["Implantar o instrumento para análise do balanço do atendimento semanal para organização da agenda", "Implantar o instrumento para mapeamento dos processos da recepção da unidade básica de saúde para organização do setor", "Organizar a agenda de atividades da equipe de saúde", "Elaborar uma agenda equilibrada entre a demanda espontânea e programada: sugestão (iniciar com 50% espontânea e 50% programada, avançando gradualmente 40% - 60% respectivamente, até alcançar 30% espontânea e 70% programada);", "Realizar a Promoção à assistência às pessoas com condições crônicas conforme a estratificação de risco e as orientações da NTR;", "Implantar a agenda por bloco de horas;", "Fortalecer o fluxo de compartilhamento do cuidado entre a APS e AAE", "Inserir 100% das gestantes e crianças menores de 2 anos com consultas programadas na agenda;", "Acompanhar e inserir na programação pessoas com HAS e DM estratificadas como alto risco conforme protocolos (ex.: pessoas com hipertensão arterial e diabetes mellitus ≥ 3 consultas/ano);", "Atualizar o plano de ação (inserir as ações da OT 9 e atualizar os prazos das ações não concluídas) da UBS na plataforma e-Planifica.", "Preencher o instrumento de autoavaliação dos macroprocessos da APS - Checklist na plataforma e-Planifica Prazo: 01 a 25/11/2025"], "fullLabel": "OT IX"}, {"label": "OT X", "name": "Gestão do autocuidado e autocuidado apoiado", "actions": ["Replicação da OT X para os profissionais da UBS: Mcroprocesso das Condições Crônicas III: Gestão do autocuidado e autocuidado Apoiado com enfoque na mudança de comportamento", "Elaborar o Plano de Autocuidado Apoiado para as pessoas usuárias de alto e muito alto risco na linha de cuidado prioritária, incluindo metas para mudança de comportamento, avaliação e monitoramento do referido plano.", "Elaborar o Plano de Autocuidado Apoiado para as pessoas usuárias que apresentam dificuldades de autocuidado em saúde bucal. , incluindo metas para mudança de comportamento, avaliação e monitoramento do referido plano.", "Implantar a Meta 2 de Segurança do Paciente na APS na operacionalização dos Planos de Autocuidado Apoiado.", "Revisar o Plano de Ação da equipe com enfoque na conclusão das ações \"não iniciadas\" e \"em andamento\", assim como dos processos de trabalho referentes às Oficinas Tutoriais anteriores."], "fullLabel": "OT X — Gestão do autocuidado e autocuidado apoiado"}, {"label": "OT XI", "name": "", "actions": ["Replicação da Oficina Tutorial 11 para os profissionais da UBS;", "Registro coletivo das pessoas idosas e das pessoas com HAS e/ou DM do território atualizado com programação do cuidado conforme nota técnica;", "Realização da avaliação das pessoas idosa através do índice de vulnerabilidade clínico-funcional (IVCF-20).", "Realização da estratificação de riscos na linha prioritária e das pessoas com HAS e/ou DM conforme nota técnica estabelecida", "Agenda programada organizada por estrato de risco", "Realização da identificação e classificação do estágio da DRC.", "Realização da estratificação de riscos em saúde bucal.", "Orientação das pessoas usuárias e das equipes da APS sobre os critérios de acesso aos medicamentos do componente especializado.", "Qualificação dos indicadores do Saúde Brasil 360 pelas equipes e gestão.", "Implementação das tecnologias de atenção (atenção contínua, atenção compartilhada em grupo e grupo operativo)."], "fullLabel": "OT XI"}, {"label": "OT XII", "name": "", "actions": ["Replicação da Oficina Tutoria 12", "Gestantes e crianças cadastradas com estratificação de risco realizada e registrada, assegurando o manejo clínico adequado a partir do risco identificado.", "Agenda programada organizada conforme estrato de risco, com garantia de acompanhamento subsequente.", "Acompanhamento de puericultura implantado para crianças menores de dois anos.", "Compartilhamento do cuidado de gestantes e crianças de alto risco com a AAE.", "Indicadores da linha materno-infantil do Programa Saúde Brasil 360 e discutidos pela equipe.", "Estratégias de intensificação vacinal implementadas para alcance das metas de cobertura.", "Realização do curso de Qualificação do Cuidado Integral à Gestante e Puérpera na APS e AAE.", "Plano de ação atualizado e monitorado durante as oficinas tutoriais e intertutorias."], "fullLabel": "OT XII"}];
+
+function findOtBankEntry(fullLabel){
+  return OT_BANK.find(o => o.fullLabel === fullLabel) || null;
+}
+function actionsForOt(fullLabel){
+  const entry = findOtBankEntry(fullLabel);
+  return entry ? entry.actions : [];
+}
+
+const ROMAN_BY_NUMBER = {1:'I',2:'II',3:'III',4:'IV',5:'V',6:'VI',7:'VII',8:'VIII',9:'IX',10:'X',11:'XI',12:'XII'};
+
+// Resolves loose/typo'd OT input ("ot-1", "OT1", "ot i", "OT VIII") to the canonical
+// fullLabel used in OT_BANK, so the right action list is always found —
+// regardless of whether the person clicked a chip or typed it in free text.
+function resolveOtName(text){
+  if(!text) return null;
+  let t = text.trim().toLowerCase().replace(/[-_.]/g, ' ').replace(/\s+/g, ' ').trim();
+  // exact match against a fullLabel or label already known (case-insensitive)
+  for(const entry of OT_BANK){
+    if(entry.fullLabel.toLowerCase() === t || entry.label.toLowerCase() === t) return entry.fullLabel;
+  }
+  // also match against any already-registered custom OT name
+  const customMatch = ots.find(o => o.name.toLowerCase() === t);
+  if(customMatch) return customMatch.name;
+  // "ot 1", "ot01", "ot 12" -> map arabic number to roman numeral
+  const m = t.match(/^ot\s*0*(\d{1,2})$/);
+  if(m){
+    const roman = ROMAN_BY_NUMBER[Number(m[1])];
+    if(roman){
+      const found = OT_BANK.find(e => e.label === ('OT ' + roman));
+      if(found) return found.fullLabel;
+    }
+  }
+  return null;
+}
+
+// ---------- OT manager ----------
+const otInput = document.getElementById('otInput');
+const otAddBtn = document.getElementById('otAddBtn');
+const otListEl = document.getElementById('otList');
+
+async function addOt(name){
+  name = name.trim();
+  if(!name) return;
+  if(ots.some(o => o.name.toLowerCase() === name.toLowerCase())) return;
+  const key = OT_PREFIX + Date.now();
+  await safeSet(key, name, false);
+  ots.push({key, name});
+  renderOtList();
+  renderAll();
+}
+
+otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
+otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
+
+async function seedDefaultOts(){
+  if(ots.length > 0) return; // only seed on a truly empty board
+  for(const entry of OT_BANK){
+    const key = OT_PREFIX + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    await safeSet(key, entry.fullLabel, false);
+    ots.push({key, name: entry.fullLabel});
+  }
+}
+
+function renderOtList(){
+  otListEl.innerHTML = '';
+  if(ots.length === 0){
+    otListEl.innerHTML = '<p class="empty-note">Nenhum eixo cadastrado. Adicione o primeiro acima.</p>';
+    return;
+  }
+  ots.forEach(o=>{
+    const row = document.createElement('div');
+    row.className = 'ot-item';
+    const n = actionsForOt(o.name).length;
+    const bank = findOtBankEntry(o.name);
+    const code = bank ? bank.label : (o.name.split('—')[0] || 'OT').trim();
+    const nameOnly = bank ? (bank.name || o.name) : o.name.replace(/^OT\s+[IVXLC]+\s*—\s*/i, '');
+    row.innerHTML = `<div class="ot-main">
+        <span class="ot-code">${code}</span>
+        <span class="ot-name"></span>
+        <span class="ot-meta">${n > 0 ? n + ' ações-modelo' : 'sem ações-modelo'}</span>
+      </div>
+      <div class="ot-actions">
+        <button type="button" class="edit-ot" data-key="${o.key}" title="Editar eixo">✎</button>
+        <button type="button" class="del-btn" data-key="${o.key}" title="Excluir eixo">✕</button>
+      </div>`;
+    row.querySelector('.ot-name').textContent = nameOnly || o.name;
+    otListEl.appendChild(row);
+  });
+  otListEl.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.onclick = async () => {
+      const key = btn.getAttribute('data-key');
+      if(!confirm('Excluir este eixo? Os cadastros de ações dele permanecem no histórico.')) return;
+      await safeDelete(key, false);
+      ots = ots.filter(o=>o.key!==key);
+      renderOtList();
+      renderAll();
+    };
+  });
+  otListEl.querySelectorAll('.edit-ot').forEach(btn=>{
+    btn.onclick = async () => {
+      const key = btn.getAttribute('data-key');
+      const ot = ots.find(o=>o.key===key);
+      if(!ot) return;
+      const novo = prompt('Novo nome do eixo (OT):', ot.name);
+      if(novo == null) return;
+      const name = novo.trim();
+      if(!name || name === ot.name) return;
+      if(ots.some(o => o.key !== key && o.name.toLowerCase() === name.toLowerCase())){
+        alert('Já existe um eixo com esse nome.');
+        return;
+      }
+      const oldName = ot.name;
+      await safeSet(key, name, false);
+      ot.name = name;
+      for(const a of actions.filter(x => x.otKey === key || x.otName === oldName)){
+        a.otName = name;
+        a.otKey = key;
+        await safeSet(a.key, JSON.stringify({
+          ubs:a.ubs, otKey:a.otKey, otName:a.otName, action:a.action, status:a.status, date:a.date
+        }), false);
+      }
+      renderOtList();
+      renderAll();
+    };
+  });
+}
+
+// ---------- chat / multi-cadastro ----------
+let step = 'ubs';
+let draft = {};
+const chatBody = document.getElementById('chatBody');
+const chipRow = document.getElementById('chipRow');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const actionPanel = document.getElementById('actionPanel');
+const classifyBar = document.getElementById('classifyBar');
+const btnBack = document.getElementById('btnBack');
+const btnNew = document.getElementById('btnNew');
+const btnEditMode = document.getElementById('btnEditMode');
+
+const STATUS_LABEL = {
+  concluida: 'Concluída',
+  nao_concluida: 'Não concluída',
+  atrasada: 'Atrasada'
+};
+
+function addMsg(text, who){
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.textContent = text;
+  chatBody.appendChild(d);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+function clearChips(){ chipRow.innerHTML = ''; chipRow.className = 'chip-row'; }
+function hideActionUI(){
+  actionPanel.style.display = 'none';
+  actionPanel.innerHTML = '';
+  classifyBar.style.display = 'none';
+  classifyBar.innerHTML = '';
+}
+function addChip(label, onClick, cls){
+  const b = document.createElement('button');
+  b.className = 'chip' + (cls ? ' '+cls : '');
+  b.textContent = label;
+  b.title = label;
+  b.onclick = onClick;
+  chipRow.appendChild(b);
+}
+function setChipRowMode(mode){
+  chipRow.className = 'chip-row' + (mode === 'status' ? ' horizontal' : '');
+}
+
+function updateNavButtons(){
+  btnBack.disabled = step === 'ubs' || step === 'idle' || step === 'edit_pick';
+}
+
+function resetCadastro(clearChat=true){
+  draft = { classifications: {}, checked: {} };
+  hideActionUI();
+  clearChips();
+  if(clearChat) chatBody.innerHTML = '';
+  step = 'ubs';
+  updateNavButtons();
+}
+
+function startNewCadastro(){
+  resetCadastro(true);
+  askUbs();
+}
+
+function goBack(){
+  if(step === 'ot'){
+    resetCadastro(true);
+    askUbs();
+  } else if(step === 'confirm_batch'){
+    step = 'action_select';
+    clearChips();
+    renderActionChecklist(actionsForOt(draft.otName));
+    updateNavButtons();
+  } else if(step === 'action_select'){
+    const ubs = draft.ubs;
+    resetCadastro(true);
+    draft.ubs = ubs;
+    addMsg(`Voltando. UBS: ${ubs}`, 'bot');
+    askOt();
+  } else if(step === 'status_single' || step === 'confirm'){
+    if(draft.editKey && draft.action){
+      askStatusSingle();
+      return;
+    }
+    if(draft.otName){
+      const ubs = draft.ubs, otName = draft.otName;
+      const classifications = draft.classifications || {};
+      const checked = draft.checked || {};
+      resetCadastro(true);
+      draft.ubs = ubs; draft.otName = otName;
+      draft.classifications = classifications; draft.checked = checked;
+      askActionMulti();
+    } else {
+      startNewCadastro();
+    }
+  } else if(step === 'edit_pick'){
+    startNewCadastro();
+  }
+}
+
+function askUbs(){
+  step = 'ubs';
+  draft = { classifications: {}, checked: {} };
+  hideActionUI();
+  addMsg('Qual UBS você quer atualizar? Digite o nome ou escolha abaixo.', 'bot');
+  clearChips();
+  knownUbs.forEach(n => addChip(n, () => submitUserText(n)));
+  updateNavButtons();
+}
+
+function askOt(){
+  step = 'ot';
+  hideActionUI();
+  addMsg(`Certo, "${draft.ubs}". A qual OT (eixo) essas ações pertencem?`, 'bot');
+  clearChips();
+  if(ots.length === 0){
+    addMsg('Nenhum eixo cadastrado ainda. Digite o nome do OT agora ou cadastre no painel ao lado.', 'bot');
+  } else {
+    ots.forEach(o => addChip(o.name, () => submitUserText(o.name)));
+  }
+  updateNavButtons();
+}
+
+function askActionMulti(){
+  step = 'action_select';
+  if(!draft.classifications) draft.classifications = {};
+  if(!draft.checked) draft.checked = {};
+  // Carrega status já salvos, mas NÃO marca checkbox —
+  // checkbox é só para o próximo lote a classificar.
+  actions.filter(a => a.ubs === draft.ubs && a.otName === draft.otName).forEach(a=>{
+    if(draft.classifications[a.action] == null){
+      draft.classifications[a.action] = a.status;
+    }
+  });
+  // limpa seleção visual ao entrar
+  draft.checked = {};
+  clearChips();
+  const list = actionsForOt(draft.otName);
+  addMsg(`Eixo: ${draft.otName}. Marque um grupo → classifique → marque outro grupo com outro status. Só salve no final. Sem classificação = Não inserida.`, 'bot');
+  renderActionChecklist(list);
+  updateNavButtons();
+}
+
+function countClassifications(){
+  const c = { concluida:0, nao_concluida:0, atrasada:0 };
+  Object.values(draft.classifications || {}).forEach(st=>{
+    if(c[st] != null) c[st]++;
+  });
+  return c;
+}
+
+function renderActionChecklist(list){
+  actionPanel.style.display = 'block';
+  classifyBar.style.display = 'flex';
+
+  const customOnes = [...new Set([
+    ...Object.keys(draft.classifications || {}),
+    ...Object.keys(draft.checked || {})
+  ])].filter(a => !list.includes(a));
+  const all = [...list, ...customOnes];
+  const counts = countClassifications();
+  const totalClassified = counts.concluida + counts.nao_concluida + counts.atrasada;
+
+  let html = `<p class="action-panel-hint">
+    1) Marque ações &nbsp; 2) Clique no status &nbsp; 3) Repita com outro grupo &nbsp; 4) Salve no final.<br>
+    Desmarcar <b>não apaga</b> o status. Sem status = <b>Não inserida</b>.
+  </p>
+  <div class="class-summary" id="classSummary">
+    <span class="cs cs-ok">Concluída: <b>${counts.concluida}</b></span>
+    <span class="cs cs-partial">Não concluída: <b>${counts.nao_concluida}</b></span>
+    <span class="cs cs-pend">Atrasada: <b>${counts.atrasada}</b></span>
+    <span class="cs cs-total">Prontas p/ salvar: <b>${totalClassified}</b></span>
+  </div>`;
+
+  if(all.length === 0){
+    html += `<p class="empty-note">Nenhuma ação-modelo. Digite uma personalizada no campo abaixo e envie.</p>`;
+  } else {
+    all.forEach((actionText, i) => {
+      const st = draft.classifications[actionText] || null;
+      const checked = !!draft.checked[actionText];
+      const stCls = st || 'none';
+      const stLabel = st ? STATUS_LABEL[st] : 'Sem status';
+      html += `<label class="action-check ${checked?'checked':''} ${st?'classified st-'+st:''}">
+        <input type="checkbox" data-idx="${i}" ${checked?'checked':''}/>
+        <span class="ac-text"></span>
+        <span class="ac-status ${stCls}">${stLabel}</span>
+      </label>`;
+    });
+  }
+  actionPanel.innerHTML = html;
+  actionPanel.querySelectorAll('.action-check').forEach((row, i)=>{
+    const actionText = all[i];
+    row.querySelector('.ac-text').textContent = actionText;
+    const cb = row.querySelector('input[type=checkbox]');
+    cb.addEventListener('change', () => {
+      // checkbox = apenas seleção do lote; NÃO remove classificação
+      if(cb.checked) draft.checked[actionText] = true;
+      else delete draft.checked[actionText];
+      row.classList.toggle('checked', cb.checked);
+    });
+  });
+
+  classifyBar.innerHTML = `
+    <span class="lbl">Aplicar às marcadas:</span>
+    <button type="button" class="status-btn ok" data-st="concluida">Concluída</button>
+    <button type="button" class="status-btn partial" data-st="nao_concluida">Não concluída</button>
+    <button type="button" class="status-btn pend" data-st="atrasada">Atrasada</button>
+    <button type="button" class="status-btn clear" id="btnClearStatus" title="Remove o status das ações marcadas">Limpar status</button>
+    <button type="button" class="nav-btn" id="btnSelectNone">Desmarcar todas</button>
+    <button type="button" class="nav-btn primary" id="btnSaveBatch" style="margin-left:auto;">Salvar tudo</button>
+  `;
+
+  classifyBar.querySelectorAll('.status-btn[data-st]').forEach(btn=>{
+    btn.onclick = () => applyStatusToChecked(btn.getAttribute('data-st'), all);
+  });
+  classifyBar.querySelector('#btnClearStatus').onclick = () => clearStatusFromChecked(all);
+  classifyBar.querySelector('#btnSelectNone').onclick = () => {
+    draft.checked = {};
+    renderActionChecklist(actionsForOt(draft.otName));
+  };
+  classifyBar.querySelector('#btnSaveBatch').onclick = () => confirmBatch();
+}
+
+function applyStatusToChecked(statusKey, allList){
+  const boxes = actionPanel.querySelectorAll('input[type=checkbox]:checked');
+  if(boxes.length === 0){
+    addMsg('Marque pelo menos uma ação antes de classificar.', 'bot');
+    return;
+  }
+  const names = [];
+  boxes.forEach(cb=>{
+    const idx = Number(cb.getAttribute('data-idx'));
+    const action = allList[idx];
+    if(!action) return;
+    draft.classifications[action] = statusKey;
+    names.push(action);
+  });
+  // libera os checkboxes para o próximo grupo com outro status
+  names.forEach(a => { delete draft.checked[a]; });
+  addMsg(`${names.length} ação(ões) classificadas como ${STATUS_LABEL[statusKey]}. Pode marcar outras com outro status — o anterior fica guardado até salvar.`, 'bot');
+  renderActionChecklist(actionsForOt(draft.otName));
+}
+
+function clearStatusFromChecked(allList){
+  const boxes = actionPanel.querySelectorAll('input[type=checkbox]:checked');
+  if(boxes.length === 0){
+    addMsg('Marque as ações cujo status deseja limpar.', 'bot');
+    return;
+  }
+  let n = 0;
+  boxes.forEach(cb=>{
+    const idx = Number(cb.getAttribute('data-idx'));
+    const action = allList[idx];
+    if(!action) return;
+    if(draft.classifications[action]){
+      delete draft.classifications[action];
+      n++;
+    }
+    delete draft.checked[action];
+  });
+  addMsg(n ? `${n} status removido(s). Ficarão como Não inserida ao salvar.` : 'Nenhuma das marcadas tinha status.', 'bot');
+  renderActionChecklist(actionsForOt(draft.otName));
+}
+
+function confirmBatch(){
+  const entries = Object.entries(draft.classifications || {});
+  if(entries.length === 0){
+    addMsg('Classifique ao menos uma ação para salvar. As demais do plano ficam como Não inserida.', 'bot');
+    return;
+  }
+  const counts = countClassifications();
+  step = 'confirm_batch';
+  hideActionUI();
+  const byStatus = {
+    concluida: entries.filter(([,s]) => s==='concluida').map(([a]) => a),
+    nao_concluida: entries.filter(([,s]) => s==='nao_concluida').map(([a]) => a),
+    atrasada: entries.filter(([,s]) => s==='atrasada').map(([a]) => a)
+  };
+  let lines = `Resumo antes de salvar (${entries.length} ações):\n`;
+  lines += `• Concluída: ${counts.concluida}\n• Não concluída: ${counts.nao_concluida}\n• Atrasada: ${counts.atrasada}\n`;
+  if(byStatus.atrasada.length) lines += `\nAtrasadas:\n` + byStatus.atrasada.map(a=>`  – ${a}`).join('\n');
+  if(byStatus.concluida.length) lines += `\nConcluídas:\n` + byStatus.concluida.slice(0,8).map(a=>`  – ${a}`).join('\n') + (byStatus.concluida.length>8?`\n  … +${byStatus.concluida.length-8}`:'');
+  if(byStatus.nao_concluida.length) lines += `\nNão concluídas:\n` + byStatus.nao_concluida.slice(0,8).map(a=>`  – ${a}`).join('\n') + (byStatus.nao_concluida.length>8?`\n  … +${byStatus.nao_concluida.length-8}`:'');
+  lines += `\n\nAs não listadas deste OT ficam Não inserida.`;
+  addMsg(lines, 'bot');
+  clearChips();
+  setChipRowMode('status');
+  addChip('Confirmar e salvar', () => saveBatch(), 'status-ok');
+  addChip('Voltar e ajustar', () => {
+    step = 'action_select';
+    clearChips();
+    renderActionChecklist(actionsForOt(draft.otName));
+    updateNavButtons();
+  });
+  updateNavButtons();
+}
+
+async function ensureOtMatch(otName){
+  let otMatch = ots.find(o => o.name.toLowerCase() === otName.toLowerCase());
+  if(!otMatch){
+    const key = OT_PREFIX + Date.now();
+    await safeSet(key, otName, false);
+    otMatch = {key, name: otName};
+    ots.push(otMatch);
+    renderOtList();
+  }
+  return otMatch;
+}
+
+async function upsertActionRecord({ubs, otMatch, actionText, status, editKey, date}){
+  const record = {
+    ubs,
+    otKey: otMatch.key,
+    otName: otMatch.name,
+    action: actionText,
+    status,
+    date: date || new Date().toISOString()
+  };
+  let key = editKey;
+  if(!key){
+    const existing = actions.find(a => a.ubs === ubs && a.otName === otMatch.name && a.action === actionText);
+    key = existing ? existing.key : (ACTION_PREFIX + Date.now() + '_' + Math.random().toString(36).slice(2,7));
+  }
+  await safeSet(key, JSON.stringify(record), false);
+  const idx = actions.findIndex(a=>a.key===key);
+  if(idx >= 0) actions[idx] = {key, ...record};
+  else actions.push({key, ...record});
+  return key;
+}
+
+async function saveBatch(){
+  const otMatch = await ensureOtMatch(draft.otName);
+  const entries = Object.entries(draft.classifications || {});
+  const classifiedSet = new Set(entries.map(([a]) => a));
+
+  for(const [actionText, status] of entries){
+    await upsertActionRecord({
+      ubs: draft.ubs,
+      otMatch,
+      actionText,
+      status
+    });
+  }
+
+  // o que não ficou classificado neste salvamento volta a ser "não inserida" (remove do banco)
+  const toRemove = actions.filter(a =>
+    a.ubs === draft.ubs &&
+    a.otName === otMatch.name &&
+    !classifiedSet.has(a.action)
+  );
+  for(const a of toRemove){
+    try{ await safeDelete(a.key, false); }catch(e){}
+  }
+  actions = actions.filter(a => !(a.ubs === draft.ubs && a.otName === otMatch.name && !classifiedSet.has(a.action)));
+
+  renderAll();
+  hideActionUI();
+  clearChips();
+  addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
+  addChip('Novo cadastro', () => startNewCadastro());
+  addChip('Ver dashboard', () => showPage('dashboard'));
+  addChip('Mesma UBS, outro OT', () => {
+    const ubs = draft.ubs;
+    resetCadastro(true);
+    draft.ubs = ubs;
+    addMsg(`UBS mantida: ${ubs}`, 'bot');
+    askOt();
+  });
+  step = 'idle';
+  updateNavButtons();
+}
+
+function askStatusSingle(){
+  step = 'status_single';
+  hideActionUI();
+  addMsg(`Ação: "${draft.action}". Qual o status?`, 'bot');
+  clearChips();
+  setChipRowMode('status');
+  addChip('Concluída', () => { draft.status = 'Concluída'; confirmEntry(); }, 'status-ok');
+  addChip('Não concluída', () => { draft.status = 'Não concluída'; confirmEntry(); }, 'status-partial');
+  addChip('Atrasada', () => { draft.status = 'Atrasada'; confirmEntry(); }, 'status-pend');
+  updateNavButtons();
+}
+
+function confirmEntry(){
+  step = 'confirm';
+  addMsg(`Confirma? UBS: ${draft.ubs} | OT: ${draft.otName} | Ação: "${draft.action}" | Status: ${draft.status}`, 'bot');
+  clearChips();
+  addChip('Salvar', () => saveEntry());
+  addChip('Cancelar', () => { addMsg('Cancelado.', 'bot'); startNewCadastro(); });
+  updateNavButtons();
+}
+
+async function saveEntry(){
+  const otMatch = await ensureOtMatch(draft.otName);
+  const status = draft.status === 'Concluída' ? 'concluida' : (draft.status === 'Atrasada' ? 'atrasada' : 'nao_concluida');
+  await upsertActionRecord({
+    ubs: draft.ubs,
+    otMatch,
+    actionText: draft.action,
+    status,
+    editKey: draft.editKey
+  });
+  renderAll();
+  hideActionUI();
+  addMsg(draft.editKey ? 'Registro atualizado.' : 'Ação salva.', 'bot');
+  clearChips();
+  addChip('Novo cadastro', () => startNewCadastro());
+  step = 'idle';
+  updateNavButtons();
+}
+
+function handleGapItemClick(ubs, otName, item){
+  showPage('cadastro');
+  resetCadastro(true);
+  draft = {
+    ubs, otName,
+    action: item.action,
+    editKey: item.key || null,
+    classifications: {},
+    checked: {}
+  };
+  addMsg(`Editando: "${item.action}" — ${otName} (${ubs}).`, 'bot');
+  askStatusSingle();
+  document.querySelector('.chat-body').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function startEditFromHistory(record){
+  showPage('cadastro');
+  resetCadastro(true);
+  draft = {
+    ubs: record.ubs,
+    otName: record.otName,
+    action: record.action,
+    editKey: record.key,
+    classifications: {},
+    checked: {}
+  };
+  addMsg(`Editando registro: "${record.action}" (${record.ubs}). Escolha o novo status.`, 'bot');
+  askStatusSingle();
+  document.querySelector('.chat-body').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function askEditPick(){
+  step = 'edit_pick';
+  hideActionUI();
+  clearChips();
+  chatBody.innerHTML = '';
+  if(actions.length === 0){
+    addMsg('Não há cadastros no histórico para editar. Faça um novo cadastro primeiro.', 'bot');
+    addChip('Novo cadastro', () => startNewCadastro());
+    updateNavButtons();
+    return;
+  }
+  addMsg('Qual registro deseja editar? Escolha abaixo ou use Editar/Excluir na tabela do histórico.', 'bot');
+  const recent = [...actions].sort((a,b)=> new Date(b.date)-new Date(a.date)).slice(0,12);
+  recent.forEach(a=>{
+    const label = `${a.ubs} · ${STATUS_LABEL[a.status]||a.status} · ${a.action.slice(0,60)}${a.action.length>60?'…':''}`;
+    addChip(label, () => startEditFromHistory(a), 'chip-wide');
+  });
+  updateNavButtons();
+}
+
+function submitUserText(raw){
+  const text = raw.trim();
+  if(!text) return;
+  addMsg(text, 'user');
+  if(step === 'ubs'){
+    draft.ubs = text;
+    askOt();
+  } else if(step === 'ot'){
+    const resolved = resolveOtName(text);
+    if(resolved && resolved !== text){
+      addMsg(`Reconheci "${text}" como ${resolved}.`, 'bot');
+    }
+    draft.otName = resolved || text;
+    draft.classifications = {};
+    draft.checked = {};
+    askActionMulti();
+  } else if(step === 'action_select'){
+    // custom action typed
+    if(!draft.classifications) draft.classifications = {};
+    if(!draft.checked) draft.checked = {};
+    draft.checked[text] = true;
+    draft.classifications[text] = draft.classifications[text] || null;
+    addMsg(`Ação personalizada adicionada à lista: "${text}". Marque-a e classifique o status.`, 'bot');
+    // if no status yet, leave null until classified
+    if(!draft.classifications[text]) delete draft.classifications[text];
+    draft.checked[text] = true;
+    renderActionChecklist(actionsForOt(draft.otName));
+  } else if(step === 'status_single'){
+    const norm = text.toLowerCase();
+    if(norm.startsWith('conclu')) draft.status = 'Concluída';
+    else if(norm.startsWith('atras')) draft.status = 'Atrasada';
+    else draft.status = 'Não concluída';
+    confirmEntry();
+  } else {
+    addMsg('Use "Novo cadastro" para começar, ou "Editar" para alterar um registro.', 'bot');
+  }
+}
+
+sendBtn.onclick = () => { submitUserText(chatInput.value); chatInput.value=''; };
+chatInput.addEventListener('keydown', e => { if(e.key==='Enter'){ submitUserText(chatInput.value); chatInput.value=''; }});
+btnNew.onclick = () => startNewCadastro();
+btnBack.onclick = () => goBack();
+btnEditMode.onclick = () => askEditPick();
+
+// ---------- aggregation helpers ----------
+function pct(done, total){ return total === 0 ? 0 : Math.round((done/total)*100); }
+function barClass(p){ return p >= 70 ? 'sage' : (p >= 40 ? 'amber' : 'alert'); }
+
+function groupBy(list, keyFn){
+  const map = new Map();
+  list.forEach(item=>{
+    const k = keyFn(item);
+    if(!map.has(k)) map.set(k, []);
+    map.get(k).push(item);
+  });
+  return map;
+}
+
+function renderBarChart(container, groups){
+  // groups: array of {label, total, done}
+  if(groups.length === 0){
+    container.innerHTML = '<p class="empty-note">Nenhuma ação registrada ainda.</p>';
+    return;
+  }
+  container.innerHTML = '';
+  groups.sort((a,b)=> pct(b.done,b.total) - pct(a.done,a.total));
+  groups.forEach(g=>{
+    const p = pct(g.done, g.total);
+    const row = document.createElement('div');
+    row.innerHTML = `
+      <div class="bar-row">
+        <div class="label" title="${g.label}">${g.label}</div>
+        <div class="bar-track"><div class="bar-fill ${barClass(p)}" style="width:${p}%"></div></div>
+        <div class="bar-pct">${p}%</div>
+      </div>
+      <div class="bar-sub">${g.done} concluídas de ${g.total}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// ---------- rendering ----------
+function renderAll(){
+  renderStats();
+  renderOtChart();
+  renderUbsChart();
+  renderUbsSelect();
+  renderUbsOtDetail();
+  renderTable();
+}
+
+function renderStats(){
+  const ubsSet = new Set(actions.map(a=>a.ubs));
+  const totalActions = actions.length;
+  const done = actions.filter(a=>a.status==='concluida').length;
+  const naoConcluida = actions.filter(a=>a.status==='nao_concluida').length;
+  const atrasada = actions.filter(a=>a.status==='atrasada').length;
+
+  // "Faltam no plano" = ações-modelo ainda sem cadastro,
+  // SOMENTE nas UBS que já têm pelo menos 1 registro (UBS ativas).
+  // Evita o número inflado (ex.: 1000+) somando todas as UBS vazias × todas as ações.
+  const activeUbs = [...ubsSet];
+  let naoInserida = 0;
+  activeUbs.forEach(ubs=>{
+    ots.forEach(otRec=>{
+      const entry = findOtBankEntry(otRec.name);
+      if(!entry) return;
+      const registeredActionsForCombo = new Set(
+        actions.filter(a=>a.ubs===ubs && a.otName===otRec.name).map(a=>a.action)
+      );
+      entry.actions.forEach(actionText=>{
+        if(!registeredActionsForCombo.has(actionText)) naoInserida++;
+      });
+    });
+  });
+
+  document.getElementById('statUbs').textContent = ubsSet.size;
+  document.getElementById('statOt').textContent = ots.length;
+  document.getElementById('statTotal').textContent = totalActions;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statPartial').textContent = naoConcluida;
+  document.getElementById('statNaoInserida').textContent = naoInserida;
+  document.getElementById('statPend').textContent = atrasada;
+}
+
+function renderOtChart(){
+  const map = groupBy(actions, a => a.otName);
+  const groups = [...map.entries()].map(([label, items]) => ({
+    label, total: items.length, done: items.filter(i=>i.status==='concluida').length
+  }));
+  renderBarChart(document.getElementById('otChart'), groups);
+}
+
+function renderUbsChart(){
+  const map = groupBy(actions, a => a.ubs);
+  const groups = [...map.entries()].map(([label, items]) => ({
+    label, total: items.length, done: items.filter(i=>i.status==='concluida').length
+  }));
+  renderBarChart(document.getElementById('ubsChart'), groups);
+}
+
+function renderUbsSelect(){
+  const select = document.getElementById('ubsSelect');
+  const current = select.value;
+  const ubsSet = [...new Set([...knownUbs, ...actions.map(a=>a.ubs)])].sort();
+  select.innerHTML = '<option value="">— selecione —</option>' +
+    ubsSet.map(u => `<option value="${u}">${u}</option>`).join('');
+  if(ubsSet.includes(current)) select.value = current;
+}
+document.getElementById('ubsSelect').addEventListener('change', renderUbsOtDetail);
+
+function renderOtFilterSelect(){
+  const select = document.getElementById('ubsGapOtFilter');
+  const current = select.value;
+  select.innerHTML = '<option value="">Todos os OTs</option>' +
+    ots.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
+  if(ots.some(o=>o.name===current)) select.value = current;
+}
+document.getElementById('ubsGapOtFilter').addEventListener('change', renderUbsOtDetail);
+
+let gapShowDone = false;
+document.getElementById('gapShowDoneToggle').onclick = function(){
+  gapShowDone = !gapShowDone;
+  this.classList.toggle('active', gapShowDone);
+  this.textContent = gapShowDone ? 'Ocultar concluídas' : 'Mostrar concluídas também';
+  renderUbsOtDetail();
+};
+
+const ICO = {
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
+  alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>',
+  inbox: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v10M8 9l4 4 4-4"/><path d="M5 17h14v4H5z"/></svg>'
+};
+
+const GAP_LABELS = {
+  concluida: {label:'CONCLUÍDA', cls:'concluida', ico: ICO.check},
+  nao_concluida: {label:'NÃO CONCLUÍDA', cls:'nao_concluida', ico: ICO.warn},
+  atrasada: {label:'ATRASADA', cls:'atrasada', ico: ICO.alert},
+  nao_inserida: {label:'NÃO INSERIDA', cls:'nao_inserida', ico: ICO.inbox}
+};
+
+function classifyGapItem(match, actionText){
+  if(!match){
+    return {action: actionText, statusKey: 'nao_inserida', key: null};
+  }
+  return {action: actionText, statusKey: match.status, key: match.key};
+}
+
+function computeGapForUbs(ubs){
+  const registered = actions.filter(a=>a.ubs===ubs);
+  const groups = [];
+  const seenOtNames = new Set();
+  OT_BANK.forEach(entry=>{
+    // only include OTs that are still registered in the manager (user may have deleted one)
+    if(!ots.some(o=>o.name===entry.fullLabel)) return;
+    seenOtNames.add(entry.fullLabel);
+    const items = entry.actions.map(actionText=>{
+      const match = registered.find(r=>r.otName===entry.fullLabel && r.action===actionText);
+      return classifyGapItem(match, actionText);
+    });
+    registered.filter(r=>r.otName===entry.fullLabel && !entry.actions.includes(r.action))
+      .forEach(r=> items.push(classifyGapItem(r, r.action)));
+    groups.push({otLabel: entry.fullLabel, items});
+  });
+  const customOtNames = [...new Set(registered.map(r=>r.otName))].filter(n=>!seenOtNames.has(n));
+  customOtNames.forEach(otName=>{
+    const items = registered.filter(r=>r.otName===otName).map(r=>classifyGapItem(r, r.action));
+    groups.push({otLabel: otName, items});
+  });
+  return groups;
+}
+
+function renderUbsOtDetail(){
+  renderOtFilterSelect();
+  const ubsSelectEl = document.getElementById('ubsSelect');
+  const otFilterEl = document.getElementById('ubsGapOtFilter');
+  const container = document.getElementById('ubsOtDetail');
+  const ubs = ubsSelectEl.value;
+  if(!ubs){
+    container.innerHTML = '<p class="empty-note">Selecione uma UBS para ver as pendências por eixo.</p>';
+    return;
+  }
+  let groups = computeGapForUbs(ubs);
+  if(otFilterEl.value) groups = groups.filter(g => g.otLabel === otFilterEl.value);
+
+  const allItems = groups.flatMap(g=>g.items);
+  const totalItems = allItems.length;
+  const doneItems = allItems.filter(i=>i.statusKey==='concluida').length;
+  const overallP = pct(doneItems, totalItems);
+  container.innerHTML = `<p style="font-size:13.5px;margin:0 0 14px;">Desempenho geral da <b>${ubs}</b>: <b>${overallP}%</b> (${doneItems} de ${totalItems} ações-modelo concluídas)</p>`;
+
+  if(groups.length === 0){
+    container.innerHTML += '<p class="empty-note">Nenhum eixo cadastrado ainda — adicione OTs no painel "Gerenciar Eixos".</p>';
+    return;
+  }
+
+  groups.forEach(g=>{
+    const visibleItems = gapShowDone ? g.items : g.items.filter(i=>i.statusKey!=='concluida');
+    if(visibleItems.length === 0 && !gapShowDone) return; // OT fully concluded, skip in pending-only view
+    const done = g.items.filter(i=>i.statusKey==='concluida').length;
+    const header = document.createElement('div');
+    header.className = 'gap-ot-header';
+    header.innerHTML = `<span>${g.otLabel}</span><span style="font-family:var(--mono);font-weight:500;font-size:12px;color:var(--stone);">${done}/${g.items.length} concluídas</span>`;
+    container.appendChild(header);
+    if(visibleItems.length === 0){
+      const p = document.createElement('p');
+      p.className = 'empty-note';
+      p.textContent = 'Todas as ações desse eixo estão concluídas. 🎉';
+      container.appendChild(p);
+      return;
+    }
+    visibleItems.forEach(item=>{
+      const meta = GAP_LABELS[item.statusKey];
+      const row = document.createElement('div');
+      row.className = 'gap-item gap-item-clickable';
+      row.title = 'Toque para registrar ou atualizar essa ação no chat';
+      row.innerHTML = `
+        <span class="gap-action">${item.action}</span>
+        <span class="gap-tag ${meta.cls}">${meta.ico}${meta.label}</span>
+      `;
+      row.onclick = () => handleGapItemClick(ubs, g.otLabel, item);
+      container.appendChild(row);
+    });
+  });
+}
+
+function renderTable(){
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  let list = [...actions].sort((a,b)=> new Date(b.date) - new Date(a.date));
+  if(showOnlyPending) list = list.filter(a=>a.status!=='concluida');
+
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--stone);padding:22px;">Nenhum registro para mostrar.</td></tr>`;
+    return;
+  }
+  const STAMP_HTML = {
+    concluida: `<span class="stamp done">${ICO.check}CONCLUÍDA</span>`,
+    nao_concluida: `<span class="stamp partial">${ICO.warn}NÃO CONCLUÍDA</span>`,
+    atrasada: `<span class="stamp pending">${ICO.alert}ATRASADA</span>`
+  };
+  list.forEach(a=>{
+    const tr = document.createElement('tr');
+    const dt = new Date(a.date);
+    const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const stamp = STAMP_HTML[a.status] || STAMP_HTML.nao_concluida;
+    tr.innerHTML = `
+      <td>${a.ubs}</td>
+      <td><span class="ot-tag">${a.otName}</span></td>
+      <td></td>
+      <td>${stamp}</td>
+      <td class="date-cell">${dtStr}</td>
+      <td>
+        <div class="row-actions">
+          <button type="button" class="edit-btn" data-key="${a.key}">Editar</button>
+          <button type="button" class="del-btn-tbl" data-key="${a.key}">Excluir</button>
+        </div>
+      </td>
+    `;
+    tr.children[2].textContent = a.action;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('.del-btn-tbl').forEach(btn=>{
+    btn.onclick = async () => {
+      const key = btn.getAttribute('data-key');
+      if(!confirm('Excluir este cadastro? A ação voltará a aparecer como Não inserida.')) return;
+      try{ await safeDelete(key, false); }catch(e){}
+      actions = actions.filter(a=>a.key!==key);
+      renderAll();
+    };
+  });
+  tbody.querySelectorAll('.edit-btn').forEach(btn=>{
+    btn.onclick = () => {
+      const key = btn.getAttribute('data-key');
+      const rec = actions.find(a=>a.key===key);
+      if(rec) startEditFromHistory(rec);
+    };
+  });
+}
+
+document.getElementById('filterToggle').onclick = function(){
+  showOnlyPending = !showOnlyPending;
+  this.classList.toggle('active', showOnlyPending);
+  this.textContent = showOnlyPending ? 'Mostrando só não concluídas' : 'Mostrar só não concluídas';
+  renderTable();
+};
+
+// ---------- páginas Cadastro / Dashboard ----------
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + name));
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-page') === name));
+  if(name === 'dashboard') renderAll();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.querySelectorAll('.page-tab').forEach(tab=>{
+  tab.onclick = () => showPage(tab.getAttribute('data-page'));
+});
+const btnGoDash = document.getElementById('btnGoDash');
+const btnGoCadastro = document.getElementById('btnGoCadastro');
+if(btnGoDash) btnGoDash.onclick = () => showPage('dashboard');
+if(btnGoCadastro) btnGoCadastro.onclick = () => { showPage('cadastro'); startNewCadastro(); };
+
+function csvCell(value){
+  // Excel BR: limpa quebras, aspas e caracteres que bagunçam colunas
+  let s = String(value == null ? '' : value)
+    .replace(/\r\n/g, ' ')
+    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  s = s.replace(/"/g, '""');
+  return '"' + s + '"';
+}
+
+function downloadCsv(filename, rows){
+  // BOM UTF-8 + separador ; (padrão Excel Brasil) = acentos e colunas corretas
+  const sep = ';';
+  const lines = rows.map(r => r.map(csvCell).join(sep));
+  const csv = '\uFEFF' + lines.join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = filename.replace('.csv', '') + '_' + stamp + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function formatStatusLabel(status){
+  if(status === 'concluida') return 'Concluída';
+  if(status === 'atrasada') return 'Atrasada';
+  if(status === 'nao_inserida') return 'Não inserida';
+  return 'Não concluída';
+}
+
+function formatDateBr(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mi = String(d.getMinutes()).padStart(2,'0');
+  return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi;
+}
+
+document.getElementById('exportBtn').onclick = function(){
+  const rows = [['UBS','OT','Ação','Status','Data']];
+  [...actions].sort((a,b)=> new Date(b.date) - new Date(a.date)).forEach(a=>{
+    rows.push([a.ubs, a.otName, a.action, formatStatusLabel(a.status), formatDateBr(a.date)]);
+  });
+  if(rows.length === 1){
+    alert('Não há registros cadastrados para exportar.');
+    return;
+  }
+  downloadCsv('ubs_acoes_registro', rows);
+};
+
+document.getElementById('exportFullBtn').onclick = function(){
+  const rows = [['UBS','OT','Ação','Status','Data']];
+  const allUbs = [...new Set([...knownUbs, ...actions.map(a=>a.ubs)])].sort();
+  allUbs.forEach(ubs=>{
+    computeGapForUbs(ubs).forEach(g=>{
+      g.items.forEach(item=>{
+        const match = item.key ? actions.find(a=>a.key===item.key) : null;
+        rows.push([
+          ubs,
+          g.otLabel,
+          item.action,
+          formatStatusLabel(item.statusKey),
+          match ? formatDateBr(match.date) : ''
+        ]);
+      });
+    });
+  });
+  downloadCsv('ubs_acoes_completo_plano', rows);
+};
+
+// ---------- load persisted data ----------
+async function loadAll(){
+  const otKeys = await safeList(OT_PREFIX, false);
+  if(otKeys && otKeys.keys && otKeys.keys.length){
+    for(const key of otKeys.keys){
+      const res = await safeGet(key, false);
+      if(res && res.value) ots.push({key, name: res.value});
+    }
+  }
+  const actKeys = await safeList(ACTION_PREFIX, false);
+  if(actKeys && actKeys.keys && actKeys.keys.length){
+    for(const key of actKeys.keys){
+      const res = await safeGet(key, false);
+      if(res && res.value){
+        try{ actions.push({key, ...JSON.parse(res.value)}); }catch(e){}
+      }
+    }
+  }
+  await seedDefaultOts();
+  renderOtList();
+  renderAll();
+  startNewCadastro();
+}
+
+loadAll();
+(function showPersistBanner(){
+  const notice = document.getElementById('storageNotice');
+  if(!notice) return;
+  const desktop = !!(window.painelApp && window.painelApp.isDesktop);
+  notice.classList.add('show');
+  notice.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/><circle cx="12" cy="12" r="9"/></svg>
+    <span>${desktop
+      ? 'App desktop pronto — registros ficam salvos neste computador entre sessões.'
+      : 'Registros salvos neste computador (armazenamento local). Feche e reabra: os dados permanecem.'}</span>`;
+})();
+</script>
+</body>
+</html>

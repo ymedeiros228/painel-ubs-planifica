@@ -1,0 +1,36 @@
+PAINEL UBS PLANIFICA — Passagem Franca (MA)
+Versão 2.0.0
+============================================
+
+O que é
+-------
+Aplicativo desktop para registro manual das ações das UBS
+(PlanificaSUS). Dados ficam salvos neste computador.
+
+Novidades 2.0
+-------------
+- Cadastro e Dashboard em páginas separadas
+- Multi-seleção de ações com status em lote
+- Paleta azul profissional
+- Exportação CSV compatível com Excel (acentos corretos)
+- Editar / Excluir no histórico e nos eixos (OTs)
+
+Como instalar (recomendado)
+---------------------------
+1. Execute: Painel-UBS-Planifica-Instalador.exe
+2. Siga o assistente de instalação
+3. Abra pelo atalho na Área de Trabalho ou no Menu Iniciar
+
+Uso sem instalar (portátil)
+---------------------------
+Execute: Painel-UBS-Planifica-Portatil.exe
+Não precisa instalar — pode rodar de um pen drive.
+
+Requisitos
+----------
+Windows 10 ou 11 (64 bits)
+
+Dicas
+-----
+- Use "Exportar CSV (Excel)" no Dashboard para backup.
+- Os 12 eixos (OTs) e ações-modelo já vêm pré-carregados.
