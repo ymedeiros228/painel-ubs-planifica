@@ -159,6 +159,18 @@
   .detail-select{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
   .detail-select select{min-width:180px;}
 
+  .dash-filter-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    margin:0 0 16px;box-shadow:var(--shadow-card);
+  }
+  .dash-filter-bar .filter-fields{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1;min-width:240px;}
+  .dash-filter-bar .filter-fields label{font-size:13.5px;color:var(--stone);font-weight:650;}
+  .dash-filter-bar .filter-fields select{min-width:180px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:var(--body);background:#fff;color:var(--ink);}
+  .dash-filter-bar .filter-fields select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
+  .dash-filter-bar .filter-toggles{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .filter-hint{font-size:12px;color:var(--stone);margin:-6px 0 14px;}
+
   .table-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;}
   .controls{display:flex;gap:8px;flex-wrap:wrap;}
   .toggle,.export{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;font-weight:650;color:var(--ink-soft);}
@@ -361,6 +373,20 @@
     </button>
   </div>
 
+  <div class="dash-filter-bar" role="search" aria-label="Filtros do dashboard">
+    <div class="filter-fields">
+      <label for="ubsSelect">UBS:</label>
+      <select id="ubsSelect"><option value="">Todas as UBS</option></select>
+      <label for="ubsGapOtFilter">Filtrar por OT:</label>
+      <select id="ubsGapOtFilter"><option value="">Todos os OTs</option></select>
+    </div>
+    <div class="filter-toggles">
+      <button type="button" class="toggle" id="gapShowDoneToggle" title="Nas pendências, inclui também as ações concluídas">Mostrar concluídas também</button>
+      <button type="button" class="toggle" id="filterToggle" title="No histórico, lista só o que não está concluído">Mostrar só não concluídas</button>
+    </div>
+  </div>
+  <p class="filter-hint" id="filterHint">Filtros aplicados aos indicadores, gráficos, pendências e histórico.</p>
+
   <div class="stat-row">
     <div class="stat">
       <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6"/></svg>
@@ -416,21 +442,13 @@
       <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
       Pendências por UBS, vistas por OT
     </h2>
-    <p style="font-size:13px;color:var(--stone);margin:-6px 0 14px;">Selecione a UBS: o painel mostra o que ainda <b>não está concluído</b> — <b style="color:var(--amber);">não concluída</b>, <b style="color:var(--alert);">atrasada</b> ou <b style="color:var(--orange);">não inserida</b>. Toque em uma ação para editar no Cadastro.</p>
-    <div class="detail-select">
-      <label for="ubsSelect" style="font-size:13.5px;color:var(--stone);">UBS:</label>
-      <select id="ubsSelect"><option value="">— selecione —</option></select>
-      <label for="ubsGapOtFilter" style="font-size:13.5px;color:var(--stone);">Filtrar por OT:</label>
-      <select id="ubsGapOtFilter"><option value="">Todos os OTs</option></select>
-      <button class="toggle" id="gapShowDoneToggle">Mostrar concluídas também</button>
-    </div>
-    <div id="ubsOtDetail"><p class="empty-note">Selecione uma UBS para ver as pendências por eixo.</p></div>
+    <p style="font-size:13px;color:var(--stone);margin:-6px 0 14px;">Usa os filtros acima. Mostra o que ainda <b>não está concluído</b> — <b style="color:var(--amber);">não concluída</b>, <b style="color:var(--alert);">atrasada</b> ou <b style="color:var(--orange);">não inserida</b>. Toque em uma ação para editar no Cadastro.</p>
+    <div id="ubsOtDetail"><p class="empty-note">Nenhuma pendência para os filtros atuais.</p></div>
   </div>
 
   <div class="table-head-row">
     <h2>Histórico de ações</h2>
     <div class="controls">
-      <button class="toggle" id="filterToggle">Mostrar só não concluídas</button>
       <button class="export" id="exportBtn">Exportar CSV (Excel)</button>
       <button class="export" id="exportFullBtn" title="Inclui também as não inseridas do plano-modelo">Exportar completo</button>
     </div>
@@ -1181,29 +1199,69 @@ function renderBarChart(container, groups){
 }
 
 // ---------- rendering ----------
-function renderAll(){
+function getDashboardFilters(){
+  const ubs = (document.getElementById('ubsSelect')?.value || '').trim();
+  const otName = (document.getElementById('ubsGapOtFilter')?.value || '').trim();
+  return { ubs, otName };
+}
+
+function filteredActions(){
+  const { ubs, otName } = getDashboardFilters();
+  return actions.filter(a => {
+    if(ubs && a.ubs !== ubs) return false;
+    if(otName && a.otName !== otName) return false;
+    return true;
+  });
+}
+
+function updateFilterHint(){
+  const hint = document.getElementById('filterHint');
+  if(!hint) return;
+  const { ubs, otName } = getDashboardFilters();
+  const parts = [];
+  parts.push(ubs ? `UBS: ${ubs}` : 'Todas as UBS');
+  parts.push(otName ? `OT: ${otName}` : 'Todos os OTs');
+  hint.textContent = `Filtros ativos — ${parts.join(' · ')}. Aplicados aos indicadores, gráficos, pendências e histórico.`;
+}
+
+function onDashboardFilterChange(){
+  updateFilterHint();
   renderStats();
   renderOtChart();
   renderUbsChart();
+  renderUbsOtDetail();
+  renderTable();
+}
+
+function renderAll(){
   renderUbsSelect();
+  renderOtFilterSelect();
+  updateFilterHint();
+  renderStats();
+  renderOtChart();
+  renderUbsChart();
   renderUbsOtDetail();
   renderTable();
 }
 
 function renderStats(){
-  const ubsSet = new Set(actions.map(a=>a.ubs));
-  const totalActions = actions.length;
-  const done = actions.filter(a=>a.status==='concluida').length;
-  const naoConcluida = actions.filter(a=>a.status==='nao_concluida').length;
-  const atrasada = actions.filter(a=>a.status==='atrasada').length;
+  const list = filteredActions();
+  const { ubs: filterUbs, otName: filterOt } = getDashboardFilters();
+  const ubsSet = new Set(list.map(a=>a.ubs));
+  const otSet = new Set(list.map(a=>a.otName));
+  const totalActions = list.length;
+  const done = list.filter(a=>a.status==='concluida').length;
+  const naoConcluida = list.filter(a=>a.status==='nao_concluida').length;
+  const atrasada = list.filter(a=>a.status==='atrasada').length;
 
-  // "Faltam no plano" = ações-modelo ainda sem cadastro,
-  // SOMENTE nas UBS que já têm pelo menos 1 registro (UBS ativas).
-  // Evita o número inflado (ex.: 1000+) somando todas as UBS vazias × todas as ações.
-  const activeUbs = [...ubsSet];
+  // "Faltam no plano" respeita filtros de UBS/OT
+  const activeUbs = filterUbs ? [filterUbs] : [...ubsSet];
+  const otScope = filterOt
+    ? ots.filter(o => o.name === filterOt)
+    : ots;
   let naoInserida = 0;
   activeUbs.forEach(ubs=>{
-    ots.forEach(otRec=>{
+    otScope.forEach(otRec=>{
       const entry = findOtBankEntry(otRec.name);
       if(!entry) return;
       const registeredActionsForCombo = new Set(
@@ -1215,8 +1273,12 @@ function renderStats(){
     });
   });
 
-  document.getElementById('statUbs').textContent = ubsSet.size;
-  document.getElementById('statOt').textContent = ots.length;
+  document.getElementById('statUbs').textContent = filterUbs
+    ? ((list.length > 0 || naoInserida > 0) ? 1 : 0)
+    : ubsSet.size;
+  document.getElementById('statOt').textContent = filterOt
+    ? 1
+    : (filterUbs ? Math.max(otSet.size, otScope.filter(o => findOtBankEntry(o.name)).length) : ots.length);
   document.getElementById('statTotal').textContent = totalActions;
   document.getElementById('statDone').textContent = done;
   document.getElementById('statPartial').textContent = naoConcluida;
@@ -1225,7 +1287,8 @@ function renderStats(){
 }
 
 function renderOtChart(){
-  const map = groupBy(actions, a => a.otName);
+  const list = filteredActions();
+  const map = groupBy(list, a => a.otName);
   const groups = [...map.entries()].map(([label, items]) => ({
     label, total: items.length, done: items.filter(i=>i.status==='concluida').length
   }));
@@ -1233,7 +1296,8 @@ function renderOtChart(){
 }
 
 function renderUbsChart(){
-  const map = groupBy(actions, a => a.ubs);
+  const list = filteredActions();
+  const map = groupBy(list, a => a.ubs);
   const groups = [...map.entries()].map(([label, items]) => ({
     label, total: items.length, done: items.filter(i=>i.status==='concluida').length
   }));
@@ -1244,11 +1308,12 @@ function renderUbsSelect(){
   const select = document.getElementById('ubsSelect');
   const current = select.value;
   const ubsSet = [...new Set([...knownUbs, ...actions.map(a=>a.ubs)])].sort();
-  select.innerHTML = '<option value="">— selecione —</option>' +
+  select.innerHTML = '<option value="">Todas as UBS</option>' +
     ubsSet.map(u => `<option value="${u}">${u}</option>`).join('');
   if(ubsSet.includes(current)) select.value = current;
+  else select.value = '';
 }
-document.getElementById('ubsSelect').addEventListener('change', renderUbsOtDetail);
+document.getElementById('ubsSelect').addEventListener('change', onDashboardFilterChange);
 
 function renderOtFilterSelect(){
   const select = document.getElementById('ubsGapOtFilter');
@@ -1256,8 +1321,9 @@ function renderOtFilterSelect(){
   select.innerHTML = '<option value="">Todos os OTs</option>' +
     ots.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
   if(ots.some(o=>o.name===current)) select.value = current;
+  else select.value = '';
 }
-document.getElementById('ubsGapOtFilter').addEventListener('change', renderUbsOtDetail);
+document.getElementById('ubsGapOtFilter').addEventListener('change', onDashboardFilterChange);
 
 let gapShowDone = false;
 document.getElementById('gapShowDoneToggle').onclick = function(){
@@ -1312,33 +1378,31 @@ function computeGapForUbs(ubs){
   return groups;
 }
 
-function renderUbsOtDetail(){
-  renderOtFilterSelect();
-  const ubsSelectEl = document.getElementById('ubsSelect');
-  const otFilterEl = document.getElementById('ubsGapOtFilter');
-  const container = document.getElementById('ubsOtDetail');
-  const ubs = ubsSelectEl.value;
-  if(!ubs){
-    container.innerHTML = '<p class="empty-note">Selecione uma UBS para ver as pendências por eixo.</p>';
-    return;
-  }
-  let groups = computeGapForUbs(ubs);
-  if(otFilterEl.value) groups = groups.filter(g => g.otLabel === otFilterEl.value);
-
+function renderGapGroups(container, ubs, groups, headingHtml){
   const allItems = groups.flatMap(g=>g.items);
   const totalItems = allItems.length;
   const doneItems = allItems.filter(i=>i.statusKey==='concluida').length;
   const overallP = pct(doneItems, totalItems);
-  container.innerHTML = `<p style="font-size:13.5px;margin:0 0 14px;">Desempenho geral da <b>${ubs}</b>: <b>${overallP}%</b> (${doneItems} de ${totalItems} ações-modelo concluídas)</p>`;
+  if(headingHtml){
+    container.insertAdjacentHTML('beforeend', headingHtml);
+  } else {
+    container.insertAdjacentHTML('beforeend',
+      `<p style="font-size:13.5px;margin:0 0 14px;">Desempenho geral da <b>${ubs}</b>: <b>${overallP}%</b> (${doneItems} de ${totalItems} ações-modelo concluídas)</p>`
+    );
+  }
 
   if(groups.length === 0){
-    container.innerHTML += '<p class="empty-note">Nenhum eixo cadastrado ainda — adicione OTs no painel "Gerenciar Eixos".</p>';
+    container.insertAdjacentHTML('beforeend',
+      '<p class="empty-note">Nenhum eixo cadastrado ainda — adicione OTs no painel "Gerenciar Eixos".</p>'
+    );
     return;
   }
 
+  let renderedAny = false;
   groups.forEach(g=>{
     const visibleItems = gapShowDone ? g.items : g.items.filter(i=>i.statusKey!=='concluida');
-    if(visibleItems.length === 0 && !gapShowDone) return; // OT fully concluded, skip in pending-only view
+    if(visibleItems.length === 0 && !gapShowDone) return;
+    renderedAny = true;
     const done = g.items.filter(i=>i.statusKey==='concluida').length;
     const header = document.createElement('div');
     header.className = 'gap-ot-header';
@@ -1347,7 +1411,7 @@ function renderUbsOtDetail(){
     if(visibleItems.length === 0){
       const p = document.createElement('p');
       p.className = 'empty-note';
-      p.textContent = 'Todas as ações desse eixo estão concluídas. 🎉';
+      p.textContent = 'Todas as ações desse eixo estão concluídas.';
       container.appendChild(p);
       return;
     }
@@ -1364,12 +1428,54 @@ function renderUbsOtDetail(){
       container.appendChild(row);
     });
   });
+
+  if(!renderedAny){
+    container.insertAdjacentHTML('beforeend',
+      '<p class="empty-note">Nenhuma pendência para os filtros atuais.</p>'
+    );
+  }
+}
+
+function renderUbsOtDetail(){
+  const { ubs: filterUbs, otName: filterOt } = getDashboardFilters();
+  const container = document.getElementById('ubsOtDetail');
+  container.innerHTML = '';
+
+  const ubsList = filterUbs
+    ? [filterUbs]
+    : [...new Set([
+        ...actions.map(a => a.ubs),
+        // UBS ativas no filtro atual (com registro)
+      ])].sort();
+
+  if(ubsList.length === 0){
+    container.innerHTML = '<p class="empty-note">Nenhuma UBS com cadastro ainda. Faça um cadastro ou selecione uma UBS no filtro.</p>';
+    return;
+  }
+
+  ubsList.forEach(ubs=>{
+    let groups = computeGapForUbs(ubs);
+    if(filterOt) groups = groups.filter(g => g.otLabel === filterOt);
+    const hasVisible = groups.some(g =>
+      gapShowDone || g.items.some(i => i.statusKey !== 'concluida')
+    );
+    // Na visão "Todas as UBS", pula UBS sem pendências (salvo se pediu ver concluídas)
+    if(!filterUbs && !hasVisible) return;
+    const heading = filterUbs
+      ? null
+      : `<div class="gap-ot-header" style="margin-top:18px;border-bottom-color:var(--accent);"><span>${ubs}</span><span style="font-family:var(--mono);font-weight:500;font-size:12px;color:var(--stone);">pendências</span></div>`;
+    renderGapGroups(container, ubs, groups, heading);
+  });
+
+  if(!container.childElementCount){
+    container.innerHTML = '<p class="empty-note">Nenhuma pendência para os filtros atuais.</p>';
+  }
 }
 
 function renderTable(){
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
-  let list = [...actions].sort((a,b)=> new Date(b.date) - new Date(a.date));
+  let list = [...filteredActions()].sort((a,b)=> new Date(b.date) - new Date(a.date));
   if(showOnlyPending) list = list.filter(a=>a.status!=='concluida');
 
   if(list.length === 0){
