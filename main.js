@@ -87,7 +87,7 @@ function buildMenu() {
               title: 'Sobre',
               message: 'Painel UBS Planifica',
               detail:
-                'Registro manual de ações das UBS — PlanificaSUS\nPassagem Franca (MA)\n\nVersão 3.0.0\nDados salvos localmente neste computador.'
+                'Registro manual de ações das UBS — PlanificaSUS\nPassagem Franca (MA)\n\nVersão 3.0.1\nDados salvos localmente neste computador.'
             });
           }
         }

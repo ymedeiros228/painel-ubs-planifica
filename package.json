@@ -1,6 +1,6 @@
 {
   "name": "painel-ubs-planifica",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Painel de Ações das UBS — PlanificaSUS Passagem Franca (MA)",
   "main": "main.js",
   "author": "UBS Passagem Franca",
@@ -30,11 +30,15 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "build/icon.ico",

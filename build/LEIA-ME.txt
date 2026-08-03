@@ -1,5 +1,5 @@
 PAINEL UBS PLANIFICA — Passagem Franca (MA)
-Versão 3.0.0
+Versão 3.0.1 (final)
 ============================================
 
 O que é
@@ -7,11 +7,15 @@ O que é
 Aplicativo desktop para registro manual das ações das UBS
 (PlanificaSUS). Dados ficam salvos neste computador.
 
-Novidades 3.0
--------------
-- Maior estabilidade na abertura do app (GPU/software raster)
+Novidades 3.0.1
+---------------
+- Dashboard: filtros de UBS e OT acima dos indicadores
+- Indicadores, gráficos, pendências e histórico respeitam o filtro
+- Botões "Mostrar concluídas também" e "Mostrar só não concluídas"
+  juntos na mesma barra de filtros
+- Maior estabilidade na abertura (GPU/software raster)
 - Electron atualizado com correções de segurança
-- Dependências de empacotamento atualizadas
+- Dependências de empacotamento atualizadas (npm audit limpo)
 - Ícone do app incluído no pacote
 
 Novidades 2.0
@@ -25,7 +29,7 @@ Novidades 2.0
 Como usar (portátil — sem instalar)
 -----------------------------------
 1. Extraia este ZIP em qualquer pasta (ou pen drive)
-2. Execute: Painel UBS Planifica-3.0.0-Portable.exe
+2. Execute: Painel UBS Planifica-3.0.1-Portable.exe
 3. Não precisa instalar — pode rodar direto
 
 Requisitos
@@ -34,6 +38,8 @@ Windows 10 ou 11 (64 bits)
 
 Dicas
 -----
+- No Dashboard, use os filtros de UBS/OT para ver só o que importa;
+  os cards do topo mudam conforme a seleção.
 - Use "Exportar CSV (Excel)" no Dashboard para backup.
 - Os 12 eixos (OTs) e ações-modelo já vêm pré-carregados.
 - Os dados ficam salvos neste computador entre sessões.
