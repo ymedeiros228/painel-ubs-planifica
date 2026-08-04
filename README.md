@@ -49,6 +49,15 @@ Os dados ficam salvos **neste computador** (não há nuvem automática).
 
 ---
 
+
+## Download (Windows)
+
+**[Painel UBS Planifica 3.0.1 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.0.1)**
+
+- Arquivo: **Portable** (`.exe`) — não precisa instalar  
+- Windows 10/11 64 bits  
+- Dados salvos localmente neste computador  
+
 ## Como usar (Windows)
 
 ### Opção rápida — portátil (recomendado)
