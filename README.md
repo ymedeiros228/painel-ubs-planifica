@@ -6,10 +6,18 @@
   <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
 </p>
 
+## Fluxo em 30 segundos
+
+1. Abra o app portable Windows  
+2. **Cadastro:** escolha UBS → eixo OT → marque ações → status (concluída / não / atrasada)  
+3. **Dashboard:** KPIs, gráficos e pendências (filtre por UBS/OT)  
+4. **CSV** ou **backup JSON** para Excel / pen drive  
+
+**Impacto real:** ferramenta operacional offline para equipes de UBS em **Passagem Franca (MA)** registrarem o plano de ações PlanificaSUS sem planilha solta e sem enviar dados de pacientes à nuvem.
 
 ## Por que este projeto importa
 
-Ferramenta **operacional de APS** (PlanificaSUS): as equipes registram e acompanham o plano de ações das UBS sem depender de planilha solta. Feita para rodar **offline no desktop Windows** (dados só na máquina — sem nuvem de pacientes).
+Feita para o dia a dia da APS: as equipes registram e acompanham o plano de ações das UBS no **desktop Windows**, com dados só na máquina.
 
 ### Destaques técnicos
 
@@ -54,7 +62,12 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 
 **[Painel UBS Planifica 3.1.1 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.1.1)**
 
-- Arquivo: **Portable** (`.exe`) ou **ZIP de entrega** (exe + LEIA-ME + Manual PDF)
+| Arquivo na release | Uso |
+|--------------------|-----|
+| `Painel.UBS.Planifica-3.1.1-Portable.exe` | App portable (recomendado) |
+| `PainelUBS-Planifica-3.1.1-Entrega.zip` | Pacote com exe + LEIA-ME + manual |
+| `PainelUBS_Manual_Entrega_Oficial.pdf` | Manual de entrega |
+
 - Windows 10/11 64 bits  
 - Dados salvos localmente neste computador (sem nuvem)
 
