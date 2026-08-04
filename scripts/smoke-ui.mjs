@@ -171,6 +171,29 @@ async function main(){
         if(saved && !saved.ok) console.log('   detail', saved);
       }
 
+      // Canetinha (edit OT) — appPrompt no Electron
+      const pencil = await evalInPage(send, `(() => {
+        renderOtList();
+        const btn = document.querySelector('.edit-ot');
+        if(!btn) return { ok:false, reason:'no-pencil' };
+        if(typeof appPrompt !== 'function') return { ok:false, reason:'no-appPrompt' };
+        // Abre modal sem esperar submit; fecha em seguida
+        const p = appPrompt({
+          title: 'teste',
+          message: 'smoke',
+          label: 'Nome',
+          defaultValue: 'OT SMOKE',
+          okText: 'OK'
+        });
+        const modal = document.getElementById('promptModal');
+        const open = modal && !modal.hidden;
+        // cancela
+        const cancel = document.getElementById('promptCancelBtn');
+        if(cancel) cancel.click();
+        return p.then(() => ({ ok: open, open }));
+      })()`, true);
+      check('modal de edição (canetinha/appPrompt) abre', !!(pencil && pencil.ok));
+
       // Dashboard navigation
       const dash = await evalInPage(send, `(() => {
         showPage('dashboard');

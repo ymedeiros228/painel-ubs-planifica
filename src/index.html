@@ -84,6 +84,15 @@
   .modal-body{margin:0 0 10px;color:var(--ink-soft);font-size:14px;line-height:1.5;}
   .modal-path{margin:0 0 18px;font-family:var(--mono);font-size:11px;color:var(--stone);word-break:break-all;line-height:1.4;}
   .modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+  .modal-input-wrap{margin:0 0 16px;}
+  .modal-input-wrap label{display:block;font-size:12.5px;font-weight:700;color:var(--stone);margin:0 0 6px;}
+  .modal-input-wrap input{
+    width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:11px 12px;
+    font-size:14px;font-family:var(--body);background:#fff;color:var(--ink);
+  }
+  .modal-input-wrap input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
+  .modal-error{display:none;margin:-8px 0 12px;font-size:12.5px;color:var(--alert);font-weight:650;}
+  .modal-error.show{display:block;}
 
   .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;}
   @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
@@ -102,7 +111,7 @@
   .msg.bot{background:#fff;color:var(--ink-soft);align-self:flex-start;border:1px solid var(--line);border-bottom-left-radius:4px;}
   .msg.user{background:var(--navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
   .chat-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:#EEF3FB;}
-  .chat-input input,.ot-add-row input,.detail-select select{
+  .chat-input input,.ot-add-row input,.detail-select select,.modal-input-wrap input{
     flex:1;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
     font-family:var(--body);background:#fff;color:var(--ink);
   }
@@ -310,8 +319,18 @@
   .edit-btn,.del-btn-tbl{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 9px;cursor:pointer;font-weight:700;transition:background .15s var(--ease);}
   .edit-btn{color:var(--navy-2);} .edit-btn:hover{background:var(--blue-tint);}
   .del-btn-tbl{color:var(--alert);} .del-btn-tbl:hover{background:var(--alert-dim);}
-  .ot-item .ot-actions{display:flex;gap:2px;flex-shrink:0;}
-  .ot-item .edit-ot{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;font-weight:700;padding:2px 5px;}
+  .ot-item .ot-actions{display:flex;gap:4px;flex-shrink:0;align-items:center;}
+  .ot-item .edit-ot,.ot-item .del-btn{
+    background:#fff;border:1px solid var(--line);border-radius:8px;cursor:pointer;
+    width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;padding:0;line-height:1;transition:background .12s,border-color .12s,color .12s;
+  }
+  .ot-item .edit-ot{color:var(--navy-2);}
+  .ot-item .edit-ot:hover{background:var(--blue-tint);border-color:var(--accent);color:var(--navy-3);}
+  .ot-item .del-btn{color:var(--stone);}
+  .ot-item .del-btn:hover{color:var(--alert);border-color:#FCA5A5;background:var(--alert-dim);}
+  .ot-item .edit-ot:focus-visible,.ot-item .del-btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .ot-item .edit-ot svg,.ot-item .del-btn svg{width:15px;height:15px;pointer-events:none;}
 
   .top-nav{display:flex;gap:4px;margin:0 0 8px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-card);width:fit-content;flex-wrap:wrap;}
   .page-tab{border:none;background:transparent;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:750;font-family:var(--display);color:var(--stone);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s var(--ease),color .15s var(--ease);}
@@ -382,6 +401,23 @@
       <div class="modal-actions">
         <button type="button" class="nav-btn" id="recoverSkipBtn">Começar vazio</button>
         <button type="button" class="nav-btn primary" id="recoverApplyBtn">Restaurar backup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de texto (substitui window.prompt — NÃO existe no Electron) -->
+  <div id="promptModal" class="modal-backdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="promptTitle">
+      <h3 id="promptTitle">Editar</h3>
+      <p id="promptBody" class="modal-body"></p>
+      <div class="modal-input-wrap">
+        <label id="promptLabel" for="promptInput">Valor</label>
+        <input id="promptInput" type="text" autocomplete="off" />
+      </div>
+      <p id="promptError" class="modal-error" role="alert"></p>
+      <div class="modal-actions">
+        <button type="button" class="nav-btn" id="promptCancelBtn">Cancelar</button>
+        <button type="button" class="nav-btn primary" id="promptOkBtn">Salvar</button>
       </div>
     </div>
   </div>
@@ -599,6 +635,99 @@ let backupSchedulePaused = false; // true durante salvamentos em lote
 let editPickQuery = '';
 let editPickCache = [];
 let renderAllTimer = null;
+let promptResolver = null;
+
+/** Electron NÃO implementa window.prompt — usamos modal HTML. */
+function appPrompt(opts){
+  const options = typeof opts === 'string' ? { message: opts } : (opts || {});
+  const title = options.title || 'Editar';
+  const message = options.message || '';
+  const label = options.label || 'Valor';
+  const defaultValue = options.defaultValue != null ? String(options.defaultValue) : '';
+  const okText = options.okText || 'Salvar';
+  const cancelText = options.cancelText || 'Cancelar';
+  const validate = typeof options.validate === 'function' ? options.validate : null;
+
+  return new Promise((resolve) => {
+    const modal = document.getElementById('promptModal');
+    const titleEl = document.getElementById('promptTitle');
+    const bodyEl = document.getElementById('promptBody');
+    const labelEl = document.getElementById('promptLabel');
+    const input = document.getElementById('promptInput');
+    const errEl = document.getElementById('promptError');
+    const okBtn = document.getElementById('promptOkBtn');
+    const cancelBtn = document.getElementById('promptCancelBtn');
+    if(!modal || !input || !okBtn || !cancelBtn){
+      // Fallback extremo (não deve ocorrer)
+      resolve(null);
+      return;
+    }
+
+    // Cancela prompt anterior se reentrante
+    if(promptResolver){
+      const prev = promptResolver;
+      promptResolver = null;
+      prev(null);
+    }
+    promptResolver = resolve;
+
+    titleEl.textContent = title;
+    bodyEl.textContent = message;
+    bodyEl.style.display = message ? '' : 'none';
+    labelEl.textContent = label;
+    input.value = defaultValue;
+    okBtn.textContent = okText;
+    cancelBtn.textContent = cancelText;
+    if(errEl){
+      errEl.textContent = '';
+      errEl.classList.remove('show');
+    }
+    modal.hidden = false;
+
+    const cleanup = (value) => {
+      modal.hidden = true;
+      input.onkeydown = null;
+      okBtn.onclick = null;
+      cancelBtn.onclick = null;
+      modal.onclick = null;
+      const res = promptResolver;
+      promptResolver = null;
+      if(res) res(value);
+    };
+
+    const trySubmit = () => {
+      const raw = input.value;
+      const trimmed = raw.trim();
+      if(validate){
+        const err = validate(trimmed, raw);
+        if(err){
+          if(errEl){
+            errEl.textContent = err;
+            errEl.classList.add('show');
+          }
+          input.focus();
+          input.select();
+          return;
+        }
+      }
+      cleanup(trimmed);
+    };
+
+    okBtn.onclick = (e) => { e.preventDefault(); trySubmit(); };
+    cancelBtn.onclick = (e) => { e.preventDefault(); cleanup(null); };
+    modal.onclick = (e) => { if(e.target === modal) cleanup(null); };
+    input.onkeydown = (e) => {
+      if(e.key === 'Enter'){ e.preventDefault(); trySubmit(); }
+      if(e.key === 'Escape'){ e.preventDefault(); cleanup(null); }
+    };
+    setTimeout(() => {
+      try{
+        input.focus();
+        input.select();
+      }catch(_e){}
+    }, 40);
+  });
+}
 
 function setBackupSchedulePaused(paused){
   backupSchedulePaused = !!paused;
@@ -882,31 +1011,61 @@ function renderOtList(){
         <span class="ot-meta">${n > 0 ? n + ' ações' : 'sem modelo'}</span>
       </div>
       <div class="ot-actions">
-        <button type="button" class="edit-ot" data-key="${o.key}" title="Editar eixo">✎</button>
-        <button type="button" class="del-btn" data-key="${o.key}" title="Excluir eixo">✕</button>
+        <button type="button" class="edit-ot" data-key="${o.key}" title="Editar nome do eixo" aria-label="Editar eixo ${code}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button type="button" class="del-btn" data-key="${o.key}" title="Excluir eixo" aria-label="Excluir eixo ${code}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
       </div>`;
     row.querySelector('.ot-code').textContent = code;
     row.querySelector('.ot-name').textContent = nameOnly || o.name;
     frag.appendChild(row);
   });
   otListEl.appendChild(frag);
+
   otListEl.querySelectorAll('.del-btn').forEach(btn=>{
-    btn.onclick = async () => {
+    btn.onclick = async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
       const key = btn.getAttribute('data-key');
-      if(!confirm('Excluir este eixo? Os cadastros de ações dele permanecem no histórico.')) return;
+      const ot = ots.find(o => o.key === key);
+      const label = ot ? ot.name : 'este eixo';
+      if(!confirm('Excluir o eixo?\n\n' + label + '\n\nOs cadastros de ações dele permanecem no histórico.')) return;
       await safeDelete(key, false);
       ots = ots.filter(o=>o.key!==key);
       renderOtList();
       scheduleRenderAll();
     };
   });
+
   otListEl.querySelectorAll('.edit-ot').forEach(btn=>{
-    btn.onclick = async () => {
+    btn.onclick = async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
       const key = btn.getAttribute('data-key');
       const ot = ots.find(o=>o.key===key);
-      if(!ot) return;
-      const novo = prompt('Novo nome do eixo (OT):', ot.name);
-      if(novo == null) return;
+      if(!ot){
+        alert('Eixo não encontrado. Recarregue o painel e tente de novo.');
+        return;
+      }
+      // Nunca use window.prompt no Electron — não funciona
+      const novo = await appPrompt({
+        title: 'Editar eixo (OT)',
+        message: 'Altere o nome do eixo. Os cadastros ligados a este OT serão atualizados.',
+        label: 'Nome do eixo',
+        defaultValue: ot.name,
+        okText: 'Salvar nome',
+        validate: (trimmed) => {
+          if(!trimmed) return 'Informe um nome para o eixo.';
+          if(trimmed === ot.name) return null; // sem mudança: allow but handler exits
+          if(ots.some(o => o.key !== key && o.name.toLowerCase() === trimmed.toLowerCase())){
+            return 'Já existe um eixo com esse nome.';
+          }
+          return null;
+        }
+      });
+      if(novo == null) return; // cancelou
       const name = novo.trim();
       if(!name || name === ot.name) return;
       if(ots.some(o => o.key !== key && o.name.toLowerCase() === name.toLowerCase())){
@@ -931,6 +1090,12 @@ function renderOtList(){
       await flushBackupNow();
       renderOtList();
       scheduleRenderAll();
+      // Feedback no chat se estiver no cadastro
+      try{
+        if(currentPageName() === 'cadastro' && chatBody){
+          addMsg(`Eixo renomeado: "${oldName}" → "${name}".`, 'bot');
+        }
+      }catch(_e){}
     };
   });
 }
