@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Sora:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* Azul profissional — rodada v4 */
     --ink:#0F172A;
     --ink-soft:#334155;
     --paper:#E8EEF8;
@@ -68,23 +67,35 @@
   .brand-mark svg circle{fill:#60A5FA;}
   .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#BFDBFE;margin:0 0 4px;font-weight:600;}
   h1{font-family:var(--display);font-weight:750;font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0;color:#fff;letter-spacing:-.02em;}
-  .topbar-badge{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
-    background:rgba(255,255,255,0.12);border:1px solid rgba(191,219,254,0.35);padding:8px 12px;border-radius:10px;color:#DBEAFE;}
+  .topbar-meta{font-size:12.5px;font-weight:600;color:#DBEAFE;opacity:.92;letter-spacing:.01em;display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;}
+  .save-status{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;color:#BFDBFE;opacity:.95;}
+  .save-status.saving{color:#FDE68A;}
+  .save-status.ok{color:#A7F3D0;}
+  .save-status.err{color:#FECACA;}
   .wrap{max-width:1200px;margin:0 auto;padding:22px 24px 72px;position:relative;z-index:1;}
-  .page-sub{color:var(--stone);font-size:14.5px;margin:10px 0 20px;max-width:860px;line-height:1.6;}
+  .page-sub{color:var(--stone);font-size:14px;margin:8px 0 18px;max-width:720px;line-height:1.55;}
   h2{font-family:var(--display);font-weight:700;font-size:18px;color:var(--navy-3);margin:0 0 14px;display:flex;align-items:center;gap:8px;}
   h2 .h-ico{width:18px;height:18px;color:var(--accent);}
+
+  .modal-backdrop{position:fixed;inset:0;z-index:50;background:rgba(15,23,42,0.45);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px);}
+  .modal-backdrop[hidden]{display:none !important;}
+  .modal-card{width:min(440px,100%);background:#fff;border-radius:14px;border:1px solid var(--line);box-shadow:0 24px 48px rgba(15,23,42,0.22);padding:22px 22px 18px;animation:pageIn .25s var(--ease);}
+  .modal-card h3{margin:0 0 8px;font-family:var(--display);font-size:18px;color:var(--navy-3);}
+  .modal-body{margin:0 0 10px;color:var(--ink-soft);font-size:14px;line-height:1.5;}
+  .modal-path{margin:0 0 18px;font-family:var(--mono);font-size:11px;color:var(--stone);word-break:break-all;line-height:1.4;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
 
   .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;}
   @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
 
-  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-card);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-card);transition:box-shadow .2s var(--ease);}
+  .card:hover{box-shadow:0 10px 28px rgba(30,58,138,0.11);}
   .card-head{background:linear-gradient(180deg,#F8FBFF,#EFF6FF);color:var(--navy-3);padding:13px 16px;
     font-family:var(--display);font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:10px;
     border-bottom:1px solid var(--line);border-left:4px solid var(--accent);}
   .card-head .head-left{display:flex;align-items:center;gap:8px;}
   .card-head .head-ico{width:17px;height:17px;color:var(--accent);}
-  .card-head small{font-family:var(--mono);font-size:10px;color:var(--stone);text-transform:uppercase;letter-spacing:.07em;}
+  .card-head small{display:none;}
 
   .chat-body{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:260px;max-height:360px;overflow-y:auto;background:#F8FAFC;}
   .msg{max-width:90%;padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.5;white-space:pre-wrap;}
@@ -115,17 +126,17 @@
   .chip.status-partial{border-left-color:var(--amber);color:var(--amber);background:var(--amber-dim);}
   .chip.status-pend{border-left-color:var(--alert);color:var(--alert);background:var(--alert-dim);}
   .chip.chip-wide{width:100%;white-space:normal;line-height:1.4;font-weight:500;}
-  .empty-note{color:var(--stone);font-size:13.5px;font-style:italic;padding:4px 2px;}
+  .empty-note{color:var(--stone);font-size:13.5px;padding:8px 2px;line-height:1.45;}
 
   .ot-manager-body{padding:14px 14px 16px;}
   .ot-add-row{display:flex;gap:8px;margin-bottom:10px;}
-  .ot-add-row button{background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .ot-add-row button{background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s var(--ease);}
   .ot-add-row button:hover{background:var(--navy-2);}
   .ot-list{display:flex;flex-direction:column;max-height:520px;overflow-y:auto;}
   .ot-item{
     display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
     background:transparent;border:none;border-bottom:1px solid var(--line);
-    border-radius:0;padding:11px 6px;font-size:13px;
+    border-radius:0;padding:11px 6px;font-size:13px;transition:background .12s var(--ease);
   }
   .ot-item:hover{background:var(--blue-tint);}
   .ot-item .ot-main{flex:1;min-width:0;}
@@ -141,16 +152,17 @@
   .stat .stat-ico{width:17px;height:17px;margin:0 auto 6px;display:block;color:var(--accent);}
   .stat .num{font-family:var(--display);font-size:26px;font-weight:750;color:var(--navy-3);display:block;line-height:1;}
   .stat .lbl{font-size:10px;color:var(--stone);text-transform:uppercase;letter-spacing:.06em;margin-top:6px;font-weight:700;display:block;}
-  .stat .hint{font-size:10px;color:var(--stone);margin-top:4px;line-height:1.3;text-transform:none;letter-spacing:0;font-weight:500;display:block;}
+  .stat .hint{display:none;}
   .stat.alert .num,.stat.alert .stat-ico{color:var(--alert);} .stat.alert::before{background:var(--alert);}
   .stat.warn .num,.stat.warn .stat-ico{color:var(--amber);} .stat.warn::before{background:var(--amber);}
   .stat.orange .num,.stat.orange .stat-ico{color:var(--orange);} .stat.orange::before{background:var(--orange);}
 
   .chart-card{padding:18px 16px;}
+  .section-lead{font-size:13px;color:var(--stone);margin:-4px 0 14px;line-height:1.45;}
   .bar-row{display:grid;grid-template-columns:150px 1fr 44px;align-items:center;gap:10px;margin-bottom:10px;}
   .bar-row .label{font-size:13px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .bar-track{background:var(--paper-dim);border-radius:999px;height:9px;overflow:hidden;}
-  .bar-fill{height:100%;border-radius:999px;}
+  .bar-fill{height:100%;border-radius:999px;transition:width .35s var(--ease);}
   .bar-fill.sage{background:var(--sage);} .bar-fill.amber{background:var(--amber);} .bar-fill.alert{background:var(--alert);}
   .bar-pct{font-family:var(--mono);font-size:11.5px;text-align:right;color:var(--stone);}
   .bar-sub{font-size:11px;color:var(--stone);margin-top:-4px;margin-bottom:10px;padding-left:160px;}
@@ -162,22 +174,23 @@
   .dash-filter-bar{
     display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
     background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
-    margin:0 0 16px;box-shadow:var(--shadow-card);
+    margin:0 0 18px;box-shadow:var(--shadow-card);
   }
   .dash-filter-bar .filter-fields{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1;min-width:240px;}
-  .dash-filter-bar .filter-fields label{font-size:13.5px;color:var(--stone);font-weight:650;}
+  .dash-filter-bar .filter-fields label{font-size:13px;color:var(--stone);font-weight:650;}
   .dash-filter-bar .filter-fields select{min-width:180px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:var(--body);background:#fff;color:var(--ink);}
   .dash-filter-bar .filter-fields select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
   .dash-filter-bar .filter-toggles{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .filter-hint{font-size:12px;color:var(--stone);margin:-6px 0 14px;padding:0 2px;}
-  .filter-hint b{color:var(--navy-2);font-weight:700;}
+  .filter-hint{display:none;}
 
   .table-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;}
   .controls{display:flex;gap:8px;flex-wrap:wrap;}
-  .toggle,.export{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;font-weight:650;color:var(--ink-soft);}
+  .toggle,.export{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;font-weight:650;color:var(--ink-soft);transition:background .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease);}
   .toggle:hover,.export:hover{background:var(--blue-tint);border-color:var(--accent);}
   .toggle.active{background:var(--navy);color:#fff;border-color:var(--navy);}
   .export{color:var(--navy-2);border-color:#93C5FD;}
+  .controls-split{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .controls-split .sep{width:1px;height:22px;background:var(--line);margin:0 2px;}
 
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-card);}
   thead th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--stone);padding:11px 12px;border-bottom:1px solid var(--line);background:var(--mist);font-weight:750;}
@@ -209,12 +222,27 @@
   .del-btn:hover{color:var(--alert);}
   footer{margin-top:18px;font-size:12.5px;color:var(--stone);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   footer .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--blue-soft);}
-  .persist-ok{display:none;background:var(--blue-soft);border:1px solid #93C5FD;color:var(--navy-2);border-radius:var(--radius-sm);padding:10px 13px;font-size:13px;margin:10px 0 16px;align-items:center;gap:8px;font-weight:600;}
+  .persist-ok{display:none;background:rgba(239,246,255,0.95);border:1px solid var(--line);color:var(--ink-soft);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin:4px 0 14px;align-items:center;gap:10px;font-weight:500;line-height:1.4;}
   .persist-ok.show{display:flex;}
-  .persist-ok svg{width:16px;height:16px;flex-shrink:0;}
+  .persist-ok svg{width:16px;height:16px;flex-shrink:0;color:var(--sage);}
+  .persist-ok strong{color:var(--navy-3);font-weight:700;}
+  .first-tip{display:none;background:#FFFBEB;border:1px solid #FCD34D;color:#92400E;border-radius:var(--radius-sm);padding:12px 14px;font-size:13.5px;margin:0 0 14px;line-height:1.45;align-items:flex-start;gap:12px;}
+  .first-tip.show{display:flex;}
+  .first-tip .tip-body{flex:1;}
+  .first-tip strong{color:#78350F;}
+  .first-tip button{border:1px solid #F59E0B;background:#fff;border-radius:8px;padding:6px 10px;font-size:12.5px;font-weight:700;cursor:pointer;color:#92400E;white-space:nowrap;}
+  .first-tip button:hover{background:#FEF3C7;}
+  .history-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;}
+  .history-tools input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:var(--body);background:#fff;color:var(--ink);}
+  .history-tools input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
+  .undo-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(12px);z-index:60;background:#0F172A;color:#F8FAFC;border-radius:12px;padding:12px 14px;display:none;align-items:center;gap:12px;box-shadow:0 16px 40px rgba(15,23,42,0.35);opacity:0;transition:opacity .2s var(--ease), transform .2s var(--ease);max-width:min(420px,92vw);}
+  .undo-toast.show{display:flex;opacity:1;transform:translateX(-50%) translateY(0);}
+  .undo-toast span{font-size:13.5px;line-height:1.35;}
+  .undo-toast button{border:none;background:#60A5FA;color:#0F172A;border-radius:8px;padding:7px 11px;font-weight:750;cursor:pointer;font-size:12.5px;}
+  .undo-toast button:hover{background:#93C5FD;}
 
   .chat-toolbar{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:#EEF3FB;flex-wrap:wrap;}
-  .nav-btn{font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:7px 11px;cursor:pointer;color:var(--navy-2);font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+  .nav-btn{font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:7px 11px;cursor:pointer;color:var(--navy-2);font-weight:700;display:inline-flex;align-items:center;gap:5px;transition:background .15s var(--ease),border-color .15s var(--ease);}
   .nav-btn:hover{background:var(--blue-tint);border-color:var(--accent);}
   .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
   .nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
@@ -223,7 +251,7 @@
 
   .action-panel{padding:0 14px 12px;max-height:400px;overflow-y:auto;}
   .action-panel-hint{font-size:12.5px;color:var(--stone);margin:0 0 10px;line-height:1.4;}
-  .action-check{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border:none;border-bottom:1px solid var(--line);border-radius:0;margin:0;background:transparent;cursor:pointer;}
+  .action-check{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border:none;border-bottom:1px solid var(--line);border-radius:0;margin:0;background:transparent;cursor:pointer;transition:background .12s var(--ease);}
   .action-check:hover{background:var(--blue-tint);}
   .action-check.checked{background:var(--blue-soft);}
   .action-check.classified{background:#E0E7FF;}
@@ -248,24 +276,26 @@
   .status-btn.clear:hover{background:var(--mist);}
   .classify-bar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px 14px;align-items:center;border-top:1px solid var(--line);}
   .classify-bar .lbl{font-size:12.5px;color:var(--stone);font-weight:700;}
-  .status-btn{border:1px solid;border-radius:var(--radius-sm);padding:7px 11px;font-size:12.5px;font-weight:750;cursor:pointer;background:#fff;}
+  .status-btn{border:1px solid;border-radius:var(--radius-sm);padding:7px 11px;font-size:12.5px;font-weight:750;cursor:pointer;background:#fff;transition:background .15s var(--ease);}
   .status-btn.ok{border-color:#6EE7B7;color:var(--sage);} .status-btn.ok:hover{background:var(--sage-dim);}
   .status-btn.partial{border-color:#FCD34D;color:var(--amber);} .status-btn.partial:hover{background:var(--amber-dim);}
   .status-btn.pend{border-color:#FCA5A5;color:var(--alert);} .status-btn.pend:hover{background:var(--alert-dim);}
 
   .row-actions{display:flex;gap:6px;justify-content:flex-end;}
-  .edit-btn,.del-btn-tbl{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 9px;cursor:pointer;font-weight:700;}
+  .edit-btn,.del-btn-tbl{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 9px;cursor:pointer;font-weight:700;transition:background .15s var(--ease);}
   .edit-btn{color:var(--navy-2);} .edit-btn:hover{background:var(--blue-tint);}
   .del-btn-tbl{color:var(--alert);} .del-btn-tbl:hover{background:var(--alert-dim);}
   .ot-item .ot-actions{display:flex;gap:2px;flex-shrink:0;}
   .ot-item .edit-ot{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;font-weight:700;padding:2px 5px;}
 
   .top-nav{display:flex;gap:4px;margin:0 0 8px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-card);width:fit-content;flex-wrap:wrap;}
-  .page-tab{border:none;background:transparent;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:750;font-family:var(--display);color:var(--stone);cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  .page-tab{border:none;background:transparent;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:750;font-family:var(--display);color:var(--stone);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s var(--ease),color .15s var(--ease);}
   .page-tab svg{width:15px;height:15px;}
   .page-tab:hover{color:var(--navy);background:var(--blue-tint);}
   .page-tab.active{background:var(--navy);color:#fff;}
-  .page{display:none;} .page.active{display:block;}
+  .page{display:none;}
+  .page.active{display:block;animation:pageIn .28s var(--ease);}
+  @keyframes pageIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
   .dash-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
 </style>
 
@@ -287,7 +317,10 @@
         <h1>Painel de Ações das UBS</h1>
       </div>
     </div>
-    <div class="topbar-badge">Paleta azul · APS</div>
+    <div class="topbar-meta">
+      <span>Dados locais · backup automático</span>
+      <span class="save-status" id="saveStatus" aria-live="polite">—</span>
+    </div>
   </div>
 </div>
 <div class="wrap">
@@ -303,10 +336,34 @@
   </nav>
 
   <div id="storageNotice" class="persist-ok"></div>
+  <div id="firstTip" class="first-tip" role="note">
+    <div class="tip-body">
+      <strong>Dica rápida:</strong> guarde o app numa pasta fixa (ex.: Documentos). A cada alteração o backup atualiza sozinho em
+      <strong>Área de Trabalho → Backup UBS Planifica</strong>. Evite rodar direto da pasta Downloads.
+    </div>
+    <button type="button" id="firstTipOk">Entendi</button>
+  </div>
+
+  <div id="undoToast" class="undo-toast" role="status" aria-live="polite">
+    <span id="undoToastText">Cadastro excluído</span>
+    <button type="button" id="undoToastBtn">Desfazer</button>
+  </div>
+
+  <div id="recoverModal" class="modal-backdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="recoverTitle">
+      <h3 id="recoverTitle">Backup encontrado</h3>
+      <p id="recoverBody" class="modal-body"></p>
+      <p id="recoverPath" class="modal-path"></p>
+      <div class="modal-actions">
+        <button type="button" class="nav-btn" id="recoverSkipBtn">Começar vazio</button>
+        <button type="button" class="nav-btn primary" id="recoverApplyBtn">Restaurar backup</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ========== PÁGINA: CADASTRO ========== -->
   <section id="page-cadastro" class="page active">
-  <p class="page-sub">Escolha a UBS e o eixo (OT), marque quantas ações quiser e classifique como Concluída, Não concluída ou Atrasada. O que não for classificado fica como <b>Não inserida</b>. Acompanhe indicadores na aba <b>Dashboard</b>.</p>
+  <p class="page-sub">Selecione a UBS e o eixo (OT), classifique as ações e salve. O acompanhamento fica no Dashboard.</p>
 
   <div class="grid2">
     <div class="card">
@@ -315,7 +372,6 @@
           <svg class="head-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
           Cadastro de ações
         </span>
-        <small>UBS · OT · multi-seleção</small>
       </div>
       <div class="chat-toolbar" id="chatToolbar">
         <button type="button" class="nav-btn" id="btnBack" title="Voltar uma etapa">
@@ -330,9 +386,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           Editar
         </button>
-        <button type="button" class="nav-btn" id="btnGoDash" title="Ver indicadores">
+        <button type="button" class="nav-btn" id="btnGoDash" title="Ir para o Dashboard">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M8 19v-8M12 19v-5M16 19V8M20 19v-3"/></svg>
-          Ver dashboard
+          Dashboard
         </button>
       </div>
       <div class="chat-body" id="chatBody"></div>
@@ -340,7 +396,7 @@
       <div id="classifyBar" class="classify-bar" style="display:none;"></div>
       <div class="chip-row" id="chipRow"></div>
       <div class="chat-input">
-        <input id="chatInput" type="text" placeholder="Digite sua resposta ou ação personalizada..." autocomplete="off"/>
+        <input id="chatInput" type="text" placeholder="Digite aqui…" autocomplete="off"/>
         <button id="sendBtn">Enviar</button>
       </div>
     </div>
@@ -349,14 +405,13 @@
       <div class="card-head">
         <span class="head-left">
           <svg class="head-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="17" r="3"/></svg>
-          Gerenciar Eixos (OTs)
+          Eixos (OT)
         </span>
-        <small>fora do chat</small>
       </div>
       <div class="ot-manager-body">
         <div class="ot-add-row">
-          <input id="otInput" type="text" placeholder="Ex: OT 1 EVENTOS AGUDOS" />
-          <button id="otAddBtn">Adicionar Eixo</button>
+          <input id="otInput" type="text" placeholder="Nome do eixo, ex.: OT I" />
+          <button id="otAddBtn">Adicionar</button>
         </div>
         <div class="ot-list" id="otList"></div>
       </div>
@@ -367,7 +422,7 @@
   <!-- ========== PÁGINA: DASHBOARD ========== -->
   <section id="page-dashboard" class="page">
   <div class="dash-toolbar">
-    <p class="page-sub" style="margin:0;flex:1;">Indicadores, pendências e histórico dos cadastros. Exporte em CSV compatível com Excel (separador ; e acentos corretos).</p>
+    <p class="page-sub" style="margin:0;flex:1;">Indicadores e histórico do plano de ações.</p>
     <button type="button" class="nav-btn primary" id="btnGoCadastro">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
       Novo cadastro
@@ -376,30 +431,30 @@
 
   <div class="dash-filter-bar" role="search" aria-label="Filtros do dashboard">
     <div class="filter-fields">
-      <label for="ubsSelect">UBS:</label>
-      <select id="ubsSelect"><option value="">Todas as UBS</option></select>
-      <label for="ubsGapOtFilter">Filtrar por OT:</label>
-      <select id="ubsGapOtFilter"><option value="">Todos os OTs</option></select>
+      <label for="ubsSelect">UBS</label>
+      <select id="ubsSelect"><option value="">Todas</option></select>
+      <label for="ubsGapOtFilter">OT</label>
+      <select id="ubsGapOtFilter"><option value="">Todos</option></select>
     </div>
     <div class="filter-toggles">
-      <button type="button" class="toggle" id="gapShowDoneToggle" title="Nas pendências, inclui também as ações concluídas">Mostrar concluídas também</button>
-      <button type="button" class="toggle" id="filterToggle" title="No histórico, lista só o que não está concluído">Mostrar só não concluídas</button>
+      <button type="button" class="toggle" id="gapShowDoneToggle" title="Incluir ações concluídas nas pendências">Incluir concluídas</button>
+      <button type="button" class="toggle" id="filterToggle" title="Mostrar só o que não está concluído no histórico">Só pendentes</button>
     </div>
   </div>
-  <p class="filter-hint" id="filterHint">Filtros aplicados aos indicadores, gráficos, pendências e histórico.</p>
+  <p class="filter-hint" id="filterHint"></p>
 
   <div class="stat-row">
     <div class="stat">
       <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6"/></svg>
-      <span class="num" id="statUbs">0</span><span class="lbl">UBS com ações</span>
+      <span class="num" id="statUbs">0</span><span class="lbl">UBS</span>
     </div>
     <div class="stat">
       <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-      <span class="num" id="statOt">0</span><span class="lbl">Eixos (OTs)</span>
+      <span class="num" id="statOt">0</span><span class="lbl">Eixos</span>
     </div>
     <div class="stat">
       <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <span class="num" id="statTotal">0</span><span class="lbl">Ações no total</span>
+      <span class="num" id="statTotal">0</span><span class="lbl">Total</span>
     </div>
     <div class="stat">
       <svg class="stat-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
@@ -409,11 +464,10 @@
       <svg class="stat-ico" style="color:var(--amber)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
       <span class="num" id="statPartial" style="color:var(--amber);">0</span><span class="lbl">Não concluídas</span>
     </div>
-    <div class="stat orange" style="border-color:var(--orange);" title="Ações do plano-modelo ainda sem cadastro nas UBS que já têm pelo menos um registro. Assim o número não explode somando todas as UBS vazias.">
+    <div class="stat orange" style="border-color:var(--orange);" title="Ações do plano-modelo ainda sem cadastro nas UBS ativas.">
       <svg class="stat-ico" style="color:var(--orange)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v10M8 9l4 4 4-4"/><path d="M5 17h14v4H5z"/></svg>
       <span class="num" id="statNaoInserida" style="color:var(--orange);">0</span>
-      <span class="lbl">Faltam no plano</span>
-      <span class="hint">sem cadastro nas UBS ativas</span>
+      <span class="lbl">Sem cadastro</span>
     </div>
     <div class="stat alert">
       <svg class="stat-ico" style="color:var(--alert)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>
@@ -425,42 +479,50 @@
     <div class="card chart-card">
       <h2>
         <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M8 19v-8M12 19v-5M16 19V8M20 19v-3"/></svg>
-        Desempenho por OT
+        Por OT
       </h2>
-      <div id="otChart"><p class="empty-note">Nenhuma ação registrada ainda.</p></div>
+      <div id="otChart"><p class="empty-note">Nenhuma ação registrada.</p></div>
     </div>
     <div class="card chart-card">
       <h2>
         <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-4 7 4v13"/></svg>
-        Desempenho por UBS
+        Por UBS
       </h2>
-      <div id="ubsChart"><p class="empty-note">Nenhuma ação registrada ainda.</p></div>
+      <div id="ubsChart"><p class="empty-note">Nenhuma ação registrada.</p></div>
     </div>
   </div>
 
   <div class="card chart-card" style="margin-bottom:26px;">
     <h2>
       <svg class="h-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-      Pendências por UBS, vistas por OT
+      Pendências
     </h2>
-    <p style="font-size:13px;color:var(--stone);margin:-6px 0 14px;">Usa os filtros acima. Mostra o que ainda <b>não está concluído</b> — <b style="color:var(--amber);">não concluída</b>, <b style="color:var(--alert);">atrasada</b> ou <b style="color:var(--orange);">não inserida</b>. Toque em uma ação para editar no Cadastro.</p>
-    <div id="ubsOtDetail"><p class="empty-note">Nenhuma pendência para os filtros atuais.</p></div>
+    <p class="section-lead">Ações ainda não concluídas. Clique em um item para editar.</p>
+    <div id="ubsOtDetail"><p class="empty-note">Nenhuma pendência nos filtros atuais.</p></div>
   </div>
 
   <div class="table-head-row">
-    <h2>Histórico de ações</h2>
-    <div class="controls">
-      <button class="export" id="exportBtn">Exportar CSV (Excel)</button>
-      <button class="export" id="exportFullBtn" title="Inclui também as não inseridas do plano-modelo">Exportar completo</button>
+    <h2>Histórico</h2>
+    <div class="controls controls-split">
+      <button class="export" id="exportBtn">CSV</button>
+      <button class="export" id="exportFullBtn" title="Inclui também as não inseridas do plano-modelo">CSV completo</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button class="export" id="backupExportBtn" title="Exportar backup JSON">Exportar backup</button>
+      <button class="export" id="backupImportBtn" title="Importar backup JSON">Importar</button>
+      <button class="export" id="backupDesktopBtn" title="Abrir pasta Backup UBS Planifica na Área de Trabalho">Pasta backup</button>
+      <button class="export" id="backupFolderBtn" title="Abrir pasta interna dos dados">Pasta dados</button>
     </div>
   </div>
+  <div class="history-tools">
+    <input id="historySearch" type="search" placeholder="Buscar no histórico (UBS, OT, ação…)" autocomplete="off" />
+  </div>
   <table>
-    <thead><tr><th>UBS</th><th>OT</th><th>Ação</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+    <thead><tr><th>UBS</th><th>OT</th><th>Ação</th><th>Status</th><th>Data</th><th></th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
   <footer>
     <span class="dot" aria-hidden="true"></span>
-    <span>Dados salvos neste computador. Use “Exportar CSV (Excel)” para abrir corretamente no Excel com acentos.</span>
+    <span id="footerPersistHint">Backup atualizado a cada alteração · pasta na Área de Trabalho</span>
   </footer>
   </section>
 </div>
@@ -468,8 +530,11 @@
 
 <script>
 const OT_PREFIX = 'ot:';
+const ACTION_PREFIX = 'action:';
+const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.1';
+const hasDesktopBackup = !!(window.painelApp && window.painelApp.backup);
 
-// Persistência local (app desktop / navegador) — mesma API do artefato, via localStorage
+// Persistência local (app desktop / navegador) — localStorage + backup JSON no Electron
 (function ensureStorage(){
   if (typeof window !== 'undefined' && window.storage) return;
   window.storage = {
@@ -499,9 +564,155 @@ const OT_PREFIX = 'ot:';
 })();
 
 const hasStorage = (typeof window !== 'undefined') && !!window.storage;
+let persistTimer = null;
+let persistInFlight = null;
+let lastBackupInfo = null;
+let lastSavedAt = null;
+let saveState = 'idle'; // idle | saving | ok | err
+let pendingRecover = null;
+
+function formatTimeHm(isoOrDate){
+  try{
+    const d = isoOrDate instanceof Date ? isoOrDate : new Date(isoOrDate);
+    if(Number.isNaN(d.getTime())) return '—';
+    return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }catch(e){ return '—'; }
+}
+
+function formatDateTimeBr(isoOrDate){
+  try{
+    const d = isoOrDate instanceof Date ? isoOrDate : new Date(isoOrDate);
+    if(Number.isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }catch(e){ return '—'; }
+}
+
+function updateSaveStatus(){
+  const el = document.getElementById('saveStatus');
+  if(!el) return;
+  el.classList.remove('saving','ok','err');
+  if(!hasDesktopBackup){
+    el.textContent = 'Armazenamento local';
+    return;
+  }
+  if(saveState === 'saving'){
+    el.classList.add('saving');
+    el.textContent = 'Salvando…';
+    return;
+  }
+  if(saveState === 'err'){
+    el.classList.add('err');
+    el.textContent = 'Falha ao salvar';
+    return;
+  }
+  if(lastSavedAt){
+    el.classList.add('ok');
+    el.textContent = 'Salvo às ' + formatTimeHm(lastSavedAt);
+    return;
+  }
+  el.textContent = 'Aguardando primeira gravação';
+}
+
+function buildSnapshot(){
+  let seedAlta = false;
+  try{ seedAlta = localStorage.getItem('meta:seedAltaLeiteV1') === '1'; }catch(e){}
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    seedFlags: { altaLeiteV1: seedAlta },
+    ots: ots.map(o => ({ key: o.key, name: o.name })),
+    actions: actions.map(a => ({
+      key: a.key,
+      ubs: a.ubs,
+      otKey: a.otKey,
+      otName: a.otName,
+      action: a.action,
+      status: a.status,
+      date: a.date
+    }))
+  };
+}
+
+async function mirrorLocalStorageFromMemory(){
+  // localStorage é apenas espelho; a fonte da verdade é o JSON no desktop
+  try{
+    const toRemove = [];
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && (k.startsWith(OT_PREFIX) || k.startsWith(ACTION_PREFIX))) toRemove.push(k);
+    }
+    toRemove.forEach(k => localStorage.removeItem(k));
+  }catch(e){}
+  for(const o of ots){
+    try{ localStorage.setItem(o.key, o.name); }catch(e){}
+  }
+  for(const a of actions){
+    try{
+      localStorage.setItem(a.key, JSON.stringify({
+        ubs:a.ubs, otKey:a.otKey, otName:a.otName, action:a.action, status:a.status, date:a.date
+      }));
+    }catch(e){}
+  }
+}
+
+async function flushBackupNow(){
+  const run = async () => {
+    if(!hasDesktopBackup){
+      await mirrorLocalStorageFromMemory();
+      lastSavedAt = new Date();
+      saveState = 'ok';
+      updateSaveStatus();
+      updatePersistBanner();
+      return { ok: true, localOnly: true };
+    }
+    saveState = 'saving';
+    updateSaveStatus();
+    const snapshot = buildSnapshot();
+    try{
+      await mirrorLocalStorageFromMemory();
+      const res = await window.painelApp.backup.save(snapshot);
+      if(res && res.ok){
+        lastBackupInfo = res;
+        lastSavedAt = res.updatedAt ? new Date(res.updatedAt) : new Date();
+        saveState = 'ok';
+      } else {
+        saveState = 'err';
+      }
+      updateSaveStatus();
+      updatePersistBanner();
+      return res;
+    }catch(e){
+      console.error('flushBackupNow', e);
+      saveState = 'err';
+      updateSaveStatus();
+      return null;
+    }
+  };
+  // Fila: nunca duas gravações em paralelo
+  persistInFlight = Promise.resolve(persistInFlight).then(run, run);
+  return persistInFlight;
+}
+
+function scheduleBackup(){
+  if(persistTimer) clearTimeout(persistTimer);
+  if(hasDesktopBackup){
+    saveState = 'saving';
+    updateSaveStatus();
+  }
+  persistTimer = setTimeout(() => {
+    persistTimer = null;
+    persistInFlight = flushBackupNow();
+  }, 120);
+}
+
 async function safeSet(key, value, shared=false){
   if(!hasStorage) return null;
-  try{ return await window.storage.set(key, value, shared); }catch(e){ return null; }
+  try{
+    // Espelho imediato no localStorage; a gravação oficial é o JSON (scheduleBackup)
+    const r = await window.storage.set(key, value, shared);
+    scheduleBackup();
+    return r;
+  }catch(e){ return null; }
 }
 async function safeGet(key, shared=false){
   if(!hasStorage) return null;
@@ -509,16 +720,24 @@ async function safeGet(key, shared=false){
 }
 async function safeDelete(key, shared=false){
   if(!hasStorage) return null;
-  try{ return await window.storage.delete(key, shared); }catch(e){ return null; }
+  try{
+    const r = await window.storage.delete(key, shared);
+    scheduleBackup();
+    return r;
+  }catch(e){ return null; }
 }
 async function safeList(prefix, shared=false){
   if(!hasStorage) return null;
   try{ return await window.storage.list(prefix, shared); }catch(e){ return null; }
 }
-const ACTION_PREFIX = 'action:';
+
 let ots = [];       // {key, name}
 let actions = [];   // {key, ubs, otKey, otName, action, status, date}
 let showOnlyPending = false;
+let dataSourceLabel = '';
+let historyQuery = '';
+let undoTimer = null;
+let undoHandler = null;
 
 const knownUbs = [
   "UBS ALTA LEITE","UBS LÁZARO BANDEIRA","Unidade Básica de Saúde Aeroporto",
@@ -584,18 +803,20 @@ otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
 otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
 
 async function seedDefaultOts(){
-  if(ots.length > 0) return; // only seed on a truly empty board
+  // Só preenche eixos se a lista estiver vazia. Não grava sozinho —
+  // finishLoadUI / scheduleBackup cuidam da persistência (evita corrida no boot).
+  if(ots.length > 0) return false;
   for(const entry of OT_BANK){
     const key = OT_PREFIX + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    await safeSet(key, entry.fullLabel, false);
     ots.push({key, name: entry.fullLabel});
   }
+  return true;
 }
 
 function renderOtList(){
   otListEl.innerHTML = '';
   if(ots.length === 0){
-    otListEl.innerHTML = '<p class="empty-note">Nenhum eixo cadastrado. Adicione o primeiro acima.</p>';
+    otListEl.innerHTML = '<p class="empty-note">Nenhum eixo cadastrado.</p>';
     return;
   }
   ots.forEach(o=>{
@@ -608,7 +829,7 @@ function renderOtList(){
     row.innerHTML = `<div class="ot-main">
         <span class="ot-code">${code}</span>
         <span class="ot-name"></span>
-        <span class="ot-meta">${n > 0 ? n + ' ações-modelo' : 'sem ações-modelo'}</span>
+        <span class="ot-meta">${n > 0 ? n + ' ações' : 'sem modelo'}</span>
       </div>
       <div class="ot-actions">
         <button type="button" class="edit-ot" data-key="${o.key}" title="Editar eixo">✎</button>
@@ -759,7 +980,7 @@ function askUbs(){
   step = 'ubs';
   draft = { classifications: {}, checked: {} };
   hideActionUI();
-  addMsg('Qual UBS você quer atualizar? Digite o nome ou escolha abaixo.', 'bot');
+  addMsg('Qual UBS deseja atualizar?', 'bot');
   clearChips();
   knownUbs.forEach(n => addChip(n, () => submitUserText(n)));
   updateNavButtons();
@@ -768,10 +989,10 @@ function askUbs(){
 function askOt(){
   step = 'ot';
   hideActionUI();
-  addMsg(`Certo, "${draft.ubs}". A qual OT (eixo) essas ações pertencem?`, 'bot');
+  addMsg(`UBS: ${draft.ubs}. Selecione o eixo (OT).`, 'bot');
   clearChips();
   if(ots.length === 0){
-    addMsg('Nenhum eixo cadastrado ainda. Digite o nome do OT agora ou cadastre no painel ao lado.', 'bot');
+    addMsg('Nenhum eixo cadastrado. Informe o OT ou adicione no painel ao lado.', 'bot');
   } else {
     ots.forEach(o => addChip(o.name, () => submitUserText(o.name)));
   }
@@ -793,7 +1014,7 @@ function askActionMulti(){
   draft.checked = {};
   clearChips();
   const list = actionsForOt(draft.otName);
-  addMsg(`Eixo: ${draft.otName}. Marque um grupo → classifique → marque outro grupo com outro status. Só salve no final. Sem classificação = Não inserida.`, 'bot');
+  addMsg(`${draft.otName}: marque as ações e classifique o status antes de salvar.`, 'bot');
   renderActionChecklist(list);
   updateNavButtons();
 }
@@ -818,19 +1039,16 @@ function renderActionChecklist(list){
   const counts = countClassifications();
   const totalClassified = counts.concluida + counts.nao_concluida + counts.atrasada;
 
-  let html = `<p class="action-panel-hint">
-    1) Marque ações &nbsp; 2) Clique no status &nbsp; 3) Repita com outro grupo &nbsp; 4) Salve no final.<br>
-    Desmarcar <b>não apaga</b> o status. Sem status = <b>Não inserida</b>.
-  </p>
+  let html = `<p class="action-panel-hint">Marque as ações, defina o status e salve ao final. Sem status = não inserida.</p>
   <div class="class-summary" id="classSummary">
     <span class="cs cs-ok">Concluída: <b>${counts.concluida}</b></span>
     <span class="cs cs-partial">Não concluída: <b>${counts.nao_concluida}</b></span>
     <span class="cs cs-pend">Atrasada: <b>${counts.atrasada}</b></span>
-    <span class="cs cs-total">Prontas p/ salvar: <b>${totalClassified}</b></span>
+    <span class="cs cs-total">A salvar: <b>${totalClassified}</b></span>
   </div>`;
 
   if(all.length === 0){
-    html += `<p class="empty-note">Nenhuma ação-modelo. Digite uma personalizada no campo abaixo e envie.</p>`;
+    html += `<p class="empty-note">Nenhuma ação na lista. Digite uma personalizada abaixo.</p>`;
   } else {
     all.forEach((actionText, i) => {
       const st = draft.classifications[actionText] || null;
@@ -1015,7 +1233,7 @@ async function saveBatch(){
   clearChips();
   addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
   addChip('Novo cadastro', () => startNewCadastro());
-  addChip('Ver dashboard', () => showPage('dashboard'));
+  addChip('Dashboard', () => showPage('dashboard'));
   addChip('Mesma UBS, outro OT', () => {
     const ubs = draft.ubs;
     resetCadastro(true);
@@ -1179,7 +1397,7 @@ function groupBy(list, keyFn){
 function renderBarChart(container, groups){
   // groups: array of {label, total, done}
   if(groups.length === 0){
-    container.innerHTML = '<p class="empty-note">Nenhuma ação registrada ainda.</p>';
+    container.innerHTML = '<p class="empty-note">Nenhuma ação registrada.</p>';
     return;
   }
   container.innerHTML = '';
@@ -1314,7 +1532,7 @@ function renderUbsSelect(){
   const select = document.getElementById('ubsSelect');
   const current = select.value;
   const ubsSet = [...new Set([...knownUbs, ...actions.map(a=>a.ubs)])].sort();
-  select.innerHTML = '<option value="">Todas as UBS</option>' +
+  select.innerHTML = '<option value="">Todas</option>' +
     ubsSet.map(u => `<option value="${u}">${u}</option>`).join('');
   if(ubsSet.includes(current)) select.value = current;
   else select.value = '';
@@ -1324,7 +1542,7 @@ document.getElementById('ubsSelect').addEventListener('change', onDashboardFilte
 function renderOtFilterSelect(){
   const select = document.getElementById('ubsGapOtFilter');
   const current = select.value;
-  select.innerHTML = '<option value="">Todos os OTs</option>' +
+  select.innerHTML = '<option value="">Todos</option>' +
     ots.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
   if(ots.some(o=>o.name===current)) select.value = current;
   else select.value = '';
@@ -1393,7 +1611,7 @@ function renderGapGroups(container, ubs, groups, headingHtml){
     container.insertAdjacentHTML('beforeend', headingHtml);
   } else {
     container.insertAdjacentHTML('beforeend',
-      `<p style="font-size:13.5px;margin:0 0 14px;">Desempenho geral da <b>${ubs}</b>: <b>${overallP}%</b> (${doneItems} de ${totalItems} ações-modelo concluídas)</p>`
+      `<p class="section-lead"><b>${ubs}</b> — ${overallP}% concluído (${doneItems} de ${totalItems})</p>`
     );
   }
 
@@ -1483,6 +1701,14 @@ function renderTable(){
   tbody.innerHTML = '';
   let list = [...filteredActions()].sort((a,b)=> new Date(b.date) - new Date(a.date));
   if(showOnlyPending) list = list.filter(a=>a.status!=='concluida');
+  const q = (historyQuery || '').trim().toLowerCase();
+  if(q){
+    list = list.filter(a => {
+      const blob = [a.ubs, a.otName, a.action, STATUS_LABEL[a.status] || a.status, a.status]
+        .filter(Boolean).join(' ').toLowerCase();
+      return blob.includes(q);
+    });
+  }
 
   if(list.length === 0){
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--stone);padding:22px;">Nenhum registro para mostrar.</td></tr>`;
@@ -1517,10 +1743,7 @@ function renderTable(){
   tbody.querySelectorAll('.del-btn-tbl').forEach(btn=>{
     btn.onclick = async () => {
       const key = btn.getAttribute('data-key');
-      if(!confirm('Excluir este cadastro? A ação voltará a aparecer como Não inserida.')) return;
-      try{ await safeDelete(key, false); }catch(e){}
-      actions = actions.filter(a=>a.key!==key);
-      renderAll();
+      await deleteActionWithUndo(key);
     };
   });
   tbody.querySelectorAll('.edit-btn').forEach(btn=>{
@@ -1532,12 +1755,67 @@ function renderTable(){
   });
 }
 
+function hideUndoToast(){
+  const toast = document.getElementById('undoToast');
+  if(toast) toast.classList.remove('show');
+  if(undoTimer){ clearTimeout(undoTimer); undoTimer = null; }
+  undoHandler = null;
+}
+
+function showUndoToast(message, onUndo){
+  const toast = document.getElementById('undoToast');
+  const text = document.getElementById('undoToastText');
+  const btn = document.getElementById('undoToastBtn');
+  if(!toast || !text || !btn) return;
+  if(undoTimer) clearTimeout(undoTimer);
+  undoHandler = onUndo;
+  text.textContent = message;
+  toast.classList.add('show');
+  btn.onclick = async () => {
+    const fn = undoHandler;
+    hideUndoToast();
+    if(fn) await fn();
+  };
+  undoTimer = setTimeout(() => hideUndoToast(), 8000);
+}
+
+async function deleteActionWithUndo(key){
+  const rec = actions.find(a => a.key === key);
+  if(!rec) return;
+  actions = actions.filter(a => a.key !== key);
+  try{ await safeDelete(key, false); }catch(e){}
+  renderAll();
+  showUndoToast('Cadastro excluído', async () => {
+    const payload = {
+      ubs: rec.ubs,
+      otKey: rec.otKey,
+      otName: rec.otName,
+      action: rec.action,
+      status: rec.status,
+      date: rec.date
+    };
+    if(!actions.some(a => a.key === rec.key)){
+      actions.push({ key: rec.key, ...payload });
+    }
+    await safeSet(rec.key, JSON.stringify(payload), false);
+    renderAll();
+  });
+}
+
 document.getElementById('filterToggle').onclick = function(){
   showOnlyPending = !showOnlyPending;
   this.classList.toggle('active', showOnlyPending);
-  this.textContent = showOnlyPending ? 'Mostrando só não concluídas' : 'Mostrar só não concluídas';
+  this.textContent = showOnlyPending ? 'Só pendentes ✓' : 'Só pendentes';
   renderTable();
 };
+
+const historySearchEl = document.getElementById('historySearch');
+if(historySearchEl){
+  historySearchEl.addEventListener('input', () => {
+    historyQuery = historySearchEl.value || '';
+    renderTable();
+  });
+}
 
 // ---------- páginas Cadastro / Dashboard ----------
 function showPage(name){
@@ -1634,7 +1912,38 @@ document.getElementById('exportFullBtn').onclick = function(){
 };
 
 // ---------- load persisted data ----------
-async function loadAll(){
+function applySnapshotToMemory(snap){
+  if(!snap) return;
+  ots = [];
+  actions = [];
+  if(Array.isArray(snap.ots)){
+    for(const o of snap.ots){
+      if(o && o.key && o.name) ots.push({ key: o.key, name: o.name });
+    }
+  }
+  if(Array.isArray(snap.actions)){
+    for(const a of snap.actions){
+      if(!a || !a.key) continue;
+      actions.push({
+        key: a.key,
+        ubs: a.ubs,
+        otKey: a.otKey,
+        otName: a.otName,
+        action: a.action,
+        status: a.status,
+        date: a.date
+      });
+    }
+  }
+}
+
+async function rewriteLocalStorageFromMemory(){
+  return mirrorLocalStorageFromMemory();
+}
+
+async function loadFromLocalStorageOnly(){
+  ots = [];
+  actions = [];
   const otKeys = await safeList(OT_PREFIX, false);
   if(otKeys && otKeys.keys && otKeys.keys.length){
     for(const key of otKeys.keys){
@@ -1651,23 +1960,356 @@ async function loadAll(){
       }
     }
   }
-  await seedDefaultOts();
+}
+
+async function fetchSeedRecovered(){
+  try{
+    const res = await fetch('seed-recovered.json', { cache: 'no-store' });
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data || (!Array.isArray(data.actions) && !Array.isArray(data.ots))) return null;
+    return data;
+  }catch(e){
+    console.error('seed-recovered', e);
+    return null;
+  }
+}
+
+function mergeSnapshotsPreferRicher(primary, secondary){
+  const otMap = new Map();
+  const actMap = new Map();
+  const ingest = (snap) => {
+    if(!snap) return;
+    (snap.ots || []).forEach(o => {
+      if(o && o.key) otMap.set(o.key, { key: o.key, name: o.name });
+    });
+    (snap.actions || []).forEach(a => {
+      if(!a || !a.key) return;
+      const prev = actMap.get(a.key);
+      if(!prev){ actMap.set(a.key, a); return; }
+      const prevT = Date.parse(prev.date || 0) || 0;
+      const nextT = Date.parse(a.date || 0) || 0;
+      if(nextT >= prevT) actMap.set(a.key, a);
+    });
+  };
+  ingest(primary);
+  ingest(secondary);
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    ots: Array.from(otMap.values()),
+    actions: Array.from(actMap.values())
+  };
+}
+
+function snapshotActionCount(snap){
+  return snap && Array.isArray(snap.actions) ? snap.actions.length : 0;
+}
+
+function showRecoverModal(candidate){
+  return new Promise((resolve) => {
+    const modal = document.getElementById('recoverModal');
+    const body = document.getElementById('recoverBody');
+    const pathEl = document.getElementById('recoverPath');
+    const applyBtn = document.getElementById('recoverApplyBtn');
+    const skipBtn = document.getElementById('recoverSkipBtn');
+    if(!modal || !applyBtn || !skipBtn){
+      resolve(false);
+      return;
+    }
+    pendingRecover = candidate;
+    const n = candidate.actionCount || 0;
+    const when = candidate.updatedAt ? formatDateTimeBr(candidate.updatedAt) : null;
+    body.textContent = n > 0
+      ? `Encontramos um backup com ${n} ação(ões)${when ? ' (de ' + when + ')' : ''}. Deseja restaurar?`
+      : 'Encontramos um arquivo de backup. Deseja restaurar?';
+    pathEl.textContent = candidate.path || '';
+    modal.hidden = false;
+
+    const cleanup = (value) => {
+      modal.hidden = true;
+      applyBtn.onclick = null;
+      skipBtn.onclick = null;
+      pendingRecover = null;
+      resolve(value);
+    };
+    applyBtn.onclick = () => cleanup(true);
+    skipBtn.onclick = () => cleanup(false);
+  });
+}
+
+async function finishLoadUI(opts){
+  const options = opts || {};
+  let persist = !!options.persist;
+  const seededOts = await seedDefaultOts();
+  if(seededOts) persist = true;
+  await mirrorLocalStorageFromMemory();
+  // Só regrava disco quando houve mudança real (migração / restauração / seed).
+  // Regravar em toda abertura podia reintroduzir cópia antiga após exclusões.
+  if(persist){
+    await flushBackupNow();
+  }
   renderOtList();
   renderAll();
   startNewCadastro();
+  updatePersistBanner();
+  updateSaveStatus();
+  bindBackupButtons();
+  maybeShowFirstTip();
 }
 
-loadAll();
-(function showPersistBanner(){
+function maybeShowFirstTip(){
+  const tip = document.getElementById('firstTip');
+  const btn = document.getElementById('firstTipOk');
+  if(!tip || !btn) return;
+  let seen = false;
+  try{ seen = localStorage.getItem('meta:firstTipV1') === '1'; }catch(e){}
+  if(seen){
+    tip.classList.remove('show');
+    return;
+  }
+  tip.classList.add('show');
+  if(!btn._bound){
+    btn._bound = true;
+    btn.onclick = () => {
+      try{ localStorage.setItem('meta:firstTipV1', '1'); }catch(e){}
+      tip.classList.remove('show');
+    };
+  }
+}
+
+async function maybeRestoreFromProbe(){
+  if(!hasDesktopBackup) return false;
+  try{
+    const probe = await window.painelApp.backup.probe();
+    const best = probe && probe.best;
+    if(!(best && best.actionCount > 0)) return false;
+    const accept = await showRecoverModal(best);
+    if(!accept) return false;
+    const loaded = await window.painelApp.backup.loadFromPath(best.path);
+    if(!(loaded && loaded.ok && loaded.data)) return false;
+    applySnapshotToMemory(loaded.data);
+    dataSourceLabel = 'restauração (' + (best.label || 'backup') + ')';
+    if(loaded.data.updatedAt) lastSavedAt = new Date(loaded.data.updatedAt);
+    if(loaded.data.seedFlags && loaded.data.seedFlags.altaLeiteV1){
+      try{ localStorage.setItem('meta:seedAltaLeiteV1', '1'); }catch(e){}
+    }
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+async function maybeOfferAltaLeiteSeed(){
+  const SEED_FLAG = 'meta:seedAltaLeiteV1';
+  const DECLINED_FLAG = 'meta:seedAltaLeiteDeclinedV1';
+  let seedAlreadyApplied = false;
+  let seedDeclined = false;
+  try{ seedAlreadyApplied = localStorage.getItem(SEED_FLAG) === '1'; }catch(e){}
+  try{ seedDeclined = localStorage.getItem(DECLINED_FLAG) === '1'; }catch(e){}
+  if(seedAlreadyApplied || seedDeclined) return false;
+  if(actions.length > 0) return false;
+
+  const seed = await fetchSeedRecovered();
+  if(!(seed && Array.isArray(seed.actions) && seed.actions.length)) return false;
+
+  const acceptSeed = hasDesktopBackup
+    ? await showRecoverModal({
+        actionCount: seed.actions.length,
+        updatedAt: seed.exportedAt || null,
+        path: 'Backup recuperado incluso neste app (UBS ALTA LEITE)',
+        label: 'seed'
+      })
+    : true;
+
+  if(acceptSeed){
+    applySnapshotToMemory(seed);
+    dataSourceLabel = 'restauração (Alta Leite)';
+    try{ localStorage.setItem(SEED_FLAG, '1'); }catch(e){}
+    return true;
+  }
+  try{ localStorage.setItem(DECLINED_FLAG, '1'); }catch(e){}
+  return false;
+}
+
+async function loadAll(){
+  let fileSnap = null;
+  let fileMeta = null;
+  let primaryPresent = false;
+
+  // Desktop: arquivo principal = fonte da verdade (mesmo se estiver vazio)
+  if(hasDesktopBackup){
+    try{
+      const loaded = await window.painelApp.backup.load();
+      if(loaded && loaded.ok && loaded.data){
+        fileSnap = loaded.data;
+        fileMeta = loaded;
+        primaryPresent = true;
+      }
+    }catch(e){ console.error(e); }
+  }
+
+  if(primaryPresent){
+    applySnapshotToMemory(fileSnap);
+    dataSourceLabel = 'arquivo (' + (fileMeta && fileMeta.source ? fileMeta.source : 'principal') + ')';
+    if(fileSnap.updatedAt) lastSavedAt = new Date(fileSnap.updatedAt);
+    if(fileSnap.seedFlags && fileSnap.seedFlags.altaLeiteV1){
+      try{ localStorage.setItem('meta:seedAltaLeiteV1', '1'); }catch(e){}
+    }
+
+    // Principal existe (mesmo sem ações) = verdade. Não oferece probe automático
+    // (senão, após apagar tudo, o modal voltaria a cada abertura).
+    await finishLoadUI({ persist: false });
+    return;
+  }
+
+  // Sem arquivo principal: migrar localStorage legado ou recuperar
+  await loadFromLocalStorageOnly();
+  if(actions.length > 0){
+    dataSourceLabel = 'armazenamento local (legado)';
+    await finishLoadUI({ persist: true });
+    return;
+  }
+
+  if(await maybeRestoreFromProbe()){
+    await finishLoadUI({ persist: true });
+    return;
+  }
+
+  if(await maybeOfferAltaLeiteSeed()){
+    await finishLoadUI({ persist: true });
+    return;
+  }
+
+  // Primeira abertura limpa: cria eixos padrão e grava arquivo principal
+  await finishLoadUI({ persist: true });
+}
+
+function updatePersistBanner(){
   const notice = document.getElementById('storageNotice');
   if(!notice) return;
   const desktop = !!(window.painelApp && window.painelApp.isDesktop);
+  const nAct = actions.length;
   notice.classList.add('show');
   notice.innerHTML = `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/><circle cx="12" cy="12" r="9"/></svg>
     <span>${desktop
-      ? 'App desktop pronto — registros ficam salvos neste computador entre sessões.'
-      : 'Registros salvos neste computador (armazenamento local). Feche e reabra: os dados permanecem.'}</span>`;
+      ? `<strong>${nAct}</strong> ações · fonte: arquivo JSON · backup na Área de Trabalho`
+      : `<strong>${nAct}</strong> ações neste computador`}</span>`;
+}
+
+function bindBackupButtons(){
+  const exportBtn = document.getElementById('backupExportBtn');
+  const importBtn = document.getElementById('backupImportBtn');
+  const folderBtn = document.getElementById('backupFolderBtn');
+  const desktopBtn = document.getElementById('backupDesktopBtn');
+  if(exportBtn && !exportBtn._bound){
+    exportBtn._bound = true;
+    exportBtn.onclick = async () => {
+      if(!hasDesktopBackup){
+        // fallback browser: download snapshot
+        const blob = new Blob([JSON.stringify(buildSnapshot(), null, 2)], {type:'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'painel-ubs-backup.json';
+        a.click();
+        return;
+      }
+      await flushBackupNow();
+      const res = await window.painelApp.backup.exportCopy();
+      if(res && res.ok) alert('Backup exportado:\n' + res.path);
+    };
+  }
+  if(importBtn && !importBtn._bound){
+    importBtn._bound = true;
+    importBtn.onclick = async () => {
+      if(!hasDesktopBackup){
+        alert('Importação de backup JSON está disponível no app desktop.');
+        return;
+      }
+      const res = await window.painelApp.backup.importFile();
+      if(!res || res.canceled) return;
+      if(!res.ok){
+        alert(res.error || 'Falha ao importar backup.');
+        return;
+      }
+      const incoming = res.actionCount != null
+        ? res.actionCount
+        : (Array.isArray(res.data && res.data.actions) ? res.data.actions.length : 0);
+      const ok = confirm(
+        `Importar backup com ${incoming} ação(ões)?\n` +
+        `Agora você tem ${actions.length} ação(ões).\n` +
+        `Os dados serão mesclados (nada é apagado automaticamente).`
+      );
+      if(!ok) return;
+      if(res.data){
+        const merged = mergeSnapshotsPreferRicher(res.data, { ots, actions });
+        applySnapshotToMemory(merged);
+      }
+      await rewriteLocalStorageFromMemory();
+      await flushBackupNow();
+      dataSourceLabel = 'importação manual';
+      renderOtList();
+      renderAll();
+      updatePersistBanner();
+      updateSaveStatus();
+      alert(`Backup importado. Agora há ${actions.length} ação(ões).`);
+    };
+  }
+  if(desktopBtn && !desktopBtn._bound){
+    desktopBtn._bound = true;
+    desktopBtn.onclick = async () => {
+      if(!hasDesktopBackup){
+        alert('Pasta de backup na Área de Trabalho disponível apenas no app desktop.');
+        return;
+      }
+      await flushBackupNow();
+      await window.painelApp.backup.openDesktop();
+    };
+  }
+  if(folderBtn && !folderBtn._bound){
+    folderBtn._bound = true;
+    folderBtn.onclick = async () => {
+      if(!hasDesktopBackup){
+        alert('Pasta de dados disponível apenas no app desktop.');
+        return;
+      }
+      await window.painelApp.backup.openFolder();
+    };
+  }
+}
+
+window.addEventListener('keydown', (e) => {
+  if((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 's'){
+    e.preventDefault();
+    flushBackupNow().then((res) => {
+      if(res && res.ok){
+        updateSaveStatus();
+      }
+    });
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  if(persistTimer){
+    clearTimeout(persistTimer);
+    persistTimer = null;
+  }
+  try{
+    if(hasDesktopBackup && window.painelApp.backup.saveSync){
+      const res = window.painelApp.backup.saveSync(buildSnapshot());
+      if(res && res.ok){
+        lastSavedAt = res.updatedAt ? new Date(res.updatedAt) : new Date();
+        saveState = 'ok';
+      }
+    }
+  }catch(e){}
+});
+
+loadAll();
+(function showPersistBanner(){
+  updatePersistBanner();
 })();
 </script>
 </body>

@@ -1,6 +1,6 @@
 # Painel UBS Planifica
 
-**Versão 3.0.1** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
+**Versão 3.1.1** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
 
 <p align="center">
   <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
@@ -16,7 +16,7 @@ Ferramenta **operacional de APS** (PlanificaSUS): as equipes registram e acompan
 - **Electron** + UI HTML/CSS/JS (app desktop instalável e **portable**)
 - Dashboard com **KPIs, filtros UBS/OT, gráficos e pendências** sincronizados
 - Cadastro guiado (UBS → eixo OT → ações → status em lote)
-- **Export CSV** (Excel, `;` + acentos) para backup e prestação de contas
+- **Export CSV** (Excel, `;` + acentos) e **backup JSON automático** a cada alteração
 - Banco de eixos/ações do PlanificaSUS pré-carregado; sem backend/cloud no caminho crítico
 
 > Ideal no portfólio junto ao [SIGAPS](https://github.com/ymedeiros228/sigaps): um sistema **web GIS territorial** + um painel **desktop do plano de ações**.
@@ -33,7 +33,7 @@ Sistema simples e visual para as equipes das Unidades Básicas de Saúde acompan
 - Ver indicadores, pendências e histórico no **Dashboard**
 - Exportar CSV para Excel (backup)
 
-Os dados ficam salvos **neste computador** (não há nuvem automática).
+Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos — sem nuvem automática).
 
 ---
 
@@ -52,30 +52,39 @@ Os dados ficam salvos **neste computador** (não há nuvem automática).
 
 ## Download (Windows)
 
-**[Painel UBS Planifica 3.0.1 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.0.1)**
+**Release mais recente:** veja [Releases](https://github.com/ymedeiros228/painel-ubs-planifica/releases) (arquivo **Portable** `.exe`).
 
-- Arquivo: **Portable** (`.exe`) — não precisa instalar  
 - Windows 10/11 64 bits  
-- Dados salvos localmente neste computador  
+- Dados salvos localmente neste computador (sem nuvem)
 
 ## Como usar (Windows)
 
 ### Opção rápida — portátil (recomendado)
 
-1. Baixe o arquivo **`Painel UBS Planifica-3.0.1-Portable.exe`** (release / ZIP da versão)
-2. Execute — **não precisa instalar**
-3. Pode rodar de uma pasta ou pen drive
+1. Baixe o **Portable** da release (`Painel UBS Planifica-*-Portable.exe` / ZIP)
+2. Extraia numa pasta **fixa** (ex.: `Documentos\PainelUBS`) — não rode direto de Downloads
+3. Execute o `.exe` — **não precisa instalar**
+4. Mantenha o `.exe` e a pasta `painel-ubs-dados` juntos
 
 > Requisitos: **Windows 10 ou 11 (64 bits)**
 
 ### Backup dos dados
 
-No Dashboard, use:
+A cada alteração o app grava automaticamente:
 
-- **Exportar CSV (Excel)** — só o que foi cadastrado  
-- **Exportar completo** — inclui também o que ainda falta no plano-modelo  
+- pasta **Área de Trabalho\\Backup UBS Planifica\\** (fácil de achar)  
+- `painel-dados.json` na pasta de dados do app  
+- cópia em **Documentos\\PainelUBSPlanifica\\**  
+- backup diário em `backups\\`
 
-Guarde o CSV em local seguro (pen drive, pasta da rede, e-mail, etc.).
+No Dashboard também há:
+
+- **Backup na Área de Trabalho** — abre a pasta do backup  
+- **Exportar backup JSON** — cópia completa para pen drive/rede  
+- **Importar backup** — restaura a partir de um JSON  
+- **Exportar CSV (Excel)** — planilha para Excel  
+
+Guarde o JSON periodicamente em local seguro.
 
 ---
 
@@ -113,6 +122,21 @@ Gera instalador/portátil em `dist/` (o alvo principal do builder é Windows).
 ```
 
 ---
+
+## Novidades 3.1.1
+
+- Arquivo JSON principal é a **fonte da verdade** (exclusões não voltam sozinhas ao reabrir)
+- Gravação em fila + salvamento ao fechar a janela (`Ctrl+S` / fechar)
+- Recuperação só com confirmação (cópias auxiliares / seed Alta Leite)
+- Pasta **Área de Trabalho\\Backup UBS Planifica\\** alinhada ao estado atual + `ultimo-com-dados` para resgate
+
+## Novidades 3.1.0
+
+- **Backup automático** em JSON a cada cadastro/edição/exclusão
+- Pasta **Área de Trabalho\\Backup UBS Planifica\\** sempre atualizada
+- Espelho em `Documentos\PainelUBSPlanifica\` e, no Portable, pasta `painel-ubs-dados` ao lado do `.exe`
+- Botões no Dashboard: exportar/importar backup JSON e abrir pasta dos dados
+- Restauração dos registros recuperados da **UBS ALTA LEITE** (OT I)
 
 ## Novidades 3.0.1
 
