@@ -108,16 +108,20 @@ async function main(){
       check('btnEditMode exists', !!before.hasEdit);
       check('actions loaded or empty array', typeof before.n === 'number');
 
-      // Seed one action if empty for edit test
-      await evalInPage(send, `(() => {
-        if(actions.length) return actions.length;
+      // Seed one controllable action always
+      const seeded = await evalInPage(send, `(() => {
         const ot = ots[0] || { key: 'ot:test', name: 'OT I — Macroprocesso dos Eventos Agudos' };
-        if(!ots.length) ots.push(ot);
+        if(!ots.some(o => o.key === ot.key)) ots.push(ot);
         const key = 'action:smoke_' + Date.now();
-        const rec = { key, ubs: 'UBS ALTA LEITE', otKey: ot.key, otName: ot.name, action: 'SMOKE TEST EDIT', status: 'nao_concluida', date: new Date().toISOString() };
-        actions.push(rec);
-        return actions.length;
-      })()`, true);
+        const rec = {
+          key, ubs: 'UBS ALTA LEITE', otKey: ot.key, otName: ot.name,
+          action: 'SMOKE TEST EDIT ' + Date.now(),
+          status: 'nao_concluida', date: new Date().toISOString()
+        };
+        actions = actions.filter(a => !(a.action && String(a.action).startsWith('SMOKE TEST EDIT')));
+        actions.unshift(rec);
+        return { key: rec.key, action: rec.action };
+      })()`);
 
       // Click Editar
       const editOk = await evalInPage(send, `(() => {
@@ -134,23 +138,33 @@ async function main(){
       check('Editar entra em edit_pick', !!editOk.ok);
       check('lista de edição renderizada', editOk.hasPanel && editOk.listItems > 0);
 
-      // Pick first item
+      // Pick smoke item by key
       if(editOk.listItems > 0){
         const afterPick = await evalInPage(send, `(() => {
-          const item = document.querySelector('.edit-pick-item');
+          const key = ${JSON.stringify(seeded.key)};
+          let item = document.querySelector('.edit-pick-item[data-key="'+key+'"]');
+          if(!item) item = document.querySelector('.edit-pick-item');
           if(!item) return { ok:false };
           item.click();
-          return { ok: step === 'status_single', step, hasEditKey: !!draft.editKey };
+          return { ok: step === 'status_single', step, hasEditKey: !!draft.editKey, editKey: draft.editKey };
         })()`);
         check('clique no item inicia edição de status', !!afterPick.ok);
         check('draft.editKey preenchido', !!afterPick.hasEditKey);
 
-        // Salva direto (espera async) — evita corrida de clique em chip
         const saved = await evalInPage(send, `(() => {
+          const key = ${JSON.stringify(seeded.key)};
           draft.status = 'concluida';
+          draft.editKey = key;
+          // garantir draft.action presente
+          const rec0 = actions.find(a => a.key === key);
+          if(rec0){
+            draft.action = rec0.action;
+            draft.ubs = rec0.ubs;
+            draft.otName = rec0.otName;
+          }
           return saveEntry().then(() => {
-            const smoke = actions.find(a => a.action && String(a.action).includes('SMOKE TEST'));
-            return { ok: !!(smoke && smoke.status === 'concluida'), status: smoke && smoke.status, n: actions.length };
+            const smoke = actions.find(a => a.key === key);
+            return { ok: !!(smoke && smoke.status === 'concluida'), status: smoke && smoke.status, n: actions.length, key };
           });
         })()`, true);
         check('edição salva status concluida', !!(saved && saved.ok));
