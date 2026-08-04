@@ -1,0 +1,112 @@
+# Painel UBS Planifica
+
+**Versão 3.0.1** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
+
+<p align="center">
+  <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
+</p>
+
+---
+
+## O que é
+
+Sistema simples e visual para as equipes das Unidades Básicas de Saúde acompanharem o plano de ações do PlanificaSUS:
+
+- Cadastrar ações por **UBS** e **eixo (OT)**
+- Classificar como **Concluída**, **Não concluída** ou **Atrasada**
+- Ver indicadores, pendências e histórico no **Dashboard**
+- Exportar CSV para Excel (backup)
+
+Os dados ficam salvos **neste computador** (não há nuvem automática).
+
+---
+
+## Funcionalidades
+
+| Área | O que faz |
+|------|-----------|
+| **Cadastro** | Fluxo guiado: UBS → OT → multi-seleção de ações → status em lote |
+| **Dashboard** | Cards de indicadores, gráficos por OT/UBS, pendências e histórico |
+| **Filtros** | UBS e OT acima dos indicadores — os números acompanham a seleção |
+| **Exportação** | CSV compatível com Excel (separador `;` e acentos corretos) |
+| **Eixos (OTs)** | 12 eixos e ações-modelo pré-carregados; dá para editar/excluir |
+
+<p align="center">
+  <img src="docs/dashboard-filtros.png" alt="Indicadores filtrados por UBS e OT" width="900" />
+</p>
+
+---
+
+## Como usar (Windows)
+
+### Opção rápida — portátil (recomendado)
+
+1. Baixe o arquivo **`Painel UBS Planifica-3.0.1-Portable.exe`** (release / ZIP da versão)
+2. Execute — **não precisa instalar**
+3. Pode rodar de uma pasta ou pen drive
+
+> Requisitos: **Windows 10 ou 11 (64 bits)**
+
+### Backup dos dados
+
+No Dashboard, use:
+
+- **Exportar CSV (Excel)** — só o que foi cadastrado  
+- **Exportar completo** — inclui também o que ainda falta no plano-modelo  
+
+Guarde o CSV em local seguro (pen drive, pasta da rede, e-mail, etc.).
+
+---
+
+## Desenvolvimento
+
+### Pré-requisitos
+
+- Node.js **22+**
+- npm
+
+### Instalar e rodar
+
+```bash
+npm ci
+npm start
+```
+
+### Empacotar para Windows
+
+```bash
+npm run dist
+```
+
+Gera instalador/portátil em `dist/` (o alvo principal do builder é Windows).
+
+### Estrutura
+
+```text
+├── main.js          # Processo principal Electron
+├── preload.js       # Bridge segura para o renderer
+├── scripts/start.js # Launcher (D-Bus no Linux)
+├── src/index.html   # Interface (Cadastro + Dashboard)
+├── build/           # Ícones e LEIA-ME
+└── docs/            # Imagens do README
+```
+
+---
+
+## Novidades 3.0.1
+
+- Filtros de **UBS** e **OT** no topo do Dashboard
+- Indicadores, gráficos, pendências e histórico respeitam o filtro
+- Botões de visibilidade lado a lado na barra de filtros
+- Abertura mais estável (GPU/software raster)
+- Electron e dependências atualizados (`npm audit` limpo)
+
+---
+
+## Sobre
+
+- **Município:** Passagem Franca (MA)  
+- **Programa:** PlanificaSUS  
+- **Licença:** uso interno (não público / `UNLICENSED`)
+
+Dúvidas de uso no dia a dia: veja também `build/LEIA-ME.txt` (incluído no ZIP da versão).
