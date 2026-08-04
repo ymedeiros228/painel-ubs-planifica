@@ -30,7 +30,15 @@ function ensureLinuxSessionBus() {
 
 ensureLinuxSessionBus();
 
-const child = spawn(electron, ['.'], {
+const electronArgs = ['.'];
+// Cloud/containers frequentemente rodam como root; Chromium exige --no-sandbox.
+try {
+  if (typeof process.getuid === 'function' && process.getuid() === 0) {
+    electronArgs.push('--no-sandbox');
+  }
+} catch (_) {}
+
+const child = spawn(electron, electronArgs, {
   cwd: root,
   env,
   stdio: 'inherit'
