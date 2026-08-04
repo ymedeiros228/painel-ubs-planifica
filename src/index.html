@@ -498,7 +498,7 @@
       <select id="ubsGapOtFilter"><option value="">Todos</option></select>
     </div>
     <div class="filter-toggles">
-      <button type="button" class="toggle" id="gapShowDoneToggle" title="Incluir ações concluídas nas pendências">Incluir concluídas</button>
+      <button type="button" class="toggle" id="gapShowDoneToggle" title="Incluir ações concluídas nas pendências">Mostrar concluídas também</button>
       <button type="button" class="toggle" id="filterToggle" title="Mostrar só o que não está concluído no histórico">Só pendentes</button>
     </div>
   </div>
@@ -1386,7 +1386,12 @@ function confirmBatch(){
   addMsg(lines, 'bot');
   clearChips();
   setChipRowMode('status');
-  addChip('Confirmar e salvar', () => saveBatch(), 'status-ok');
+  addChip('Confirmar e salvar', () => {
+    saveBatch().catch((err) => {
+      console.error('saveBatch', err);
+      addMsg('Não foi possível salvar o lote. Tente de novo.', 'bot');
+    });
+  }, 'status-ok');
   addChip('Voltar e ajustar', () => {
     step = 'action_select';
     clearChips();
@@ -1514,7 +1519,12 @@ function confirmEntry(){
   addMsg(`Confirma? UBS: ${draft.ubs} | OT: ${draft.otName} | Ação: "${draft.action}" | Status: ${statusLabel}`, 'bot');
   clearChips();
   setChipRowMode('status');
-  addChip('Salvar', () => { saveEntry(); }, 'status-ok');
+  addChip('Salvar', () => {
+    saveEntry().catch((err) => {
+      console.error('saveEntry', err);
+      addMsg('Não foi possível salvar. Tente de novo.', 'bot');
+    });
+  }, 'status-ok');
   addChip('Cancelar', () => { addMsg('Cancelado.', 'bot'); startNewCadastro(); });
   updateNavButtons();
 }
@@ -1529,6 +1539,8 @@ async function saveEntry(){
     status,
     editKey: draft.editKey
   });
+  // Garante mirror + status "Salvo às" mesmo se só houver localStorage
+  try{ await flushBackupNow(); }catch(_e){}
   scheduleRenderAll();
   hideActionUI();
   addMsg(draft.editKey ? 'Registro atualizado e salvo.' : 'Ação salva.', 'bot');

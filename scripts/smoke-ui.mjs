@@ -221,6 +221,160 @@ async function main(){
         return { step, page: document.getElementById('page-cadastro').classList.contains('active') };
       })()`);
       check('Novo cadastro step=ubs', cad.step === 'ubs' && cad.page);
+
+      // Full UI edit: chips Concluída → Salvar (no direct saveEntry)
+      const fullUi = await evalInPage(send, `(async () => {
+        const ot = ots[0] || { key: 'ot:x', name: 'OT X' };
+        if(!ots.some(o => o.key === ot.key)) ots.push(ot);
+        const key = 'action:smoke_ui_' + Date.now();
+        const rec = {
+          key, ubs: 'UBS ALTA LEITE', otKey: ot.key, otName: ot.name,
+          action: 'SMOKE UI FULL ' + Date.now(),
+          status: 'atrasada', date: new Date().toISOString()
+        };
+        actions.unshift(rec);
+        showPage('cadastro');
+        document.getElementById('btnEditMode').click();
+        await new Promise(r => setTimeout(r, 50));
+        const item = document.querySelector('.edit-pick-item[data-key="'+key+'"]')
+          || document.querySelector('.edit-pick-item');
+        if(!item) return { ok:false, stage:'pick' };
+        item.click();
+        await new Promise(r => setTimeout(r, 50));
+        const concluida = [...document.querySelectorAll('#chipRow .chip')]
+          .find(c => c.textContent.trim() === 'Concluída');
+        if(!concluida) return { ok:false, stage:'status' };
+        concluida.click();
+        await new Promise(r => setTimeout(r, 50));
+        const salvar = [...document.querySelectorAll('#chipRow .chip')]
+          .find(c => c.textContent.trim() === 'Salvar');
+        if(!salvar) return { ok:false, stage:'confirm', chips:[...document.querySelectorAll('#chipRow .chip')].map(c=>c.textContent) };
+        salvar.click();
+        await new Promise(r => setTimeout(r, 500));
+        const after = actions.find(a => a.key === key);
+        return {
+          ok: !!(after && after.status === 'concluida'),
+          status: after && after.status,
+          step,
+          chat: (chatBody.innerText || '').includes('atualizado') || (chatBody.innerText || '').includes('salvo')
+        };
+      })()`, true);
+      check('UI chips editar+salvar status', !!(fullUi && fullUi.ok));
+      if(fullUi && !fullUi.ok) console.log('   detail UI full', fullUi);
+
+      // Pencil rename cancel + slight rename
+      const pencilUi = await evalInPage(send, `(async () => {
+        renderOtList();
+        const btn = document.querySelector('.edit-ot');
+        if(!btn) return { ok:false, reason:'no-btn' };
+        const otKey = btn.getAttribute('data-key');
+        const before = (ots.find(o => o.key === otKey) || {}).name;
+        btn.click();
+        await new Promise(r => setTimeout(r, 60));
+        const modal = document.getElementById('promptModal');
+        const title = document.getElementById('promptTitle')?.textContent;
+        const open = modal && !modal.hidden && /eixo/i.test(title || '');
+        // cancel
+        document.getElementById('promptCancelBtn')?.click();
+        await new Promise(r => setTimeout(r, 40));
+        const cancelOk = modal.hidden && ots.find(o => o.key === otKey)?.name === before;
+        // rename
+        btn.click();
+        await new Promise(r => setTimeout(r, 60));
+        const input = document.getElementById('promptInput');
+        const base = before.replace(/\\s*\\[SMOKE\\]\\s*$/,'');
+        const novo = base + ' [SMOKE]';
+        input.value = novo;
+        document.getElementById('promptOkBtn')?.click();
+        await new Promise(r => setTimeout(r, 500));
+        const after = ots.find(o => o.key === otKey)?.name;
+        // restore clean name
+        if(after && after.includes('[SMOKE]')){
+          const ot = ots.find(o => o.key === otKey);
+          if(ot){
+            const old = ot.name;
+            ot.name = base;
+            for(const a of actions.filter(x => x.otKey === otKey || x.otName === old)){
+              a.otName = base; a.otKey = otKey;
+            }
+            renderOtList();
+          }
+        }
+        return { open, cancelOk, renamed: after === novo, after };
+      })()`, true);
+      check('canetinha modal+cancel+rename', !!(pencilUi && pencilUi.open && pencilUi.cancelOk && pencilUi.renamed));
+      if(pencilUi && !(pencilUi.open && pencilUi.cancelOk && pencilUi.renamed)) console.log('   pencil detail', pencilUi);
+
+      // Dashboard undo delete
+      const undo = await evalInPage(send, `(async () => {
+        showPage('dashboard');
+        const before = actions.length;
+        const del = document.querySelector('#tableBody .del-btn-tbl');
+        if(!del) return { ok:false, reason:'no-del' };
+        const key = del.getAttribute('data-key');
+        const origConfirm = window.confirm;
+        window.confirm = () => true;
+        del.click();
+        window.confirm = origConfirm;
+        await new Promise(r => setTimeout(r, 80));
+        // deleteActionWithUndo does not use confirm — direct delete
+        const toast = document.getElementById('undoToast');
+        const shown = toast && toast.classList.contains('show');
+        if(shown) document.getElementById('undoToastBtn')?.click();
+        await new Promise(r => setTimeout(r, 200));
+        const restored = actions.some(a => a.key === key);
+        return { ok: shown && restored, shown, restored, before, after: actions.length };
+      })()`, true);
+      check('dashboard excluir+desfazer', !!(undo && undo.ok));
+      if(undo && !undo.ok) console.log('   undo detail', undo);
+
+      // Novo cadastro: UBS → OT → marcar → status → Salvar tudo → Confirmar
+      const novo = await evalInPage(send, `(async () => {
+        const before = actions.length;
+        showPage('cadastro');
+        startNewCadastro();
+        await new Promise(r => setTimeout(r, 40));
+        const ubs = document.querySelector('#chipRow .chip');
+        if(!ubs) return { ok:false, stage:'ubs' };
+        ubs.click();
+        await new Promise(r => setTimeout(r, 40));
+        // Prefer OT with bank model actions
+        let otChip = [...document.querySelectorAll('#chipRow .chip')]
+          .find(c => /OT I\\b|OT II\\b|OT VIII|OT VII/i.test(c.textContent));
+        if(!otChip) otChip = document.querySelector('#chipRow .chip');
+        if(!otChip) return { ok:false, stage:'ot' };
+        otChip.click();
+        await new Promise(r => setTimeout(r, 80));
+        const row = document.querySelector('#actionPanel .action-check');
+        if(!row) return { ok:false, stage:'actions', step };
+        const actionText = row.querySelector('.ac-text')?.textContent || '';
+        const cb = row.querySelector('input[type=checkbox]');
+        if(cb){
+          cb.checked = true;
+          cb.dispatchEvent(new Event('change', { bubbles:true }));
+        }
+        await new Promise(r => setTimeout(r, 30));
+        const st = document.querySelector('#classifyBar .status-btn.ok');
+        if(!st) return { ok:false, stage:'statusBtn' };
+        st.click();
+        await new Promise(r => setTimeout(r, 60));
+        document.getElementById('btnSaveBatch')?.click();
+        await new Promise(r => setTimeout(r, 60));
+        const confirm = [...document.querySelectorAll('#chipRow .chip')]
+          .find(c => /Confirmar e salvar|Salvar/i.test(c.textContent || ''));
+        if(!confirm) return { ok:false, stage:'confirm', chips:[...document.querySelectorAll('#chipRow .chip')].map(c=>c.textContent), step };
+        confirm.click();
+        await new Promise(r => setTimeout(r, 700));
+        const saveText = document.getElementById('saveStatus')?.textContent || '';
+        const found = actions.some(a => a.action === actionText);
+        return {
+          ok: found && actions.length >= before,
+          before, after: actions.length, actionText, saveText, step, found
+        };
+      })()`, true);
+      check('Novo cadastro UBS→OT→salvar', !!(novo && novo.ok));
+      if(novo && !novo.ok) console.log('   novo detail', novo);
+      else if(novo) console.log('   novo save:', novo.saveText, 'delta', novo.after - novo.before);
     });
   } catch (e){
     console.error('Smoke UI error:', e.message || e);
