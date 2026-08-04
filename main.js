@@ -71,6 +71,10 @@ function desktopDataPath() {
   return path.join(desktopBackupDir(), DATA_FILE);
 }
 
+function desktopLastGoodPath() {
+  return path.join(desktopBackupDir(), 'painel-dados-ultimo-com-dados.json');
+}
+
 function dailyBackupPath() {
   const day = new Date().toISOString().slice(0, 10);
   return path.join(app.getPath('userData'), 'backups', `painel-dados-${day}.json`);
@@ -88,11 +92,12 @@ function ensureDesktopBackupFolder() {
     '',
     'Arquivo principal: painel-dados.json',
     'Cópia anterior:    painel-dados-anterior.json',
+    'Último com dados:  painel-dados-ultimo-com-dados.json',
     '',
     'Se o app abrir vazio:',
     '1. Abra o Painel UBS Planifica',
-    '2. No Dashboard, use "Importar backup"',
-    '3. Escolha o arquivo painel-dados.json desta pasta',
+    '2. Se aparecer a tela “Backup encontrado”, clique em Restaurar',
+    '3. Ou no Dashboard use "Importar" e escolha um dos JSON desta pasta',
     '',
     'Também dá para copiar esta pasta inteira para pen drive / rede.',
     ''
@@ -157,6 +162,7 @@ function collectCandidateSnapshots() {
       label: 'espelho-area-trabalho-anterior',
       path: path.join(desktopBackupDir(), PREV_FILE)
     },
+    { label: 'ultimo-com-dados', path: desktopLastGoodPath() },
     { label: 'legado-appdata', path: path.join(legacyAppDataDir(), DATA_FILE) },
     { label: 'legado-espelho', path: path.join(legacyAppDataDir(), MIRROR_DIR_NAME, DATA_FILE) }
   ];
@@ -221,6 +227,10 @@ function saveSnapshot(snapshot) {
       } catch (_) {}
     }
     writeJsonAtomic(deskPrimary, data);
+    // Mantém sempre a última cópia com dados (não sobrescreve com vazio)
+    if (snapshotActionCount(data) > 0) {
+      writeJsonAtomic(desktopLastGoodPath(), data);
+    }
   } catch (err) {
     console.error('Falha ao espelhar na Área de Trabalho:', err.message);
   }
@@ -276,6 +286,39 @@ function registerIpc() {
       path: best.path,
       data: best.data
     };
+  });
+
+  ipcMain.handle('backup:probe', async () => {
+    const candidates = collectCandidateSnapshots()
+      .map((c) => ({
+        label: c.label,
+        path: c.path,
+        actionCount: snapshotActionCount(c.data),
+        otCount: Array.isArray(c.data.ots) ? c.data.ots.length : 0,
+        updatedAt: c.data.updatedAt || null
+      }))
+      .sort((a, b) => {
+        if (b.actionCount !== a.actionCount) return b.actionCount - a.actionCount;
+        return (Date.parse(b.updatedAt || 0) || 0) - (Date.parse(a.updatedAt || 0) || 0);
+      });
+    const best = candidates[0] || null;
+    return {
+      ok: true,
+      primary: getBackupInfo(),
+      candidates,
+      best
+    };
+  });
+
+  ipcMain.handle('backup:loadFromPath', async (_event, filePath) => {
+    if (!filePath || typeof filePath !== 'string') {
+      return { ok: false, error: 'Caminho inválido.' };
+    }
+    const data = readJsonSafe(filePath);
+    if (!data || (!Array.isArray(data.actions) && !Array.isArray(data.ots))) {
+      return { ok: false, error: 'Arquivo de backup inválido.' };
+    }
+    return { ok: true, path: filePath, data };
   });
 
   ipcMain.handle('backup:save', async (_event, snapshot) => {

@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('painelApp', {
   backup: {
     getInfo: () => ipcRenderer.invoke('backup:getInfo'),
     load: () => ipcRenderer.invoke('backup:load'),
+    probe: () => ipcRenderer.invoke('backup:probe'),
+    loadFromPath: (filePath) => ipcRenderer.invoke('backup:loadFromPath', filePath),
     save: (snapshot) => ipcRenderer.invoke('backup:save', snapshot),
     openFolder: () => ipcRenderer.invoke('backup:openFolder'),
     openDocuments: () => ipcRenderer.invoke('backup:openDocuments'),

@@ -12,6 +12,9 @@ Novidades 3.1.0
 - Backup automático em arquivo JSON a cada alteração
 - Pasta na Área de Trabalho: "Backup UBS Planifica"
   (atualiza sozinha a cada cadastro/edição/exclusão)
+- Arquivo JSON é a fonte da verdade (localStorage só espelha)
+- Indicador "Salvo às HH:MM" no topo
+- Tela de recuperação se o app abrir sem dados e houver backup
 - Cópia espelho também em Documentos\PainelUBSPlanifica\
 - No Portable, pasta de dados ao lado do .exe (painel-ubs-dados)
 - Botões: Exportar backup JSON, Importar backup,
