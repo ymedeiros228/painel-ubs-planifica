@@ -30,7 +30,7 @@ function ensureLinuxSessionBus() {
 
 ensureLinuxSessionBus();
 
-const electronArgs = ['.'];
+const electronArgs = ['.', ...process.argv.slice(2)];
 // Cloud/containers frequentemente rodam como root; Chromium exige --no-sandbox.
 try {
   if (typeof process.getuid === 'function' && process.getuid() === 0) {
