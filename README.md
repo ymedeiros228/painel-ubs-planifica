@@ -31,10 +31,6 @@ Os dados ficam salvos **neste computador** (não há nuvem automática).
 | **Exportação** | CSV compatível com Excel (separador `;` e acentos corretos) |
 | **Eixos (OTs)** | 12 eixos e ações-modelo pré-carregados; dá para editar/excluir |
 
-<p align="center">
-  <img src="docs/dashboard-filtros.png" alt="Indicadores filtrados por UBS e OT" width="900" />
-</p>
-
 ---
 
 ## Como usar (Windows)
