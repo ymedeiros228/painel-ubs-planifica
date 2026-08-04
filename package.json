@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win",
+    "docs:manual": "node scripts/generate-manual-pdf.mjs"
   },
   "build": {
     "appId": "br.ma.passagemfranca.painelubsplanifica",
@@ -63,6 +64,9 @@
   },
   "devDependencies": {
     "electron": "^39.8.10",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "marked": "^15.0.12",
+    "playwright": "1.54",
+    "qrcode": "1.5"
   }
 }

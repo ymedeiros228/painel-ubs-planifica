@@ -57,6 +57,14 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 - Windows 10/11 64 bits  
 - Dados salvos localmente neste computador (sem nuvem)
 
+### Manual de entrega
+
+Documentação oficial (capa, prints, termo de aceite):
+
+- Fonte: [`docs/manual/MANUAL_ENTREGA.md`](docs/manual/MANUAL_ENTREGA.md)
+- PDF: [`docs/manual/PainelUBS_Manual_Entrega_Oficial.pdf`](docs/manual/PainelUBS_Manual_Entrega_Oficial.pdf)
+- Regenerar: `npm run docs:manual`
+
 ## Como usar (Windows)
 
 ### Opção rápida — portátil (recomendado)
