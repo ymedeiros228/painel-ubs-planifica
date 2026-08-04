@@ -1,51 +1,37 @@
 PAINEL UBS PLANIFICA — Passagem Franca (MA)
-Versão 3.1.0
+Versão 3.1.0 · uso: Jonas / equipe UBS
 ============================================
 
-O que é
--------
-Aplicativo desktop para registro manual das ações das UBS
-(PlanificaSUS). Dados ficam salvos neste computador.
+Como usar (Portable)
+--------------------
+1. Extraia o ZIP numa pasta FIXA
+   Ex.: Documentos\PainelUBS
+   (não rode direto de Downloads)
+2. Abra: Painel UBS Planifica-3.1.0-Portable.exe
+3. Na Área de Trabalho aparece a pasta:
+   "Backup UBS Planifica"
+   — ela atualiza sozinha a cada alteração
 
-Novidades 3.1.0
----------------
-- Backup automático em arquivo JSON a cada alteração
-- Pasta na Área de Trabalho: "Backup UBS Planifica"
-  (atualiza sozinha a cada cadastro/edição/exclusão)
-- Arquivo JSON é a fonte da verdade (localStorage só espelha)
-- Indicador "Salvo às HH:MM" no topo
-- Tela de recuperação se o app abrir sem dados e houver backup
-- Cópia espelho também em Documentos\PainelUBSPlanifica\
-- No Portable, pasta de dados ao lado do .exe (painel-ubs-dados)
-- Botões: Exportar backup JSON, Importar backup,
-  Backup na Área de Trabalho, Pasta dos dados
-- Restauração dos registros recuperados da UBS ALTA LEITE (OT I)
+O que o app já faz por você
+--------------------------
+- Salva cada cadastro/edição automaticamente
+- Mostra "Salvo às HH:MM" no topo
+- Mantém cópia na Área de Trabalho + Documentos
+- Se abrir vazio e houver backup, oferece restaurar
+- Ctrl+S força um backup agora
+- No histórico: busca e Desfazer após excluir (8s)
 
-Como usar (portátil — sem instalar)
------------------------------------
-1. Extraia o ZIP em uma pasta FIXA (ex.: Documentos\PainelUBS)
-   — não rode direto da pasta Downloads / temporária
-2. Execute: Painel UBS Planifica-3.1.0-Portable.exe
-3. Na primeira abertura o app cria na Área de Trabalho:
-   pasta "Backup UBS Planifica" com painel-dados.json
-
-Requisitos
-----------
-Windows 10 ou 11 (64 bits)
-
-Backup e segurança
-------------------
-- Cada alteração atualiza:
-  1) Área de Trabalho\Backup UBS Planifica\painel-dados.json
-  2) Documentos\PainelUBSPlanifica\painel-dados.json
-  3) pasta interna do app
-- Se perder os dados: Dashboard → Importar backup →
-  escolha painel-dados.json da pasta da Área de Trabalho
-- Guarde uma cópia do JSON em pen drive / rede periodicamente
-- Menu Arquivo → Abrir Backup UBS Planifica (Área de Trabalho)…
+Se algo sumir
+-------------
+1. Veja se aparece a tela "Backup encontrado" → Restaurar
+2. Ou Dashboard → Importar → escolha
+   Área de Trabalho\Backup UBS Planifica\painel-dados.json
+   (ou painel-dados-ultimo-com-dados.json)
 
 Dicas
 -----
-- No Dashboard, use os filtros de UBS/OT para ver só o que importa
-- Os 12 eixos (OTs) e ações-modelo já vêm pré-carregados
-- Não apague a pasta "Backup UBS Planifica" da Área de Trabalho
+- Use o Dashboard para ver indicadores e exportar CSV
+- Guarde de vez em quando uma cópia do JSON num pen drive
+- Não apague a pasta "Backup UBS Planifica"
+
+Requisitos: Windows 10/11 (64 bits)

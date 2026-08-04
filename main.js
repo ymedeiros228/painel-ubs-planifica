@@ -377,12 +377,19 @@ function registerIpc() {
     if (result.canceled || !result.filePaths || !result.filePaths[0]) {
       return { ok: false, canceled: true };
     }
-    const data = readJsonSafe(result.filePaths[0]);
+    const filePath = result.filePaths[0];
+    const data = readJsonSafe(filePath);
     if (!data || (!Array.isArray(data.actions) && !Array.isArray(data.ots))) {
       return { ok: false, error: 'Arquivo JSON inválido para este painel.' };
     }
-    const saved = saveSnapshot(data);
-    return { ok: true, data, ...saved };
+    // Só lê — a confirmação e a gravação ficam no renderer
+    return {
+      ok: true,
+      path: filePath,
+      data,
+      actionCount: snapshotActionCount(data),
+      otCount: Array.isArray(data.ots) ? data.ots.length : 0
+    };
   });
 }
 
