@@ -90,22 +90,22 @@ function ensureDesktopBackupFolder() {
     '',
     'Esta pasta é atualizada sozinha a cada alteração no app.',
     '',
-    'Arquivo principal: painel-dados.json',
-    'Cópia anterior:    painel-dados-anterior.json',
-    'Último com dados:  painel-dados-ultimo-com-dados.json',
+    'Arquivo principal:     painel-dados.json  (estado atual)',
+    'Último com dados:      painel-dados-ultimo-com-dados.json',
+    'Cópia anterior:        painel-dados-anterior.json',
     '',
     'Se o app abrir vazio:',
-    '1. Abra o Painel UBS Planifica',
-    '2. Se aparecer a tela “Backup encontrado”, clique em Restaurar',
-    '3. Ou no Dashboard use "Importar" e escolha um dos JSON desta pasta',
+    '1. Se aparecer “Backup encontrado”, clique em Restaurar',
+    '2. Ou Dashboard → Importar → prefira',
+    '   painel-dados-ultimo-com-dados.json',
     '',
-    'Também dá para copiar esta pasta inteira para pen drive / rede.',
+    'Mantenha o .exe e a pasta painel-ubs-dados juntos.',
+    'Pode copiar esta pasta inteira para pen drive.',
     ''
   ].join('\n');
   try {
-    if (!fs.existsSync(readmePath)) {
-      fs.writeFileSync(readmePath, readme, 'utf8');
-    }
+    // Sempre atualiza o LEIA-ME do backup (instruções mudam entre versões)
+    fs.writeFileSync(readmePath, readme, 'utf8');
   } catch (_) {}
   return dir;
 }
@@ -134,22 +134,6 @@ function writeJsonAtomic(filePath, data) {
 function snapshotActionCount(snap) {
   if (!snap || !Array.isArray(snap.actions)) return 0;
   return snap.actions.length;
-}
-
-function pickRichestSnapshot(candidates) {
-  let best = null;
-  let bestCount = -1;
-  for (const item of candidates) {
-    if (!item || !item.data) continue;
-    const count = snapshotActionCount(item.data);
-    const updated = Date.parse(item.data.updatedAt || 0) || 0;
-    const bestUpdated = best ? Date.parse(best.data.updatedAt || 0) || 0 : 0;
-    if (count > bestCount || (count === bestCount && updated >= bestUpdated)) {
-      best = item;
-      bestCount = count;
-    }
-  }
-  return best;
 }
 
 function collectCandidateSnapshots() {
@@ -199,10 +183,17 @@ function saveSnapshot(snapshot) {
 
   const primary = primaryDataPath();
   const prev = previousDataPath();
+  const incomingCount = snapshotActionCount(data);
+  const existingPrimary = readJsonSafe(primary);
+  const existingCount = snapshotActionCount(existingPrimary);
 
-  // Guarda a versão anterior antes de sobrescrever
+  // Guarda versão anterior só quando o estado atual ainda tem dados
+  // (evita que um "anterior" rico desfaça exclusões no próximo boot)
   try {
-    if (fs.existsSync(primary)) {
+    if (existingPrimary && existingCount > 0 && incomingCount > 0) {
+      fs.copyFileSync(primary, prev);
+    } else if (existingPrimary && existingCount > 0 && incomingCount === 0) {
+      // Apagou tudo de propósito: preserva o último estado com dados no "anterior"
       fs.copyFileSync(primary, prev);
     }
   } catch (err) {
@@ -212,6 +203,7 @@ function saveSnapshot(snapshot) {
   writeJsonAtomic(primary, data);
 
   try {
+    // Espelho acompanha o estado atual (inclusive vazio intencional)
     writeJsonAtomic(mirrorDataPath(), data);
   } catch (err) {
     console.error('Falha ao espelhar em Documentos:', err.message);
@@ -221,14 +213,16 @@ function saveSnapshot(snapshot) {
     ensureDesktopBackupFolder();
     const deskPrimary = desktopDataPath();
     const deskPrev = path.join(desktopBackupDir(), PREV_FILE);
-    if (fs.existsSync(deskPrimary)) {
+    const existingDesk = readJsonSafe(deskPrimary);
+    if (existingDesk && snapshotActionCount(existingDesk) > 0) {
       try {
         fs.copyFileSync(deskPrimary, deskPrev);
       } catch (_) {}
     }
+    // painel-dados.json da Área de Trabalho = mesmo estado do app
     writeJsonAtomic(deskPrimary, data);
-    // Mantém sempre a última cópia com dados (não sobrescreve com vazio)
-    if (snapshotActionCount(data) > 0) {
+    // Último com dados: nunca sobrescreve com vazio (recuperação manual)
+    if (incomingCount > 0) {
       writeJsonAtomic(desktopLastGoodPath(), data);
     }
   } catch (err) {
@@ -236,7 +230,9 @@ function saveSnapshot(snapshot) {
   }
 
   try {
-    writeJsonAtomic(dailyBackupPath(), data);
+    if (incomingCount > 0) {
+      writeJsonAtomic(dailyBackupPath(), data);
+    }
   } catch (err) {
     console.error('Falha no backup diário:', err.message);
   }
@@ -252,6 +248,29 @@ function saveSnapshot(snapshot) {
     actionCount: data.actions.length,
     otCount: data.ots.length
   };
+}
+
+let saveQueue = Promise.resolve();
+let pendingSaveSnapshot = null;
+function enqueueSaveSnapshot(snapshot) {
+  // Coalescing: várias alterações rápidas → grava só a mais recente
+  pendingSaveSnapshot = snapshot || {};
+  const job = saveQueue.then(() => {
+    const toSave = pendingSaveSnapshot;
+    pendingSaveSnapshot = null;
+    if (!toSave) return { ok: true, skipped: true };
+    try {
+      return saveSnapshot(toSave);
+    } catch (err) {
+      console.error('backup:save', err);
+      return { ok: false, error: String(err && err.message ? err.message : err) };
+    }
+  });
+  saveQueue = job.then(
+    () => undefined,
+    () => undefined
+  );
+  return job;
 }
 
 function getBackupInfo() {
@@ -278,14 +297,19 @@ function registerIpc() {
   ipcMain.handle('backup:getInfo', async () => getBackupInfo());
 
   ipcMain.handle('backup:load', async () => {
-    const best = pickRichestSnapshot(collectCandidateSnapshots());
-    if (!best) return { ok: false, data: null };
-    return {
-      ok: true,
-      source: best.label,
-      path: best.path,
-      data: best.data
-    };
+    // Fonte da verdade = arquivo principal. NÃO usa "mais rico"
+    // (isso desfazia exclusões ao reabrir o app).
+    const primaryPath = primaryDataPath();
+    const data = readJsonSafe(primaryPath);
+    if (data && (Array.isArray(data.actions) || Array.isArray(data.ots))) {
+      return {
+        ok: true,
+        source: 'principal',
+        path: primaryPath,
+        data
+      };
+    }
+    return { ok: false, data: null, empty: true };
   });
 
   ipcMain.handle('backup:probe', async () => {
@@ -297,6 +321,7 @@ function registerIpc() {
         otCount: Array.isArray(c.data.ots) ? c.data.ots.length : 0,
         updatedAt: c.data.updatedAt || null
       }))
+      .filter((c) => c.label !== 'principal') // recuperação = cópias auxiliares
       .sort((a, b) => {
         if (b.actionCount !== a.actionCount) return b.actionCount - a.actionCount;
         return (Date.parse(b.updatedAt || 0) || 0) - (Date.parse(a.updatedAt || 0) || 0);
@@ -322,11 +347,19 @@ function registerIpc() {
   });
 
   ipcMain.handle('backup:save', async (_event, snapshot) => {
+    return enqueueSaveSnapshot(snapshot || {});
+  });
+
+  ipcMain.on('backup:saveSync', (event, snapshot) => {
     try {
-      return saveSnapshot(snapshot || {});
+      // Descarta pendências assíncronas obsoletas; o fechamento manda o estado final
+      pendingSaveSnapshot = null;
+      event.returnValue = saveSnapshot(snapshot || {});
     } catch (err) {
-      console.error('backup:save', err);
-      return { ok: false, error: String(err && err.message ? err.message : err) };
+      event.returnValue = {
+        ok: false,
+        error: String(err && err.message ? err.message : err)
+      };
     }
   });
 
@@ -497,7 +530,7 @@ function buildMenu() {
               message: 'Painel UBS Planifica',
               detail:
                 'Registro manual de ações das UBS — PlanificaSUS\nPassagem Franca (MA)\n\n' +
-                'Versão 3.1.0\n' +
+                'Versão 3.1.1\n' +
                 'Backup automático em arquivo JSON a cada alteração.\n\n' +
                 `Pasta de dados:\n${info.userData}\n\n` +
                 `Área de Trabalho:\n${info.desktopDir}\n\n` +

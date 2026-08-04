@@ -1,6 +1,6 @@
 # Painel UBS Planifica
 
-**Versão 3.1.0** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
+**Versão 3.1.1** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
 
 <p align="center">
   <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
@@ -52,19 +52,19 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 
 ## Download (Windows)
 
-**[Painel UBS Planifica 3.0.1 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.0.1)**
+**Release mais recente:** veja [Releases](https://github.com/ymedeiros228/painel-ubs-planifica/releases) (arquivo **Portable** `.exe`).
 
-- Arquivo: **Portable** (`.exe`) — não precisa instalar  
 - Windows 10/11 64 bits  
-- Dados salvos localmente neste computador  
+- Dados salvos localmente neste computador (sem nuvem)
 
 ## Como usar (Windows)
 
 ### Opção rápida — portátil (recomendado)
 
-1. Baixe o arquivo **`Painel UBS Planifica-3.0.1-Portable.exe`** (release / ZIP da versão)
-2. Execute — **não precisa instalar**
-3. Pode rodar de uma pasta ou pen drive
+1. Baixe o **Portable** da release (`Painel UBS Planifica-*-Portable.exe` / ZIP)
+2. Extraia numa pasta **fixa** (ex.: `Documentos\PainelUBS`) — não rode direto de Downloads
+3. Execute o `.exe` — **não precisa instalar**
+4. Mantenha o `.exe` e a pasta `painel-ubs-dados` juntos
 
 > Requisitos: **Windows 10 ou 11 (64 bits)**
 
@@ -122,6 +122,13 @@ Gera instalador/portátil em `dist/` (o alvo principal do builder é Windows).
 ```
 
 ---
+
+## Novidades 3.1.1
+
+- Arquivo JSON principal é a **fonte da verdade** (exclusões não voltam sozinhas ao reabrir)
+- Gravação em fila + salvamento ao fechar a janela (`Ctrl+S` / fechar)
+- Recuperação só com confirmação (cópias auxiliares / seed Alta Leite)
+- Pasta **Área de Trabalho\\Backup UBS Planifica\\** alinhada ao estado atual + `ultimo-com-dados` para resgate
 
 ## Novidades 3.1.0
 

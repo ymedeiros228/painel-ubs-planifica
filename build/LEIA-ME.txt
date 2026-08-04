@@ -1,5 +1,5 @@
 PAINEL UBS PLANIFICA — Passagem Franca (MA)
-Versão 3.1.0 · uso: Jonas / equipe UBS
+Versão 3.1.1 · uso: Jonas / equipe UBS
 ============================================
 
 Como usar (Portable)
@@ -7,31 +7,34 @@ Como usar (Portable)
 1. Extraia o ZIP numa pasta FIXA
    Ex.: Documentos\PainelUBS
    (não rode direto de Downloads)
-2. Abra: Painel UBS Planifica-3.1.0-Portable.exe
-3. Na Área de Trabalho aparece a pasta:
+2. Abra: Painel UBS Planifica-3.1.1-Portable.exe
+3. Mantenha o .exe e a pasta "painel-ubs-dados" juntos
+4. Na Área de Trabalho aparece a pasta:
    "Backup UBS Planifica"
    — ela atualiza sozinha a cada alteração
 
 O que o app já faz por você
 --------------------------
-- Salva cada cadastro/edição automaticamente
+- Salva cada cadastro/edição/exclusão automaticamente
 - Mostra "Salvo às HH:MM" no topo
 - Mantém cópia na Área de Trabalho + Documentos
-- Se abrir vazio e houver backup, oferece restaurar
+- Se abrir sem arquivo e houver backup, oferece restaurar
 - Ctrl+S força um backup agora
 - No histórico: busca e Desfazer após excluir (8s)
 
 Se algo sumir
 -------------
 1. Veja se aparece a tela "Backup encontrado" → Restaurar
-2. Ou Dashboard → Importar → escolha
-   Área de Trabalho\Backup UBS Planifica\painel-dados.json
-   (ou painel-dados-ultimo-com-dados.json)
+2. Ou Dashboard → Importar → escolha nesta ordem:
+   Área de Trabalho\Backup UBS Planifica\
+     painel-dados-ultimo-com-dados.json
+     (ou painel-dados.json / painel-dados-anterior.json)
 
 Dicas
 -----
 - Use o Dashboard para ver indicadores e exportar CSV
 - Guarde de vez em quando uma cópia do JSON num pen drive
 - Não apague a pasta "Backup UBS Planifica"
+- Exclusões ficam gravadas: o app não “traz de volta” sozinho
 
 Requisitos: Windows 10/11 (64 bits)

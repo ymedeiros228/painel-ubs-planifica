@@ -531,7 +531,7 @@
 <script>
 const OT_PREFIX = 'ot:';
 const ACTION_PREFIX = 'action:';
-const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.0';
+const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.1';
 const hasDesktopBackup = !!(window.painelApp && window.painelApp.backup);
 
 // Persistência local (app desktop / navegador) — localStorage + backup JSON no Electron
@@ -576,6 +576,14 @@ function formatTimeHm(isoOrDate){
     const d = isoOrDate instanceof Date ? isoOrDate : new Date(isoOrDate);
     if(Number.isNaN(d.getTime())) return '—';
     return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }catch(e){ return '—'; }
+}
+
+function formatDateTimeBr(isoOrDate){
+  try{
+    const d = isoOrDate instanceof Date ? isoOrDate : new Date(isoOrDate);
+    if(Number.isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }catch(e){ return '—'; }
 }
 
@@ -648,36 +656,41 @@ async function mirrorLocalStorageFromMemory(){
 }
 
 async function flushBackupNow(){
-  if(!hasDesktopBackup){
-    await mirrorLocalStorageFromMemory();
-    lastSavedAt = new Date();
-    saveState = 'ok';
-    updateSaveStatus();
-    updatePersistBanner();
-    return { ok: true, localOnly: true };
-  }
-  saveState = 'saving';
-  updateSaveStatus();
-  const snapshot = buildSnapshot();
-  try{
-    await mirrorLocalStorageFromMemory();
-    const res = await window.painelApp.backup.save(snapshot);
-    if(res && res.ok){
-      lastBackupInfo = res;
-      lastSavedAt = res.updatedAt ? new Date(res.updatedAt) : new Date();
+  const run = async () => {
+    if(!hasDesktopBackup){
+      await mirrorLocalStorageFromMemory();
+      lastSavedAt = new Date();
       saveState = 'ok';
-    } else {
-      saveState = 'err';
+      updateSaveStatus();
+      updatePersistBanner();
+      return { ok: true, localOnly: true };
     }
+    saveState = 'saving';
     updateSaveStatus();
-    updatePersistBanner();
-    return res;
-  }catch(e){
-    console.error('flushBackupNow', e);
-    saveState = 'err';
-    updateSaveStatus();
-    return null;
-  }
+    const snapshot = buildSnapshot();
+    try{
+      await mirrorLocalStorageFromMemory();
+      const res = await window.painelApp.backup.save(snapshot);
+      if(res && res.ok){
+        lastBackupInfo = res;
+        lastSavedAt = res.updatedAt ? new Date(res.updatedAt) : new Date();
+        saveState = 'ok';
+      } else {
+        saveState = 'err';
+      }
+      updateSaveStatus();
+      updatePersistBanner();
+      return res;
+    }catch(e){
+      console.error('flushBackupNow', e);
+      saveState = 'err';
+      updateSaveStatus();
+      return null;
+    }
+  };
+  // Fila: nunca duas gravações em paralelo
+  persistInFlight = Promise.resolve(persistInFlight).then(run, run);
+  return persistInFlight;
 }
 
 function scheduleBackup(){
@@ -689,7 +702,7 @@ function scheduleBackup(){
   persistTimer = setTimeout(() => {
     persistTimer = null;
     persistInFlight = flushBackupNow();
-  }, 80);
+  }, 120);
 }
 
 async function safeSet(key, value, shared=false){
@@ -790,12 +803,14 @@ otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
 otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
 
 async function seedDefaultOts(){
-  if(ots.length > 0) return; // only seed on a truly empty board
+  // Só preenche eixos se a lista estiver vazia. Não grava sozinho —
+  // finishLoadUI / scheduleBackup cuidam da persistência (evita corrida no boot).
+  if(ots.length > 0) return false;
   for(const entry of OT_BANK){
     const key = OT_PREFIX + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    await safeSet(key, entry.fullLabel, false);
     ots.push({key, name: entry.fullLabel});
   }
+  return true;
 }
 
 function renderOtList(){
@@ -2004,9 +2019,9 @@ function showRecoverModal(candidate){
     }
     pendingRecover = candidate;
     const n = candidate.actionCount || 0;
-    const when = candidate.updatedAt ? formatTimeHm(candidate.updatedAt) : null;
+    const when = candidate.updatedAt ? formatDateTimeBr(candidate.updatedAt) : null;
     body.textContent = n > 0
-      ? `Encontramos um backup com ${n} ação(ões)${when ? ' (salvo por volta de ' + when + ')' : ''}. Deseja restaurar?`
+      ? `Encontramos um backup com ${n} ação(ões)${when ? ' (de ' + when + ')' : ''}. Deseja restaurar?`
       : 'Encontramos um arquivo de backup. Deseja restaurar?';
     pathEl.textContent = candidate.path || '';
     modal.hidden = false;
@@ -2023,10 +2038,17 @@ function showRecoverModal(candidate){
   });
 }
 
-async function finishLoadUI(){
-  await seedDefaultOts();
+async function finishLoadUI(opts){
+  const options = opts || {};
+  let persist = !!options.persist;
+  const seededOts = await seedDefaultOts();
+  if(seededOts) persist = true;
   await mirrorLocalStorageFromMemory();
-  await flushBackupNow();
+  // Só regrava disco quando houve mudança real (migração / restauração / seed).
+  // Regravar em toda abertura podia reintroduzir cópia antiga após exclusões.
+  if(persist){
+    await flushBackupNow();
+  }
   renderOtList();
   renderAll();
   startNewCadastro();
@@ -2056,105 +2078,112 @@ function maybeShowFirstTip(){
   }
 }
 
+async function maybeRestoreFromProbe(){
+  if(!hasDesktopBackup) return false;
+  try{
+    const probe = await window.painelApp.backup.probe();
+    const best = probe && probe.best;
+    if(!(best && best.actionCount > 0)) return false;
+    const accept = await showRecoverModal(best);
+    if(!accept) return false;
+    const loaded = await window.painelApp.backup.loadFromPath(best.path);
+    if(!(loaded && loaded.ok && loaded.data)) return false;
+    applySnapshotToMemory(loaded.data);
+    dataSourceLabel = 'restauração (' + (best.label || 'backup') + ')';
+    if(loaded.data.updatedAt) lastSavedAt = new Date(loaded.data.updatedAt);
+    if(loaded.data.seedFlags && loaded.data.seedFlags.altaLeiteV1){
+      try{ localStorage.setItem('meta:seedAltaLeiteV1', '1'); }catch(e){}
+    }
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+async function maybeOfferAltaLeiteSeed(){
+  const SEED_FLAG = 'meta:seedAltaLeiteV1';
+  const DECLINED_FLAG = 'meta:seedAltaLeiteDeclinedV1';
+  let seedAlreadyApplied = false;
+  let seedDeclined = false;
+  try{ seedAlreadyApplied = localStorage.getItem(SEED_FLAG) === '1'; }catch(e){}
+  try{ seedDeclined = localStorage.getItem(DECLINED_FLAG) === '1'; }catch(e){}
+  if(seedAlreadyApplied || seedDeclined) return false;
+  if(actions.length > 0) return false;
+
+  const seed = await fetchSeedRecovered();
+  if(!(seed && Array.isArray(seed.actions) && seed.actions.length)) return false;
+
+  const acceptSeed = hasDesktopBackup
+    ? await showRecoverModal({
+        actionCount: seed.actions.length,
+        updatedAt: seed.exportedAt || null,
+        path: 'Backup recuperado incluso neste app (UBS ALTA LEITE)',
+        label: 'seed'
+      })
+    : true;
+
+  if(acceptSeed){
+    applySnapshotToMemory(seed);
+    dataSourceLabel = 'restauração (Alta Leite)';
+    try{ localStorage.setItem(SEED_FLAG, '1'); }catch(e){}
+    return true;
+  }
+  try{ localStorage.setItem(DECLINED_FLAG, '1'); }catch(e){}
+  return false;
+}
+
 async function loadAll(){
   let fileSnap = null;
   let fileMeta = null;
+  let primaryPresent = false;
 
-  // Desktop: JSON é a fonte da verdade
+  // Desktop: arquivo principal = fonte da verdade (mesmo se estiver vazio)
   if(hasDesktopBackup){
     try{
       const loaded = await window.painelApp.backup.load();
       if(loaded && loaded.ok && loaded.data){
         fileSnap = loaded.data;
         fileMeta = loaded;
+        primaryPresent = true;
       }
     }catch(e){ console.error(e); }
   }
 
-  const fileCount = snapshotActionCount(fileSnap);
-
-  if(hasDesktopBackup && fileCount > 0){
-    // Arquivo manda — não mescla localStorage (evita estado corrompido/antigo)
+  if(primaryPresent){
     applySnapshotToMemory(fileSnap);
-    dataSourceLabel = `arquivo (${fileMeta && fileMeta.source ? fileMeta.source : 'backup'})`;
+    dataSourceLabel = 'arquivo (' + (fileMeta && fileMeta.source ? fileMeta.source : 'principal') + ')';
     if(fileSnap.updatedAt) lastSavedAt = new Date(fileSnap.updatedAt);
     if(fileSnap.seedFlags && fileSnap.seedFlags.altaLeiteV1){
       try{ localStorage.setItem('meta:seedAltaLeiteV1', '1'); }catch(e){}
     }
-    await finishLoadUI();
+
+    // Principal existe (mesmo sem ações) = verdade. Não oferece probe automático
+    // (senão, após apagar tudo, o modal voltaria a cada abertura).
+    await finishLoadUI({ persist: false });
     return;
   }
 
-  // Sem arquivo rico: tenta localStorage só como fallback legado
+  // Sem arquivo principal: migrar localStorage legado ou recuperar
   await loadFromLocalStorageOnly();
-  const lsCount = actions.length;
-
-  if(lsCount > 0){
+  if(actions.length > 0){
     dataSourceLabel = 'armazenamento local (legado)';
+    await finishLoadUI({ persist: true });
+    return;
   }
 
-  // Se ainda vazio no desktop, oferece recuperação explícita do melhor candidato
-  if(hasDesktopBackup && actions.length === 0){
-    try{
-      const probe = await window.painelApp.backup.probe();
-      const best = probe && probe.best;
-      if(best && best.actionCount > 0){
-        const accept = await showRecoverModal(best);
-        if(accept){
-          const loaded = await window.painelApp.backup.loadFromPath(best.path);
-          if(loaded && loaded.ok && loaded.data){
-            applySnapshotToMemory(loaded.data);
-            dataSourceLabel = `restauração (${best.label})`;
-            if(loaded.data.updatedAt) lastSavedAt = new Date(loaded.data.updatedAt);
-            if(loaded.data.seedFlags && loaded.data.seedFlags.altaLeiteV1){
-              try{ localStorage.setItem('meta:seedAltaLeiteV1', '1'); }catch(e){}
-            }
-            await finishLoadUI();
-            return;
-          }
-        }
-      }
-    }catch(e){ console.error(e); }
+  if(await maybeRestoreFromProbe()){
+    await finishLoadUI({ persist: true });
+    return;
   }
 
-  // Seed Alta Leite (uma vez) se ainda não houver ações
-  const SEED_FLAG = 'meta:seedAltaLeiteV1';
-  let seedAlreadyApplied = false;
-  try{ seedAlreadyApplied = localStorage.getItem(SEED_FLAG) === '1'; }catch(e){}
-  if(fileSnap && fileSnap.seedFlags && fileSnap.seedFlags.altaLeiteV1) seedAlreadyApplied = true;
-
-  if(!seedAlreadyApplied && actions.length === 0){
-    const seed = await fetchSeedRecovered();
-    if(seed && Array.isArray(seed.actions) && seed.actions.length){
-      const acceptSeed = hasDesktopBackup
-        ? await showRecoverModal({
-            actionCount: seed.actions.length,
-            updatedAt: seed.exportedAt || null,
-            path: 'Backup recuperado incluso neste app (UBS ALTA LEITE)',
-            label: 'seed'
-          })
-        : true;
-      if(acceptSeed){
-        applySnapshotToMemory(seed);
-        dataSourceLabel = 'restauração (Alta Leite)';
-        try{ localStorage.setItem(SEED_FLAG, '1'); }catch(e){}
-      } else {
-        try{ localStorage.setItem(SEED_FLAG, '1'); }catch(e){}
-      }
-    }
-  } else if(!seedAlreadyApplied && actions.length > 0){
-    const seed = await fetchSeedRecovered();
-    if(seed && Array.isArray(seed.actions) && seed.actions.length){
-      const before = actions.length;
-      applySnapshotToMemory(mergeSnapshotsPreferRicher({ ots, actions }, seed));
-      if(actions.length > before){
-        dataSourceLabel = (dataSourceLabel ? dataSourceLabel + ' + ' : '') + 'restauração parcial';
-      }
-      try{ localStorage.setItem(SEED_FLAG, '1'); }catch(e){}
-    }
+  if(await maybeOfferAltaLeiteSeed()){
+    await finishLoadUI({ persist: true });
+    return;
   }
 
-  await finishLoadUI();
+  // Primeira abertura limpa: cria eixos padrão e grava arquivo principal
+  await finishLoadUI({ persist: true });
 }
 
 function updatePersistBanner(){
@@ -2267,7 +2296,15 @@ window.addEventListener('beforeunload', () => {
     clearTimeout(persistTimer);
     persistTimer = null;
   }
-  try{ if(hasDesktopBackup) window.painelApp.backup.save(buildSnapshot()); }catch(e){}
+  try{
+    if(hasDesktopBackup && window.painelApp.backup.saveSync){
+      const res = window.painelApp.backup.saveSync(buildSnapshot());
+      if(res && res.ok){
+        lastSavedAt = res.updatedAt ? new Date(res.updatedAt) : new Date();
+        saveState = 'ok';
+      }
+    }
+  }catch(e){}
 });
 
 loadAll();
