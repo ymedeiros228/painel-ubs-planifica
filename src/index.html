@@ -127,6 +127,31 @@
   .chip.status-pend{border-left-color:var(--alert);color:var(--alert);background:var(--alert-dim);}
   .chip.chip-wide{width:100%;white-space:normal;line-height:1.4;font-weight:500;}
   .empty-note{color:var(--stone);font-size:13.5px;padding:8px 2px;line-height:1.45;}
+  .edit-pick-panel{display:flex;flex-direction:column;gap:8px;padding:0 14px 12px;}
+  .edit-pick-panel .edit-search{
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
+    font-family:var(--body);background:#fff;color:var(--ink);width:100%;
+  }
+  .edit-pick-panel .edit-search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
+  .edit-pick-list{max-height:280px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  .edit-pick-item{
+    display:block;width:100%;text-align:left;border:none;border-bottom:1px solid var(--line);
+    background:#fff;padding:11px 12px;cursor:pointer;font-family:var(--body);
+  }
+  .edit-pick-item:last-child{border-bottom:none;}
+  .edit-pick-item:hover{background:var(--blue-tint);}
+  .edit-pick-item:focus{outline:2px solid var(--accent);outline-offset:-2px;}
+  .edit-pick-item .ep-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:4px;}
+  .edit-pick-item .ep-ubs{font-weight:750;font-size:13px;color:var(--navy-3);}
+  .edit-pick-item .ep-st{font-family:var(--mono);font-size:10px;font-weight:650;padding:2px 7px;border-radius:6px;text-transform:uppercase;}
+  .edit-pick-item .ep-st.concluida{background:var(--sage-dim);color:var(--sage);}
+  .edit-pick-item .ep-st.nao_concluida{background:var(--amber-dim);color:var(--amber);}
+  .edit-pick-item .ep-st.atrasada{background:var(--alert-dim);color:var(--alert);}
+  .edit-pick-item .ep-action{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+  .edit-pick-item .ep-ot{font-size:11.5px;color:var(--stone);margin-top:3px;}
+  .edit-pick-meta{font-size:12px;color:var(--stone);padding:0 2px;}
+  .nav-btn.active-mode{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .nav-btn.active-mode:hover{background:var(--navy-2);}
 
   .ot-manager-body{padding:14px 14px 16px;}
   .ot-add-row{display:flex;gap:8px;margin-bottom:10px;}
@@ -531,7 +556,7 @@
 <script>
 const OT_PREFIX = 'ot:';
 const ACTION_PREFIX = 'action:';
-const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.1';
+const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.2';
 const hasDesktopBackup = !!(window.painelApp && window.painelApp.backup);
 
 // Persistência local (app desktop / navegador) — localStorage + backup JSON no Electron
@@ -570,6 +595,20 @@ let lastBackupInfo = null;
 let lastSavedAt = null;
 let saveState = 'idle'; // idle | saving | ok | err
 let pendingRecover = null;
+let backupSchedulePaused = false; // true durante salvamentos em lote
+let editPickQuery = '';
+let editPickCache = [];
+let renderAllTimer = null;
+
+function setBackupSchedulePaused(paused){
+  backupSchedulePaused = !!paused;
+}
+
+function currentPageName(){
+  const active = document.querySelector('.page.active');
+  if(!active || !active.id) return 'cadastro';
+  return active.id.replace(/^page-/, '') || 'cadastro';
+}
 
 function formatTimeHm(isoOrDate){
   try{
@@ -694,6 +733,7 @@ async function flushBackupNow(){
 }
 
 function scheduleBackup(){
+  if(backupSchedulePaused) return;
   if(persistTimer) clearTimeout(persistTimer);
   if(hasDesktopBackup){
     saveState = 'saving';
@@ -702,13 +742,14 @@ function scheduleBackup(){
   persistTimer = setTimeout(() => {
     persistTimer = null;
     persistInFlight = flushBackupNow();
-  }, 120);
+  }, 180);
 }
 
 async function safeSet(key, value, shared=false){
   if(!hasStorage) return null;
   try{
-    // Espelho imediato no localStorage; a gravação oficial é o JSON (scheduleBackup)
+    // Espelho imediato no localStorage (síncrono); JSON formal via scheduleBackup
+    try{ localStorage.setItem(key, String(value)); }catch(_e){}
     const r = await window.storage.set(key, value, shared);
     scheduleBackup();
     return r;
@@ -721,6 +762,7 @@ async function safeGet(key, shared=false){
 async function safeDelete(key, shared=false){
   if(!hasStorage) return null;
   try{
+    try{ localStorage.removeItem(key); }catch(_e){}
     const r = await window.storage.delete(key, shared);
     scheduleBackup();
     return r;
@@ -796,11 +838,11 @@ async function addOt(name){
   await safeSet(key, name, false);
   ots.push({key, name});
   renderOtList();
-  renderAll();
+  scheduleRenderAll();
 }
 
-otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
-otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
+if(otAddBtn) otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
+if(otInput) otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
 
 async function seedDefaultOts(){
   // Só preenche eixos se a lista estiver vazia. Não grava sozinho —
@@ -814,20 +856,28 @@ async function seedDefaultOts(){
 }
 
 function renderOtList(){
+  if(!otListEl) return;
   otListEl.innerHTML = '';
   if(ots.length === 0){
     otListEl.innerHTML = '<p class="empty-note">Nenhum eixo cadastrado.</p>';
     return;
   }
+  // contagem por OT com um único passe (sem filter N vezes)
+  const countByOt = new Map();
+  actions.forEach(a => {
+    const k = a.otName || '';
+    countByOt.set(k, (countByOt.get(k) || 0) + 1);
+  });
+  const frag = document.createDocumentFragment();
   ots.forEach(o=>{
     const row = document.createElement('div');
     row.className = 'ot-item';
-    const n = actionsForOt(o.name).length;
+    const n = countByOt.get(o.name) || 0;
     const bank = findOtBankEntry(o.name);
     const code = bank ? bank.label : (o.name.split('—')[0] || 'OT').trim();
     const nameOnly = bank ? (bank.name || o.name) : o.name.replace(/^OT\s+[IVXLC]+\s*—\s*/i, '');
     row.innerHTML = `<div class="ot-main">
-        <span class="ot-code">${code}</span>
+        <span class="ot-code"></span>
         <span class="ot-name"></span>
         <span class="ot-meta">${n > 0 ? n + ' ações' : 'sem modelo'}</span>
       </div>
@@ -835,9 +885,11 @@ function renderOtList(){
         <button type="button" class="edit-ot" data-key="${o.key}" title="Editar eixo">✎</button>
         <button type="button" class="del-btn" data-key="${o.key}" title="Excluir eixo">✕</button>
       </div>`;
+    row.querySelector('.ot-code').textContent = code;
     row.querySelector('.ot-name').textContent = nameOnly || o.name;
-    otListEl.appendChild(row);
+    frag.appendChild(row);
   });
+  otListEl.appendChild(frag);
   otListEl.querySelectorAll('.del-btn').forEach(btn=>{
     btn.onclick = async () => {
       const key = btn.getAttribute('data-key');
@@ -845,7 +897,7 @@ function renderOtList(){
       await safeDelete(key, false);
       ots = ots.filter(o=>o.key!==key);
       renderOtList();
-      renderAll();
+      scheduleRenderAll();
     };
   });
   otListEl.querySelectorAll('.edit-ot').forEach(btn=>{
@@ -862,17 +914,23 @@ function renderOtList(){
         return;
       }
       const oldName = ot.name;
-      await safeSet(key, name, false);
-      ot.name = name;
-      for(const a of actions.filter(x => x.otKey === key || x.otName === oldName)){
-        a.otName = name;
-        a.otKey = key;
-        await safeSet(a.key, JSON.stringify({
-          ubs:a.ubs, otKey:a.otKey, otName:a.otName, action:a.action, status:a.status, date:a.date
-        }), false);
+      setBackupSchedulePaused(true);
+      try{
+        await safeSet(key, name, false);
+        ot.name = name;
+        for(const a of actions.filter(x => x.otKey === key || x.otName === oldName)){
+          a.otName = name;
+          a.otKey = key;
+          await safeSet(a.key, JSON.stringify({
+            ubs:a.ubs, otKey:a.otKey, otName:a.otName, action:a.action, status:a.status, date:a.date
+          }), false);
+        }
+      } finally {
+        setBackupSchedulePaused(false);
       }
+      await flushBackupNow();
       renderOtList();
-      renderAll();
+      scheduleRenderAll();
     };
   });
 }
@@ -923,7 +981,8 @@ function setChipRowMode(mode){
 }
 
 function updateNavButtons(){
-  btnBack.disabled = step === 'ubs' || step === 'idle' || step === 'edit_pick';
+  if(btnBack) btnBack.disabled = step === 'ubs' || step === 'idle' || step === 'edit_pick';
+  if(btnEditMode) btnEditMode.classList.toggle('active-mode', step === 'edit_pick');
 }
 
 function resetCadastro(clearChat=true){
@@ -932,6 +991,8 @@ function resetCadastro(clearChat=true){
   clearChips();
   if(clearChat) chatBody.innerHTML = '';
   step = 'ubs';
+  editPickQuery = '';
+  editPickCache = [];
   updateNavButtons();
 }
 
@@ -1208,27 +1269,33 @@ async function saveBatch(){
   const entries = Object.entries(draft.classifications || {});
   const classifiedSet = new Set(entries.map(([a]) => a));
 
-  for(const [actionText, status] of entries){
-    await upsertActionRecord({
-      ubs: draft.ubs,
-      otMatch,
-      actionText,
-      status
-    });
-  }
+  setBackupSchedulePaused(true);
+  try{
+    for(const [actionText, status] of entries){
+      await upsertActionRecord({
+        ubs: draft.ubs,
+        otMatch,
+        actionText,
+        status
+      });
+    }
 
-  // o que não ficou classificado neste salvamento volta a ser "não inserida" (remove do banco)
-  const toRemove = actions.filter(a =>
-    a.ubs === draft.ubs &&
-    a.otName === otMatch.name &&
-    !classifiedSet.has(a.action)
-  );
-  for(const a of toRemove){
-    try{ await safeDelete(a.key, false); }catch(e){}
+    // o que não ficou classificado neste salvamento volta a ser "não inserida" (remove do banco)
+    const toRemove = actions.filter(a =>
+      a.ubs === draft.ubs &&
+      a.otName === otMatch.name &&
+      !classifiedSet.has(a.action)
+    );
+    for(const a of toRemove){
+      try{ await safeDelete(a.key, false); }catch(e){}
+    }
+    actions = actions.filter(a => !(a.ubs === draft.ubs && a.otName === otMatch.name && !classifiedSet.has(a.action)));
+  } finally {
+    setBackupSchedulePaused(false);
   }
-  actions = actions.filter(a => !(a.ubs === draft.ubs && a.otName === otMatch.name && !classifiedSet.has(a.action)));
+  await flushBackupNow();
 
-  renderAll();
+  scheduleRenderAll();
   hideActionUI();
   clearChips();
   addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
@@ -1245,30 +1312,51 @@ async function saveBatch(){
   updateNavButtons();
 }
 
+function statusKeyFromLabel(labelOrKey){
+  if(!labelOrKey) return 'nao_concluida';
+  const s = String(labelOrKey).toLowerCase().trim();
+  if(s === 'concluida' || s.startsWith('conclu')) return 'concluida';
+  if(s === 'atrasada' || s.startsWith('atras')) return 'atrasada';
+  if(s === 'nao_concluida' || s.includes('não conclu') || s.includes('nao conclu')) return 'nao_concluida';
+  return 'nao_concluida';
+}
+
 function askStatusSingle(){
   step = 'status_single';
   hideActionUI();
-  addMsg(`Ação: "${draft.action}". Qual o status?`, 'bot');
+  const current = draft.editKey
+    ? (STATUS_LABEL[statusKeyFromLabel(draft.currentStatus)] || draft.currentStatus || null)
+    : null;
+  if(current){
+    addMsg(`Editando: "${draft.action}". Status atual: ${current}. Escolha o novo status.`, 'bot');
+  } else {
+    addMsg(`Ação: "${draft.action}". Qual o status?`, 'bot');
+  }
   clearChips();
   setChipRowMode('status');
-  addChip('Concluída', () => { draft.status = 'Concluída'; confirmEntry(); }, 'status-ok');
-  addChip('Não concluída', () => { draft.status = 'Não concluída'; confirmEntry(); }, 'status-partial');
-  addChip('Atrasada', () => { draft.status = 'Atrasada'; confirmEntry(); }, 'status-pend');
+  addChip('Concluída', () => { draft.status = 'concluida'; confirmEntry(); }, 'status-ok');
+  addChip('Não concluída', () => { draft.status = 'nao_concluida'; confirmEntry(); }, 'status-partial');
+  addChip('Atrasada', () => { draft.status = 'atrasada'; confirmEntry(); }, 'status-pend');
+  if(draft.editKey){
+    addChip('Cancelar edição', () => { addMsg('Edição cancelada.', 'bot'); startNewCadastro(); });
+  }
   updateNavButtons();
 }
 
 function confirmEntry(){
   step = 'confirm';
-  addMsg(`Confirma? UBS: ${draft.ubs} | OT: ${draft.otName} | Ação: "${draft.action}" | Status: ${draft.status}`, 'bot');
+  const statusLabel = STATUS_LABEL[statusKeyFromLabel(draft.status)] || draft.status;
+  addMsg(`Confirma? UBS: ${draft.ubs} | OT: ${draft.otName} | Ação: "${draft.action}" | Status: ${statusLabel}`, 'bot');
   clearChips();
-  addChip('Salvar', () => saveEntry());
+  setChipRowMode('status');
+  addChip('Salvar', () => { saveEntry(); }, 'status-ok');
   addChip('Cancelar', () => { addMsg('Cancelado.', 'bot'); startNewCadastro(); });
   updateNavButtons();
 }
 
 async function saveEntry(){
   const otMatch = await ensureOtMatch(draft.otName);
-  const status = draft.status === 'Concluída' ? 'concluida' : (draft.status === 'Atrasada' ? 'atrasada' : 'nao_concluida');
+  const status = statusKeyFromLabel(draft.status);
   await upsertActionRecord({
     ubs: draft.ubs,
     otMatch,
@@ -1276,11 +1364,13 @@ async function saveEntry(){
     status,
     editKey: draft.editKey
   });
-  renderAll();
+  scheduleRenderAll();
   hideActionUI();
-  addMsg(draft.editKey ? 'Registro atualizado.' : 'Ação salva.', 'bot');
+  addMsg(draft.editKey ? 'Registro atualizado e salvo.' : 'Ação salva.', 'bot');
   clearChips();
   addChip('Novo cadastro', () => startNewCadastro());
+  addChip('Editar outro', () => askEditPick());
+  addChip('Dashboard', () => showPage('dashboard'));
   step = 'idle';
   updateNavButtons();
 }
@@ -1292,15 +1382,22 @@ function handleGapItemClick(ubs, otName, item){
     ubs, otName,
     action: item.action,
     editKey: item.key || null,
+    currentStatus: item.statusKey || null,
     classifications: {},
     checked: {}
   };
-  addMsg(`Editando: "${item.action}" — ${otName} (${ubs}).`, 'bot');
+  addMsg(item.key
+    ? `Editando: "${item.action}" — ${otName} (${ubs}).`
+    : `Registrando: "${item.action}" — ${otName} (${ubs}).`, 'bot');
   askStatusSingle();
-  document.querySelector('.chat-body').scrollIntoView({behavior:'smooth', block:'center'});
+  chatBody.scrollTop = 0;
 }
 
 function startEditFromHistory(record){
+  if(!record || !record.key){
+    addMsg('Registro inválido para edição.', 'bot');
+    return;
+  }
   showPage('cadastro');
   resetCadastro(true);
   draft = {
@@ -1308,38 +1405,125 @@ function startEditFromHistory(record){
     otName: record.otName,
     action: record.action,
     editKey: record.key,
+    currentStatus: record.status,
     classifications: {},
     checked: {}
   };
-  addMsg(`Editando registro: "${record.action}" (${record.ubs}). Escolha o novo status.`, 'bot');
+  addMsg(`Editando registro: "${record.action}" (${record.ubs}).`, 'bot');
   askStatusSingle();
-  document.querySelector('.chat-body').scrollIntoView({behavior:'smooth', block:'center'});
+  chatBody.scrollTop = 0;
+  try{ chatInput && chatInput.blur(); }catch(e){}
+}
+
+function renderEditPickList(){
+  const q = (editPickQuery || '').trim().toLowerCase();
+  let list = editPickCache;
+  if(q){
+    list = list.filter(a => {
+      const blob = [a.ubs, a.otName, a.action, STATUS_LABEL[a.status] || a.status]
+        .filter(Boolean).join(' ').toLowerCase();
+      return blob.includes(q);
+    });
+  }
+  const meta = document.getElementById('editPickMeta');
+  const listEl = document.getElementById('editPickList');
+  if(meta){
+    meta.textContent = list.length
+      ? `${list.length} registro(s)${q ? ' encontrados' : ' — toque em um para editar'}`
+      : (q ? 'Nenhum registro para esta busca.' : 'Nenhum cadastro no histórico.');
+  }
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  if(!list.length){
+    listEl.innerHTML = `<p class="empty-note" style="padding:12px;">Nada para editar${q ? ' com esse filtro' : ''}.</p>`;
+    return;
+  }
+  const max = 80;
+  const frag = document.createDocumentFragment();
+  list.slice(0, max).forEach(a => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'edit-pick-item';
+    btn.setAttribute('data-key', a.key);
+    const st = a.status || 'nao_concluida';
+    const stLabel = STATUS_LABEL[st] || st;
+    btn.innerHTML = `
+      <div class="ep-top">
+        <span class="ep-ubs"></span>
+        <span class="ep-st ${st}"></span>
+      </div>
+      <div class="ep-action"></div>
+      <div class="ep-ot"></div>
+    `;
+    btn.querySelector('.ep-ubs').textContent = a.ubs || '—';
+    btn.querySelector('.ep-st').textContent = stLabel;
+    btn.querySelector('.ep-action').textContent = a.action || '—';
+    btn.querySelector('.ep-ot').textContent = a.otName || '';
+    btn.onclick = () => startEditFromHistory(a);
+    frag.appendChild(btn);
+  });
+  listEl.appendChild(frag);
+  if(list.length > max){
+    const more = document.createElement('p');
+    more.className = 'empty-note';
+    more.style.padding = '10px 12px';
+    more.textContent = `Mostrando ${max} de ${list.length}. Use a busca para refinar.`;
+    listEl.appendChild(more);
+  }
 }
 
 function askEditPick(){
+  showPage('cadastro');
   step = 'edit_pick';
   hideActionUI();
   clearChips();
   chatBody.innerHTML = '';
+  editPickQuery = '';
+  editPickCache = [...actions].sort((a,b)=> new Date(b.date)-new Date(a.date));
+  updateNavButtons();
+
   if(actions.length === 0){
     addMsg('Não há cadastros no histórico para editar. Faça um novo cadastro primeiro.', 'bot');
     addChip('Novo cadastro', () => startNewCadastro());
-    updateNavButtons();
+    addChip('Dashboard', () => showPage('dashboard'));
     return;
   }
-  addMsg('Qual registro deseja editar? Escolha abaixo ou use Editar/Excluir na tabela do histórico.', 'bot');
-  const recent = [...actions].sort((a,b)=> new Date(b.date)-new Date(a.date)).slice(0,12);
-  recent.forEach(a=>{
-    const label = `${a.ubs} · ${STATUS_LABEL[a.status]||a.status} · ${a.action.slice(0,60)}${a.action.length>60?'…':''}`;
-    addChip(label, () => startEditFromHistory(a), 'chip-wide');
-  });
-  updateNavButtons();
+
+  addMsg('Escolha o registro que deseja editar. Use a busca se a lista for grande.', 'bot');
+  actionPanel.style.display = 'block';
+  actionPanel.innerHTML = `
+    <div class="edit-pick-panel">
+      <input type="search" class="edit-search" id="editPickSearch" placeholder="Buscar por UBS, OT, ação ou status…" autocomplete="off" />
+      <div class="edit-pick-meta" id="editPickMeta"></div>
+      <div class="edit-pick-list" id="editPickList"></div>
+    </div>
+  `;
+  renderEditPickList();
+  const search = document.getElementById('editPickSearch');
+  if(search){
+    search.value = '';
+    search.oninput = () => {
+      editPickQuery = search.value || '';
+      renderEditPickList();
+    };
+    setTimeout(() => { try{ search.focus(); }catch(e){} }, 30);
+  }
+  addChip('Cancelar', () => startNewCadastro());
+  addChip('Ir ao histórico', () => showPage('dashboard'));
 }
 
 function submitUserText(raw){
   const text = raw.trim();
   if(!text) return;
   addMsg(text, 'user');
+  if(step === 'edit_pick'){
+    editPickQuery = text;
+    const search = document.getElementById('editPickSearch');
+    if(search) search.value = text;
+    renderEditPickList();
+    addMsg('Filtrei a lista pelo que você digitou. Toque em um registro para editar.', 'bot');
+    return;
+  }
   if(step === 'ubs'){
     draft.ubs = text;
     askOt();
@@ -1359,26 +1543,22 @@ function submitUserText(raw){
     draft.checked[text] = true;
     draft.classifications[text] = draft.classifications[text] || null;
     addMsg(`Ação personalizada adicionada à lista: "${text}". Marque-a e classifique o status.`, 'bot');
-    // if no status yet, leave null until classified
     if(!draft.classifications[text]) delete draft.classifications[text];
     draft.checked[text] = true;
     renderActionChecklist(actionsForOt(draft.otName));
   } else if(step === 'status_single'){
-    const norm = text.toLowerCase();
-    if(norm.startsWith('conclu')) draft.status = 'Concluída';
-    else if(norm.startsWith('atras')) draft.status = 'Atrasada';
-    else draft.status = 'Não concluída';
+    draft.status = statusKeyFromLabel(text);
     confirmEntry();
   } else {
     addMsg('Use "Novo cadastro" para começar, ou "Editar" para alterar um registro.', 'bot');
   }
 }
 
-sendBtn.onclick = () => { submitUserText(chatInput.value); chatInput.value=''; };
-chatInput.addEventListener('keydown', e => { if(e.key==='Enter'){ submitUserText(chatInput.value); chatInput.value=''; }});
-btnNew.onclick = () => startNewCadastro();
-btnBack.onclick = () => goBack();
-btnEditMode.onclick = () => askEditPick();
+if(sendBtn) sendBtn.onclick = () => { submitUserText(chatInput.value); chatInput.value=''; };
+if(chatInput) chatInput.addEventListener('keydown', e => { if(e.key==='Enter'){ submitUserText(chatInput.value); chatInput.value=''; }});
+if(btnNew) btnNew.onclick = () => startNewCadastro();
+if(btnBack) btnBack.onclick = () => goBack();
+if(btnEditMode) btnEditMode.onclick = () => askEditPick();
 
 // ---------- aggregation helpers ----------
 function pct(done, total){ return total === 0 ? 0 : Math.round((done/total)*100); }
@@ -1457,15 +1637,29 @@ function onDashboardFilterChange(){
   renderTable();
 }
 
-function renderAll(){
-  renderUbsSelect();
-  renderOtFilterSelect();
-  updateFilterHint();
-  renderStats();
-  renderOtChart();
-  renderUbsChart();
-  renderUbsOtDetail();
-  renderTable();
+function scheduleRenderAll(){
+  if(renderAllTimer) clearTimeout(renderAllTimer);
+  renderAllTimer = setTimeout(() => {
+    renderAllTimer = null;
+    renderAll();
+  }, 40);
+}
+
+function renderAll(forceDashboard){
+  // Dashboard pesado só quando a aba está aberta (evita travar o cadastro)
+  const onDashboard = forceDashboard === true || currentPageName() === 'dashboard';
+  if(onDashboard){
+    renderUbsSelect();
+    renderOtFilterSelect();
+    updateFilterHint();
+    renderStats();
+    renderOtChart();
+    renderUbsChart();
+    renderUbsOtDetail();
+    renderTable();
+  }
+  updatePersistBanner();
+  updateSaveStatus();
 }
 
 function renderStats(){
@@ -1478,8 +1672,12 @@ function renderStats(){
   const naoConcluida = list.filter(a=>a.status==='nao_concluida').length;
   const atrasada = list.filter(a=>a.status==='atrasada').length;
 
-  // "Faltam no plano" respeita filtros de UBS/OT
-  const activeUbs = filterUbs ? [filterUbs] : [...ubsSet];
+  // Índice O(1) de ações registradas — evita .find em loop (fonte de lentidão)
+  const registeredCombo = new Set(
+    actions.map(a => a.ubs + '\0' + a.otName + '\0' + a.action)
+  );
+
+  const activeUbs = filterUbs ? [filterUbs] : (ubsSet.size ? [...ubsSet] : []);
   const otScope = filterOt
     ? ots.filter(o => o.name === filterOt)
     : ots;
@@ -1488,26 +1686,24 @@ function renderStats(){
     otScope.forEach(otRec=>{
       const entry = findOtBankEntry(otRec.name);
       if(!entry) return;
-      const registeredActionsForCombo = new Set(
-        actions.filter(a=>a.ubs===ubs && a.otName===otRec.name).map(a=>a.action)
-      );
       entry.actions.forEach(actionText=>{
-        if(!registeredActionsForCombo.has(actionText)) naoInserida++;
+        if(!registeredCombo.has(ubs + '\0' + otRec.name + '\0' + actionText)) naoInserida++;
       });
     });
   });
 
-  document.getElementById('statUbs').textContent = filterUbs
+  const el = (id) => document.getElementById(id);
+  if(el('statUbs')) el('statUbs').textContent = filterUbs
     ? ((list.length > 0 || naoInserida > 0) ? 1 : 0)
     : ubsSet.size;
-  document.getElementById('statOt').textContent = filterOt
+  if(el('statOt')) el('statOt').textContent = filterOt
     ? 1
     : (filterUbs ? Math.max(otSet.size, otScope.filter(o => findOtBankEntry(o.name)).length) : ots.length);
-  document.getElementById('statTotal').textContent = totalActions;
-  document.getElementById('statDone').textContent = done;
-  document.getElementById('statPartial').textContent = naoConcluida;
-  document.getElementById('statNaoInserida').textContent = naoInserida;
-  document.getElementById('statPend').textContent = atrasada;
+  if(el('statTotal')) el('statTotal').textContent = totalActions;
+  if(el('statDone')) el('statDone').textContent = done;
+  if(el('statPartial')) el('statPartial').textContent = naoConcluida;
+  if(el('statNaoInserida')) el('statNaoInserida').textContent = naoInserida;
+  if(el('statPend')) el('statPend').textContent = atrasada;
 }
 
 function renderOtChart(){
@@ -1580,17 +1776,24 @@ function classifyGapItem(match, actionText){
 
 function computeGapForUbs(ubs){
   const registered = actions.filter(a=>a.ubs===ubs);
+  // mapa O(1): otName + action -> record
+  const byOtAction = new Map();
+  registered.forEach(r => {
+    byOtAction.set(r.otName + '\0' + r.action, r);
+  });
   const groups = [];
   const seenOtNames = new Set();
   OT_BANK.forEach(entry=>{
     // only include OTs that are still registered in the manager (user may have deleted one)
     if(!ots.some(o=>o.name===entry.fullLabel)) return;
     seenOtNames.add(entry.fullLabel);
+    const covered = new Set();
     const items = entry.actions.map(actionText=>{
-      const match = registered.find(r=>r.otName===entry.fullLabel && r.action===actionText);
+      const match = byOtAction.get(entry.fullLabel + '\0' + actionText);
+      if(match) covered.add(actionText);
       return classifyGapItem(match, actionText);
     });
-    registered.filter(r=>r.otName===entry.fullLabel && !entry.actions.includes(r.action))
+    registered.filter(r=>r.otName===entry.fullLabel && !covered.has(r.action) && !entry.actions.includes(r.action))
       .forEach(r=> items.push(classifyGapItem(r, r.action)));
     groups.push({otLabel: entry.fullLabel, items});
   });
@@ -1698,7 +1901,7 @@ function renderUbsOtDetail(){
 
 function renderTable(){
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
+  if(!tbody) return;
   let list = [...filteredActions()].sort((a,b)=> new Date(b.date) - new Date(a.date));
   if(showOnlyPending) list = list.filter(a=>a.status!=='concluida');
   const q = (historyQuery || '').trim().toLowerCase();
@@ -1719,14 +1922,20 @@ function renderTable(){
     nao_concluida: `<span class="stamp partial">${ICO.warn}NÃO CONCLUÍDA</span>`,
     atrasada: `<span class="stamp pending">${ICO.alert}ATRASADA</span>`
   };
-  list.forEach(a=>{
+  const frag = document.createDocumentFragment();
+  // Limite de render: histórico grande sem virtualização ainda precisa ser rápido
+  const maxRows = 300;
+  const visible = list.slice(0, maxRows);
+  visible.forEach(a=>{
     const tr = document.createElement('tr');
     const dt = new Date(a.date);
-    const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const dtStr = Number.isNaN(dt.getTime())
+      ? '—'
+      : (dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
     const stamp = STAMP_HTML[a.status] || STAMP_HTML.nao_concluida;
     tr.innerHTML = `
-      <td>${a.ubs}</td>
-      <td><span class="ot-tag">${a.otName}</span></td>
+      <td></td>
+      <td><span class="ot-tag"></span></td>
       <td></td>
       <td>${stamp}</td>
       <td class="date-cell">${dtStr}</td>
@@ -1737,9 +1946,18 @@ function renderTable(){
         </div>
       </td>
     `;
-    tr.children[2].textContent = a.action;
-    tbody.appendChild(tr);
+    tr.children[0].textContent = a.ubs || '';
+    tr.children[1].querySelector('.ot-tag').textContent = a.otName || '';
+    tr.children[2].textContent = a.action || '';
+    frag.appendChild(tr);
   });
+  tbody.innerHTML = '';
+  tbody.appendChild(frag);
+  if(list.length > maxRows){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="6" style="text-align:center;color:var(--stone);padding:14px;">Mostrando ${maxRows} de ${list.length}. Use a busca para filtrar.</td>`;
+    tbody.appendChild(tr);
+  }
   tbody.querySelectorAll('.del-btn-tbl').forEach(btn=>{
     btn.onclick = async () => {
       const key = btn.getAttribute('data-key');
@@ -1751,6 +1969,7 @@ function renderTable(){
       const key = btn.getAttribute('data-key');
       const rec = actions.find(a=>a.key===key);
       if(rec) startEditFromHistory(rec);
+      else alert('Registro não encontrado. Atualize a tela e tente de novo.');
     };
   });
 }
@@ -1784,7 +2003,7 @@ async function deleteActionWithUndo(key){
   if(!rec) return;
   actions = actions.filter(a => a.key !== key);
   try{ await safeDelete(key, false); }catch(e){}
-  renderAll();
+  scheduleRenderAll();
   showUndoToast('Cadastro excluído', async () => {
     const payload = {
       ubs: rec.ubs,
@@ -1798,7 +2017,7 @@ async function deleteActionWithUndo(key){
       actions.push({ key: rec.key, ...payload });
     }
     await safeSet(rec.key, JSON.stringify(payload), false);
-    renderAll();
+    scheduleRenderAll();
   });
 }
 
@@ -1821,7 +2040,7 @@ if(historySearchEl){
 function showPage(name){
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + name));
   document.querySelectorAll('.page-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-page') === name));
-  if(name === 'dashboard') renderAll();
+  if(name === 'dashboard') renderAll(true);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 document.querySelectorAll('.page-tab').forEach(tab=>{
@@ -2251,7 +2470,7 @@ function bindBackupButtons(){
       await flushBackupNow();
       dataSourceLabel = 'importação manual';
       renderOtList();
-      renderAll();
+      renderAll(true);
       updatePersistBanner();
       updateSaveStatus();
       alert(`Backup importado. Agora há ${actions.length} ação(ões).`);

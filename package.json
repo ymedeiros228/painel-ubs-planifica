@@ -1,6 +1,6 @@
 {
   "name": "painel-ubs-planifica",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Painel de Ações das UBS — PlanificaSUS Passagem Franca (MA)",
   "main": "main.js",
   "author": "UBS Passagem Franca",
@@ -10,7 +10,10 @@
     "start": "node scripts/start.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder --win",
-    "docs:manual": "node scripts/generate-manual-pdf.mjs"
+    "docs:manual": "node scripts/generate-manual-pdf.mjs",
+    "test:logic": "node scripts/logic-test.mjs",
+    "test:ui": "node scripts/smoke-ui.mjs --launch",
+    "test": "node scripts/logic-test.mjs"
   },
   "build": {
     "appId": "br.ma.passagemfranca.painelubsplanifica",
@@ -67,6 +70,7 @@
     "electron-builder": "^26.15.3",
     "marked": "^15.0.12",
     "playwright": "1.54",
-    "qrcode": "1.5"
+    "qrcode": "1.5",
+    "ws": "^8.21.2"
   }
 }

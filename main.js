@@ -530,7 +530,7 @@ function buildMenu() {
               message: 'Painel UBS Planifica',
               detail:
                 'Registro manual de ações das UBS — PlanificaSUS\nPassagem Franca (MA)\n\n' +
-                'Versão 3.1.1\n' +
+                'Versão 3.1.2\n' +
                 'Backup automático em arquivo JSON a cada alteração.\n\n' +
                 `Pasta de dados:\n${info.userData}\n\n` +
                 `Área de Trabalho:\n${info.desktopDir}\n\n` +
