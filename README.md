@@ -1,6 +1,6 @@
 # Painel UBS Planifica
 
-**Versão 3.0.1** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
+**Versão 3.1.0** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
 
 <p align="center">
   <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
@@ -16,7 +16,7 @@ Ferramenta **operacional de APS** (PlanificaSUS): as equipes registram e acompan
 - **Electron** + UI HTML/CSS/JS (app desktop instalável e **portable**)
 - Dashboard com **KPIs, filtros UBS/OT, gráficos e pendências** sincronizados
 - Cadastro guiado (UBS → eixo OT → ações → status em lote)
-- **Export CSV** (Excel, `;` + acentos) para backup e prestação de contas
+- **Export CSV** (Excel, `;` + acentos) e **backup JSON automático** a cada alteração
 - Banco de eixos/ações do PlanificaSUS pré-carregado; sem backend/cloud no caminho crítico
 
 > Ideal no portfólio junto ao [SIGAPS](https://github.com/ymedeiros228/sigaps): um sistema **web GIS territorial** + um painel **desktop do plano de ações**.
@@ -33,7 +33,7 @@ Sistema simples e visual para as equipes das Unidades Básicas de Saúde acompan
 - Ver indicadores, pendências e histórico no **Dashboard**
 - Exportar CSV para Excel (backup)
 
-Os dados ficam salvos **neste computador** (não há nuvem automática).
+Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos — sem nuvem automática).
 
 ---
 
@@ -113,6 +113,13 @@ Gera instalador/portátil em `dist/` (o alvo principal do builder é Windows).
 ```
 
 ---
+
+## Novidades 3.1.0
+
+- **Backup automático** em JSON a cada cadastro/edição/exclusão
+- Espelho em `Documentos\PainelUBSPlanifica\` e, no Portable, pasta `painel-ubs-dados` ao lado do `.exe`
+- Botões no Dashboard: exportar/importar backup JSON e abrir pasta dos dados
+- Restauração dos registros recuperados da **UBS ALTA LEITE** (OT I)
 
 ## Novidades 3.0.1
 

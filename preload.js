@@ -1,6 +1,15 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('painelApp', {
   isDesktop: true,
-  version: '3.0.1'
+  version: '3.1.0',
+  backup: {
+    getInfo: () => ipcRenderer.invoke('backup:getInfo'),
+    load: () => ipcRenderer.invoke('backup:load'),
+    save: (snapshot) => ipcRenderer.invoke('backup:save', snapshot),
+    openFolder: () => ipcRenderer.invoke('backup:openFolder'),
+    openDocuments: () => ipcRenderer.invoke('backup:openDocuments'),
+    exportCopy: () => ipcRenderer.invoke('backup:exportCopy'),
+    importFile: () => ipcRenderer.invoke('backup:importFile')
+  }
 });

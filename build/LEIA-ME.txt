@@ -1,5 +1,5 @@
 PAINEL UBS PLANIFICA — Passagem Franca (MA)
-Versão 3.0.1 (final)
+Versão 3.1.0
 ============================================
 
 O que é
@@ -7,39 +7,43 @@ O que é
 Aplicativo desktop para registro manual das ações das UBS
 (PlanificaSUS). Dados ficam salvos neste computador.
 
+Novidades 3.1.0
+---------------
+- Backup automático em arquivo JSON a cada alteração
+- Cópia espelho em Documentos\PainelUBSPlanifica\
+- No Portable, pasta de dados ao lado do .exe (painel-ubs-dados)
+- Botões: Exportar backup JSON, Importar backup, Pasta dos dados
+- Restauração dos registros recuperados da UBS ALTA LEITE (OT I)
+  que estavam no Local Storage do aparelho (demais UBS não
+  estavam nesse arquivo — re-cadastre se ainda faltarem)
+
 Novidades 3.0.1
 ---------------
 - Dashboard: filtros de UBS e OT acima dos indicadores
 - Indicadores, gráficos, pendências e histórico respeitam o filtro
-- Botões "Mostrar concluídas também" e "Mostrar só não concluídas"
-  juntos na mesma barra de filtros
 - Maior estabilidade na abertura (GPU/software raster)
-- Electron atualizado com correções de segurança
-- Dependências de empacotamento atualizadas (npm audit limpo)
-- Ícone do app incluído no pacote
-
-Novidades 2.0
--------------
-- Cadastro e Dashboard em páginas separadas
-- Multi-seleção de ações com status em lote
-- Paleta azul profissional
-- Exportação CSV compatível com Excel (acentos corretos)
-- Editar / Excluir no histórico e nos eixos (OTs)
 
 Como usar (portátil — sem instalar)
 -----------------------------------
-1. Extraia este ZIP em qualquer pasta (ou pen drive)
-2. Execute: Painel UBS Planifica-3.0.1-Portable.exe
-3. Não precisa instalar — pode rodar direto
+1. Extraia o ZIP em uma pasta FIXA (ex.: Documentos\PainelUBS)
+   — não rode direto da pasta Downloads / temporária
+2. Execute: Painel UBS Planifica-3.1.0-Portable.exe
+3. Os dados ficam em:
+   - (ao lado do exe) pasta painel-ubs-dados\
+   - e também em Documentos\PainelUBSPlanifica\painel-dados.json
 
 Requisitos
 ----------
 Windows 10 ou 11 (64 bits)
 
+Backup e segurança
+------------------
+- Cada cadastro/edição/exclusão grava o JSON automaticamente
+- Use "Exportar backup JSON" ou "Exportar CSV" no Dashboard
+- Guarde uma cópia do JSON em pen drive / rede periodicamente
+- Menu Arquivo → Abrir pasta de dados… / backup em Documentos…
+
 Dicas
 -----
-- No Dashboard, use os filtros de UBS/OT para ver só o que importa;
-  os cards do topo mudam conforme a seleção.
-- Use "Exportar CSV (Excel)" no Dashboard para backup.
-- Os 12 eixos (OTs) e ações-modelo já vêm pré-carregados.
-- Os dados ficam salvos neste computador entre sessões.
+- No Dashboard, use os filtros de UBS/OT para ver só o que importa
+- Os 12 eixos (OTs) e ações-modelo já vêm pré-carregados

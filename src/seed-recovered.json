@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "exportedAt": "2026-08-04T00:00:00.000Z",
+  "source": "recuperado-leveldb-usuario",
+  "ots": [
+    {
+      "key": "ot:1785698320320_0vfvt",
+      "name": "OT I — Macroprocesso dos Eventos Agudos"
+    },
+    {
+      "key": "ot:1785698320321_5lua2",
+      "name": "OT II — Macroprocesso Qualidade e Segurança do Paciente"
+    },
+    {
+      "key": "ot:1785698320321_q4koz",
+      "name": "OT III — Macroprocessos Básicos da APS"
+    },
+    {
+      "key": "ot:1785698320321_of9c2",
+      "name": "OT IV — Cuidados Paliativos I"
+    },
+    {
+      "key": "ot:1785698320321_2c7lq",
+      "name": "OT IX"
+    },
+    {
+      "key": "ot:1785698320321_7tj5y",
+      "name": "OT V — Resgate dos Macroprocessos"
+    },
+    {
+      "key": "ot:1785698320321_0un34",
+      "name": "OT VI — Cuidados Paliativos II"
+    },
+    {
+      "key": "ot:1785698320321_ronk8",
+      "name": "OT VII — Cuidados Paliativos III"
+    },
+    {
+      "key": "ot:1785698320321_xxe3z",
+      "name": "OT VIII — Macroprocesso de Atenção às Condições Crônicas"
+    },
+    {
+      "key": "ot:1785698320321_z4m6j",
+      "name": "OT X — Gestão do autocuidado e autocuidado apoiado"
+    },
+    {
+      "key": "ot:1785698320321_uml8b",
+      "name": "OT XI"
+    },
+    {
+      "key": "ot:1785698320321_tffq7",
+      "name": "OT XII"
+    }
+  ],
+  "actions": [
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Implantar e/ou Atualizar o Mapa Dinâmico do território em todas as UBS",
+      "status": "atrasada",
+      "date": "2026-08-04T13:33:17.219Z",
+      "key": "action:1785723562025_eg1n4"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Definir tutor e suplente UBS",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562030_i29ds"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Assegurar o horário protegido para educação permanente dos profisisonais",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562031_185gm"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Definir horário protegido da equipe",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562031_vivka"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Resgatar e/ou implantar os fluxos internos da unidade (para atendimento agendado, demanda espontânea e serviços específicos) desenhados, apropriados pela equipe e de conhecimento da população",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562032_049q1"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Elaborar Plano de Ação customizando com a equipe e monitorar durante as reuniões. (Toda UBS deve ter seu plano de ação).",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562032_54iqm"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Capacitar os profissionais da recepção sobre a identificação dos usuários com um evento agudo;",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562032_m65er"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Definir o guardião do plano de ação UBS",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562032_qa2w6"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Relação de profisisonais que compõe a ESF, ESF-SB, NASF e Equipes de Apoio, com dados sobre categoria profissional, formação específica em saúde da família, tempo de atuação na APS e na UBS, tipo de contrato, carag horária semanal e horário de atendimento.",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562032_twknb"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Avaliar os macroprocessos da APS e traçar estratégias para as ações que estão de forma parcial ou não implantados",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562032_yamvq"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Qualificar e/ou implantar o Acolhimento com Classificação de Risco na UBS",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_3smjo"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Implantar Time de Resposta Rápida (TRR) formalizado",
+      "status": "atrasada",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_8obhc"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Capacitar os profissionais e implantar o POP de manejo de hipoglicemia",
+      "status": "atrasada",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_ap34m"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Implantar sala de hidratação oral/venosa",
+      "status": "atrasada",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_b0il8"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Replicar a OT 1 para os profissionais da UBS",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_hr7rg"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Implantar e/ou Revisar a caixa de emergência e definir responsável para sua manutenção",
+      "status": "atrasada",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_ly6fm"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Inserir ações e atualizar plano de ação na plataforma e-planifica.",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.229Z",
+      "key": "action:1785723562033_rlcy4"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Implantar/implementar Fluxo com a RUE de forma pactuada, deixando esse fluxograma de fácil acesso com todas as equipes.",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_uw1nb"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Realizar curso sobre manejo da Dengue",
+      "status": "concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562033_xpp4e"
+    },
+    {
+      "ubs": "UBS ALTA LEITE",
+      "otKey": "ot:1785698320320_0vfvt",
+      "otName": "OT I — Macroprocesso dos Eventos Agudos",
+      "action": "Apresentar o fluxo da Rede de Urgência e Emergência para os profissionais da UBS (após a definição e pactuação da gestão)",
+      "status": "nao_concluida",
+      "date": "2026-08-04T13:33:17.230Z",
+      "key": "action:1785723562034_it4et"
+    }
+  ]
+}
