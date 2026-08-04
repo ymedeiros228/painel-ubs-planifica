@@ -141,9 +141,11 @@ function saveSnapshot(snapshot) {
   const data = {
     version: 1,
     updatedAt: new Date().toISOString(),
+    seedFlags: snapshot && snapshot.seedFlags ? snapshot.seedFlags : undefined,
     ots: Array.isArray(snapshot.ots) ? snapshot.ots : [],
     actions: Array.isArray(snapshot.actions) ? snapshot.actions : []
   };
+  if (!data.seedFlags) delete data.seedFlags;
 
   const primary = primaryDataPath();
   const prev = previousDataPath();

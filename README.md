@@ -70,12 +70,19 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 
 ### Backup dos dados
 
-No Dashboard, use:
+A cada alteração o app grava automaticamente:
 
-- **Exportar CSV (Excel)** — só o que foi cadastrado  
-- **Exportar completo** — inclui também o que ainda falta no plano-modelo  
+- `painel-dados.json` na pasta de dados do app  
+- cópia em **Documentos\\PainelUBSPlanifica\\**  
+- backup diário em `backups\\`
 
-Guarde o CSV em local seguro (pen drive, pasta da rede, e-mail, etc.).
+No Dashboard também há:
+
+- **Exportar backup JSON** — cópia completa para pen drive/rede  
+- **Importar backup** — restaura a partir de um JSON  
+- **Exportar CSV (Excel)** — planilha para Excel  
+
+Guarde o JSON periodicamente em local seguro.
 
 ---
 
