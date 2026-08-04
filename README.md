@@ -52,8 +52,9 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 
 ## Download (Windows)
 
-**Release mais recente:** veja [Releases](https://github.com/ymedeiros228/painel-ubs-planifica/releases) (arquivo **Portable** `.exe`).
+**[Painel UBS Planifica 3.1.1 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.1.1)**
 
+- Arquivo: **Portable** (`.exe`) ou **ZIP de entrega** (exe + LEIA-ME + Manual PDF)
 - Windows 10/11 64 bits  
 - Dados salvos localmente neste computador (sem nuvem)
 
