@@ -6,7 +6,23 @@
   <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
 </p>
 
+
+## Por que este projeto importa
+
+Ferramenta **operacional de APS** (PlanificaSUS): as equipes registram e acompanham o plano de ações das UBS sem depender de planilha solta. Feita para rodar **offline no desktop Windows** (dados só na máquina — sem nuvem de pacientes).
+
+### Destaques técnicos
+
+- **Electron** + UI HTML/CSS/JS (app desktop instalável e **portable**)
+- Dashboard com **KPIs, filtros UBS/OT, gráficos e pendências** sincronizados
+- Cadastro guiado (UBS → eixo OT → ações → status em lote)
+- **Export CSV** (Excel, `;` + acentos) para backup e prestação de contas
+- Banco de eixos/ações do PlanificaSUS pré-carregado; sem backend/cloud no caminho crítico
+
+> Ideal no portfólio junto ao [SIGAPS](https://github.com/ymedeiros228/sigaps): um sistema **web GIS territorial** + um painel **desktop do plano de ações**.
+
 ---
+
 
 ## O que é
 
