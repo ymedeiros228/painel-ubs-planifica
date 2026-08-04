@@ -10,27 +10,21 @@ Aplicativo desktop para registro manual das ações das UBS
 Novidades 3.1.0
 ---------------
 - Backup automático em arquivo JSON a cada alteração
-- Cópia espelho em Documentos\PainelUBSPlanifica\
+- Pasta na Área de Trabalho: "Backup UBS Planifica"
+  (atualiza sozinha a cada cadastro/edição/exclusão)
+- Cópia espelho também em Documentos\PainelUBSPlanifica\
 - No Portable, pasta de dados ao lado do .exe (painel-ubs-dados)
-- Botões: Exportar backup JSON, Importar backup, Pasta dos dados
+- Botões: Exportar backup JSON, Importar backup,
+  Backup na Área de Trabalho, Pasta dos dados
 - Restauração dos registros recuperados da UBS ALTA LEITE (OT I)
-  que estavam no Local Storage do aparelho (demais UBS não
-  estavam nesse arquivo — re-cadastre se ainda faltarem)
-
-Novidades 3.0.1
----------------
-- Dashboard: filtros de UBS e OT acima dos indicadores
-- Indicadores, gráficos, pendências e histórico respeitam o filtro
-- Maior estabilidade na abertura (GPU/software raster)
 
 Como usar (portátil — sem instalar)
 -----------------------------------
 1. Extraia o ZIP em uma pasta FIXA (ex.: Documentos\PainelUBS)
    — não rode direto da pasta Downloads / temporária
 2. Execute: Painel UBS Planifica-3.1.0-Portable.exe
-3. Os dados ficam em:
-   - (ao lado do exe) pasta painel-ubs-dados\
-   - e também em Documentos\PainelUBSPlanifica\painel-dados.json
+3. Na primeira abertura o app cria na Área de Trabalho:
+   pasta "Backup UBS Planifica" com painel-dados.json
 
 Requisitos
 ----------
@@ -38,12 +32,17 @@ Windows 10 ou 11 (64 bits)
 
 Backup e segurança
 ------------------
-- Cada cadastro/edição/exclusão grava o JSON automaticamente
-- Use "Exportar backup JSON" ou "Exportar CSV" no Dashboard
+- Cada alteração atualiza:
+  1) Área de Trabalho\Backup UBS Planifica\painel-dados.json
+  2) Documentos\PainelUBSPlanifica\painel-dados.json
+  3) pasta interna do app
+- Se perder os dados: Dashboard → Importar backup →
+  escolha painel-dados.json da pasta da Área de Trabalho
 - Guarde uma cópia do JSON em pen drive / rede periodicamente
-- Menu Arquivo → Abrir pasta de dados… / backup em Documentos…
+- Menu Arquivo → Abrir Backup UBS Planifica (Área de Trabalho)…
 
 Dicas
 -----
 - No Dashboard, use os filtros de UBS/OT para ver só o que importa
 - Os 12 eixos (OTs) e ações-modelo já vêm pré-carregados
+- Não apague a pasta "Backup UBS Planifica" da Área de Trabalho

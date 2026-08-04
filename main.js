@@ -14,6 +14,8 @@ const APP_DIR_NAME = 'painel-ubs-planifica';
 const DATA_FILE = 'painel-dados.json';
 const PREV_FILE = 'painel-dados-anterior.json';
 const MIRROR_DIR_NAME = 'PainelUBSPlanifica';
+const DESKTOP_BACKUP_DIR_NAME = 'Backup UBS Planifica';
+const DESKTOP_README = 'LEIA-ME-BACKUP.txt';
 
 function isPortable() {
   return Boolean(process.env.PORTABLE_EXECUTABLE_DIR);
@@ -49,6 +51,10 @@ function documentsMirrorDir() {
   return path.join(docs, MIRROR_DIR_NAME);
 }
 
+function desktopBackupDir() {
+  return path.join(app.getPath('desktop'), DESKTOP_BACKUP_DIR_NAME);
+}
+
 function primaryDataPath() {
   return path.join(app.getPath('userData'), DATA_FILE);
 }
@@ -61,9 +67,42 @@ function mirrorDataPath() {
   return path.join(documentsMirrorDir(), DATA_FILE);
 }
 
+function desktopDataPath() {
+  return path.join(desktopBackupDir(), DATA_FILE);
+}
+
 function dailyBackupPath() {
   const day = new Date().toISOString().slice(0, 10);
   return path.join(app.getPath('userData'), 'backups', `painel-dados-${day}.json`);
+}
+
+function ensureDesktopBackupFolder() {
+  const dir = desktopBackupDir();
+  fs.mkdirSync(dir, { recursive: true });
+  const readmePath = path.join(dir, DESKTOP_README);
+  const readme = [
+    'BACKUP AUTOMÁTICO — Painel UBS Planifica',
+    '========================================',
+    '',
+    'Esta pasta é atualizada sozinha a cada alteração no app.',
+    '',
+    'Arquivo principal: painel-dados.json',
+    'Cópia anterior:    painel-dados-anterior.json',
+    '',
+    'Se o app abrir vazio:',
+    '1. Abra o Painel UBS Planifica',
+    '2. No Dashboard, use "Importar backup"',
+    '3. Escolha o arquivo painel-dados.json desta pasta',
+    '',
+    'Também dá para copiar esta pasta inteira para pen drive / rede.',
+    ''
+  ].join('\n');
+  try {
+    if (!fs.existsSync(readmePath)) {
+      fs.writeFileSync(readmePath, readme, 'utf8');
+    }
+  } catch (_) {}
+  return dir;
 }
 
 function readJsonSafe(filePath) {
@@ -113,6 +152,11 @@ function collectCandidateSnapshots() {
     { label: 'principal', path: primaryDataPath() },
     { label: 'anterior', path: previousDataPath() },
     { label: 'espelho-documentos', path: mirrorDataPath() },
+    { label: 'espelho-area-trabalho', path: desktopDataPath() },
+    {
+      label: 'espelho-area-trabalho-anterior',
+      path: path.join(desktopBackupDir(), PREV_FILE)
+    },
     { label: 'legado-appdata', path: path.join(legacyAppDataDir(), DATA_FILE) },
     { label: 'legado-espelho', path: path.join(legacyAppDataDir(), MIRROR_DIR_NAME, DATA_FILE) }
   ];
@@ -168,6 +212,20 @@ function saveSnapshot(snapshot) {
   }
 
   try {
+    ensureDesktopBackupFolder();
+    const deskPrimary = desktopDataPath();
+    const deskPrev = path.join(desktopBackupDir(), PREV_FILE);
+    if (fs.existsSync(deskPrimary)) {
+      try {
+        fs.copyFileSync(deskPrimary, deskPrev);
+      } catch (_) {}
+    }
+    writeJsonAtomic(deskPrimary, data);
+  } catch (err) {
+    console.error('Falha ao espelhar na Área de Trabalho:', err.message);
+  }
+
+  try {
     writeJsonAtomic(dailyBackupPath(), data);
   } catch (err) {
     console.error('Falha no backup diário:', err.message);
@@ -177,6 +235,8 @@ function saveSnapshot(snapshot) {
     ok: true,
     primary,
     mirror: mirrorDataPath(),
+    desktop: desktopDataPath(),
+    desktopDir: desktopBackupDir(),
     daily: dailyBackupPath(),
     updatedAt: data.updatedAt,
     actionCount: data.actions.length,
@@ -194,6 +254,8 @@ function getBackupInfo() {
     previous: previousDataPath(),
     mirror: mirrorDataPath(),
     documentsDir: documentsMirrorDir(),
+    desktop: desktopDataPath(),
+    desktopDir: desktopBackupDir(),
     legacyAppData: legacyAppDataDir(),
     exists: Boolean(snap),
     updatedAt: snap && snap.updatedAt ? snap.updatedAt : null,
@@ -235,6 +297,12 @@ function registerIpc() {
   ipcMain.handle('backup:openDocuments', async () => {
     const dir = documentsMirrorDir();
     fs.mkdirSync(dir, { recursive: true });
+    await shell.openPath(dir);
+    return { ok: true, path: dir };
+  });
+
+  ipcMain.handle('backup:openDesktop', async () => {
+    const dir = ensureDesktopBackupFolder();
     await shell.openPath(dir);
     return { ok: true, path: dir };
   });
@@ -334,6 +402,13 @@ function buildMenu() {
             await shell.openPath(dir);
           }
         },
+        {
+          label: 'Abrir Backup UBS Planifica (Área de Trabalho)…',
+          click: async () => {
+            const dir = ensureDesktopBackupFolder();
+            await shell.openPath(dir);
+          }
+        },
         { type: 'separator' },
         { role: 'quit', label: 'Sair' }
       ]
@@ -375,6 +450,7 @@ function buildMenu() {
                 'Versão 3.1.0\n' +
                 'Backup automático em arquivo JSON a cada alteração.\n\n' +
                 `Pasta de dados:\n${info.userData}\n\n` +
+                `Área de Trabalho:\n${info.desktopDir}\n\n` +
                 `Espelho em Documentos:\n${info.mirror}`
             });
           }
@@ -386,6 +462,11 @@ function buildMenu() {
 }
 
 app.whenReady().then(() => {
+  try {
+    ensureDesktopBackupFolder();
+  } catch (err) {
+    console.error('Falha ao criar pasta de backup na Área de Trabalho:', err.message);
+  }
   registerIpc();
   buildMenu();
   createWindow();

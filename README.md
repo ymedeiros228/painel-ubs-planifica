@@ -72,12 +72,14 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 
 A cada alteração o app grava automaticamente:
 
+- pasta **Área de Trabalho\\Backup UBS Planifica\\** (fácil de achar)  
 - `painel-dados.json` na pasta de dados do app  
 - cópia em **Documentos\\PainelUBSPlanifica\\**  
 - backup diário em `backups\\`
 
 No Dashboard também há:
 
+- **Backup na Área de Trabalho** — abre a pasta do backup  
 - **Exportar backup JSON** — cópia completa para pen drive/rede  
 - **Importar backup** — restaura a partir de um JSON  
 - **Exportar CSV (Excel)** — planilha para Excel  
@@ -124,6 +126,7 @@ Gera instalador/portátil em `dist/` (o alvo principal do builder é Windows).
 ## Novidades 3.1.0
 
 - **Backup automático** em JSON a cada cadastro/edição/exclusão
+- Pasta **Área de Trabalho\\Backup UBS Planifica\\** sempre atualizada
 - Espelho em `Documentos\PainelUBSPlanifica\` e, no Portable, pasta `painel-ubs-dados` ao lado do `.exe`
 - Botões no Dashboard: exportar/importar backup JSON e abrir pasta dos dados
 - Restauração dos registros recuperados da **UBS ALTA LEITE** (OT I)

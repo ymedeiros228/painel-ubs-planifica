@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('painelApp', {
     save: (snapshot) => ipcRenderer.invoke('backup:save', snapshot),
     openFolder: () => ipcRenderer.invoke('backup:openFolder'),
     openDocuments: () => ipcRenderer.invoke('backup:openDocuments'),
+    openDesktop: () => ipcRenderer.invoke('backup:openDesktop'),
     exportCopy: () => ipcRenderer.invoke('backup:exportCopy'),
     importFile: () => ipcRenderer.invoke('backup:importFile')
   }

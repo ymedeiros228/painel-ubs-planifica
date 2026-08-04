@@ -454,6 +454,7 @@
       <button class="export" id="exportFullBtn" title="Inclui também as não inseridas do plano-modelo">Exportar completo</button>
       <button class="export" id="backupExportBtn" title="Copia o backup JSON completo">Exportar backup JSON</button>
       <button class="export" id="backupImportBtn" title="Restaura a partir de um arquivo JSON">Importar backup</button>
+      <button class="export" id="backupDesktopBtn" title="Abre a pasta Backup UBS Planifica na Área de Trabalho">Backup na Área de Trabalho</button>
       <button class="export" id="backupFolderBtn" title="Abre a pasta onde os dados ficam salvos">Pasta dos dados</button>
     </div>
   </div>
@@ -463,7 +464,7 @@
   </table>
   <footer>
     <span class="dot" aria-hidden="true"></span>
-    <span id="footerPersistHint">Cada alteração gera backup automático em arquivo JSON (pasta do app + Documentos). Use também o CSV para Excel.</span>
+    <span id="footerPersistHint">Cada alteração atualiza o backup automático na Área de Trabalho (pasta “Backup UBS Planifica”), em Documentos e na pasta do app. Use Importar backup se precisar restaurar.</span>
   </footer>
   </section>
 </div>
@@ -1892,7 +1893,7 @@ function updatePersistBanner(){
   notice.innerHTML = `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/><circle cx="12" cy="12" r="9"/></svg>
     <span>${desktop
-      ? `App desktop v${APP_VERSION} — cada alteração é salva automaticamente em JSON (pasta do app e Documentos/PainelUBSPlanifica).${extra}`
+      ? `App desktop v${APP_VERSION} — cada alteração atualiza o backup na Área de Trabalho (pasta “Backup UBS Planifica”), em Documentos e na pasta do app.${extra}`
       : `Registros salvos neste computador (armazenamento local).${extra}`}</span>`;
 }
 
@@ -1900,6 +1901,7 @@ function bindBackupButtons(){
   const exportBtn = document.getElementById('backupExportBtn');
   const importBtn = document.getElementById('backupImportBtn');
   const folderBtn = document.getElementById('backupFolderBtn');
+  const desktopBtn = document.getElementById('backupDesktopBtn');
   if(exportBtn && !exportBtn._bound){
     exportBtn._bound = true;
     exportBtn.onclick = async () => {
@@ -1942,6 +1944,17 @@ function bindBackupButtons(){
       renderAll();
       updatePersistBanner();
       alert(`Backup importado. Agora há ${actions.length} ação(ões).`);
+    };
+  }
+  if(desktopBtn && !desktopBtn._bound){
+    desktopBtn._bound = true;
+    desktopBtn.onclick = async () => {
+      if(!hasDesktopBackup){
+        alert('Pasta de backup na Área de Trabalho disponível apenas no app desktop.');
+        return;
+      }
+      await flushBackupNow();
+      await window.painelApp.backup.openDesktop();
     };
   }
   if(folderBtn && !folderBtn._bound){
