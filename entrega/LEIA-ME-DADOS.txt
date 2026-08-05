@@ -1,0 +1,18 @@
+DADOS DA ENTREGA — Painel UBS Planifica 3.1.2
+=============================================
+
+Este pacote inclui o backup completo da sessão de 04/08/2026 (tarde),
+UBS ALTA LEITE — 46 ações (25 concluídas, 20 atrasadas, 1 não concluída).
+
+Arquivos:
+  painel-dados-ultimo-com-dados.zip   ← copie/guarde (pen drive)
+  backup-jonas-2026-08-04\            ← mesma pasta, descompactada
+
+Nada “sumiu” do zip: é o espelho íntegro da pasta Backup UBS Planifica.
+Três ações do modelo Planifica ainda não foram cadastradas (OT II/III);
+veja RESUMO.txt dentro da pasta/zip.
+
+Para não perder ao instalar a versão nova:
+  • Não apague a pasta painel-ubs-dados ao lado do .exe antigo
+  • Guarde também este zip / a pasta backup-jonas-2026-08-04
+  • Se o app abrir vazio: Importar → painel-dados-ultimo-com-dados.json

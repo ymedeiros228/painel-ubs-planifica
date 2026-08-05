@@ -1,12 +1,12 @@
-ENTREGA FINALIZADA — Painel UBS Planifica
+ENTREGA — Painel UBS Planifica
 ========================================
 
 Produto:   Painel UBS Planifica
-Versão:    3.1.1
+Versão:    3.1.2
 Cliente:   Jonas Almeida Medeiros (Enfermeiro APS)
 Município: Passagem Franca / MA
 Programa:  PlanificaSUS
-Data:      04/08/2026
+Data:      05/08/2026
 
 Pacote documental:
   docs/manual/MANUAL_ENTREGA.md
@@ -14,7 +14,13 @@ Pacote documental:
   docs/manual/screenshots/
   build/LEIA-ME.txt
 
+Pacote de dados (sessão 04/08/2026 — tarde):
+  entrega/painel-dados-ultimo-com-dados.zip
+  entrega/backup-jonas-2026-08-04/
+  entrega/LEIA-ME-DADOS.txt
+  → 46 ações UBS ALTA LEITE (não perder ao trocar o Portable)
+
 Desenvolvedor: Yuri Medeiros Bandeira
 Repositório:   https://github.com/ymedeiros228/painel-ubs-planifica
 
-Status: DOCUMENTAÇÃO DE ENTREGA PRONTA PARA ASSINATURA
+Status: DADOS DA TARDE EMPACOTADOS + APP 3.1.2 (PR #9)
