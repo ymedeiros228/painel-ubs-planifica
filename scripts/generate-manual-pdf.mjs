@@ -19,9 +19,9 @@ const manualDir = join(root, 'docs', 'manual');
 const input = join(manualDir, 'MANUAL_ENTREGA.md');
 const output = join(manualDir, 'PainelUBS_Manual_Entrega_Oficial.pdf');
 const REPO_URL = 'https://github.com/ymedeiros228/painel-ubs-planifica';
-const DOC_DATE = '04/08/2026';
-const DOC_DATE_LONG = '04 de agosto de 2026';
-const APP_VERSION = '3.1.1';
+const DOC_DATE = '05/08/2026';
+const DOC_DATE_LONG = '05 de agosto de 2026';
+const APP_VERSION = '3.1.2';
 
 mkdirSync(join(manualDir, 'assets'), { recursive: true });
 

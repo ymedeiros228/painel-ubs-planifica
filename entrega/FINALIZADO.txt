@@ -1,4 +1,4 @@
-ENTREGA — Painel UBS Planifica
+ENTREGA FINAL — Painel UBS Planifica
 ========================================
 
 Produto:   Painel UBS Planifica
@@ -18,9 +18,15 @@ Pacote de dados (sessão 04/08/2026 — tarde):
   entrega/painel-dados-ultimo-com-dados.zip
   entrega/backup-jonas-2026-08-04/
   entrega/LEIA-ME-DADOS.txt
-  → 46 ações UBS ALTA LEITE (não perder ao trocar o Portable)
+  → 46 ações UBS ALTA LEITE
+
+Portable / release:
+  Painel UBS Planifica-3.1.2-Portable.exe
+  PainelUBS-Planifica-3.1.2-Entrega.zip
+  (gerar com npm run dist após merge)
 
 Desenvolvedor: Yuri Medeiros Bandeira
 Repositório:   https://github.com/ymedeiros228/painel-ubs-planifica
+Release:       https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.1.2
 
-Status: DADOS DA TARDE EMPACOTADOS + APP 3.1.2 (PR #9)
+Status: PRONTO PARA ASSINATURA / ENTREGA 3.1.2

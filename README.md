@@ -1,6 +1,6 @@
 # Painel UBS Planifica
 
-**Versão 3.1.1** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
+**Versão 3.1.2** · App desktop para o registro das ações das UBS — **PlanificaSUS · Passagem Franca (MA)**
 
 <p align="center">
   <img src="docs/dashboard.png" alt="Dashboard do Painel UBS Planifica" width="900" />
@@ -60,12 +60,12 @@ Os dados ficam salvos **neste computador** (arquivo JSON + cópia em Documentos 
 
 ## Download (Windows)
 
-**[Painel UBS Planifica 3.1.1 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.1.1)**
+**[Painel UBS Planifica 3.1.2 — Release](https://github.com/ymedeiros228/painel-ubs-planifica/releases/tag/v3.1.2)**
 
 | Arquivo na release | Uso |
 |--------------------|-----|
-| `Painel.UBS.Planifica-3.1.1-Portable.exe` | App portable (recomendado) |
-| `PainelUBS-Planifica-3.1.1-Entrega.zip` | Pacote com exe + LEIA-ME + manual |
+| `Painel.UBS.Planifica-3.1.2-Portable.exe` | App portable (recomendado) |
+| `PainelUBS-Planifica-3.1.2-Entrega.zip` | Pacote com exe + LEIA-ME + manual |
 | `PainelUBS_Manual_Entrega_Oficial.pdf` | Manual de entrega |
 
 - Windows 10/11 64 bits  
@@ -145,12 +145,14 @@ Gera instalador/portátil em `dist/` (o alvo principal do builder é Windows).
 
 ---
 
-## Novidades 3.1.1
+## Novidades 3.1.2
 
-- Arquivo JSON principal é a **fonte da verdade** (exclusões não voltam sozinhas ao reabrir)
-- Gravação em fila + salvamento ao fechar a janela (`Ctrl+S` / fechar)
-- Recuperação só com confirmação (cópias auxiliares / seed Alta Leite)
-- Pasta **Área de Trabalho\\Backup UBS Planifica\\** alinhada ao estado atual + `ultimo-com-dados` para resgate
+- Botão **Editar** com lista pesquisável + fluxo de status claro
+- Canetinha dos eixos com **modal nativo** (Electron não tem `prompt`)
+- Desempenho: dashboard sob demanda, índices O(1), fila de save
+- Feedback real se o backup falhar; edição **preserva a data**; exclusão faz flush imediato
+- Pacote de dados Jonas (46 ações Alta Leite) incluso em `entrega/`
+- Mantém a integridade 3.1.1: JSON principal como fonte da verdade + pasta Backup na Área de Trabalho
 
 ## Novidades 3.1.0
 

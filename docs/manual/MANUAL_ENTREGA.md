@@ -20,7 +20,7 @@
 
 <div class="contract-banner">
 
-**Este documento constitui o Manual Técnico e o Termo de Entrega e Aceite** entre o desenvolvedor **Yuri Medeiros Bandeira** e o cliente **Jonas Almeida Medeiros** (Enfermeiro da APS), referente ao aplicativo desktop **Painel UBS Planifica** (PlanificaSUS — Passagem Franca/MA), versão **3.1.1**.
+**Este documento constitui o Manual Técnico e o Termo de Entrega e Aceite** entre o desenvolvedor **Yuri Medeiros Bandeira** e o cliente **Jonas Almeida Medeiros** (Enfermeiro da APS), referente ao aplicativo desktop **Painel UBS Planifica** (PlanificaSUS — Passagem Franca/MA), versão **3.1.2**.
 
 </div>
 
@@ -91,7 +91,7 @@ Este documento foi elaborado para **Jonas Almeida Medeiros**, enfermeiro da APS 
 
 <div class="flow-step">
 
-**Passo 1.** Baixe o pacote da versão **3.1.1** (arquivo Portable / ZIP).
+**Passo 1.** Baixe o pacote da versão **3.1.2** (arquivo Portable / ZIP).
 
 **Passo 2.** Extraia em uma pasta **fixa**, por exemplo:
 `Documentos\PainelUBS`
@@ -99,7 +99,7 @@ Este documento foi elaborado para **Jonas Almeida Medeiros**, enfermeiro da APS 
 **Importante:** não execute direto da pasta **Downloads** (o Windows pode limpar ou mover arquivos).
 
 **Passo 3.** Abra o arquivo:
-`Painel UBS Planifica-3.1.1-Portable.exe`
+`Painel UBS Planifica-3.1.2-Portable.exe`
 
 **Passo 4.** Mantenha juntos o `.exe` e a pasta `painel-ubs-dados` (criada automaticamente).
 
@@ -341,7 +341,7 @@ O painel foi desenhado para **uso interno** da APS de Passagem Franca/MA no cont
 | **Persistência** | Arquivo JSON + espelhos (userData, Documentos, Desktop) |
 | **Empacotamento** | electron-builder (NSIS + Portable Windows x64) |
 | **Sistema-alvo** | Windows 10/11 64 bits |
-| **Versão entregue** | **3.1.1** |
+| **Versão entregue** | **3.1.2** |
 
 ## 11.1 Repositório
 
@@ -369,8 +369,8 @@ Código-fonte do projeto: [github.com/ymedeiros228/painel-ubs-planifica](https:/
 | **Função** | Programador / responsável técnico |
 | **Cliente** | Jonas Almeida Medeiros — Enfermeiro APS |
 | **Município** | Passagem Franca — Maranhão |
-| **Data da entrega** | 04 de agosto de 2026 |
-| **Versão do sistema** | Painel UBS Planifica **3.1.1** |
+| **Data da entrega** | 05 de agosto de 2026 |
+| **Versão do sistema** | Painel UBS Planifica **3.1.2** |
 | **Repositório** | https://github.com/ymedeiros228/painel-ubs-planifica |
 
 ---
@@ -381,13 +381,13 @@ Código-fonte do projeto: [github.com/ymedeiros228/painel-ubs-planifica](https:/
 
 <div class="contract-banner">
 
-**TERMO DE ENTREGA E ACEITE — PAINEL UBS PLANIFICA** — Documento oficial que formaliza a entrega técnica da versão **3.1.1** e o recebimento pelo cliente abaixo identificado.
+**TERMO DE ENTREGA E ACEITE — PAINEL UBS PLANIFICA** — Documento oficial que formaliza a entrega técnica da versão **3.1.2** e o recebimento pelo cliente abaixo identificado.
 
 </div>
 
 ## 13.1 Declaração de entrega
 
-Declaro que o aplicativo **Painel UBS Planifica** — registro do plano de ações das UBS no âmbito do **PlanificaSUS**, município de **Passagem Franca — Maranhão**, versão **3.1.1**, foi desenvolvido, documentado e entregue em formato **Portable para Windows**, atendendo aos módulos descritos nas seções 2 a 12 deste manual, incluindo cadastro guiado, dashboard, histórico, exportações e backup automático em arquivo JSON.
+Declaro que o aplicativo **Painel UBS Planifica** — registro do plano de ações das UBS no âmbito do **PlanificaSUS**, município de **Passagem Franca — Maranhão**, versão **3.1.2**, foi desenvolvido, documentado e entregue em formato **Portable para Windows**, atendendo aos módulos descritos nas seções 2 a 12 deste manual, incluindo cadastro guiado, dashboard, histórico, exportações e backup automático em arquivo JSON.
 
 ## 13.2 Termo de recebimento
 
@@ -431,7 +431,7 @@ Secretaria Municipal de Saúde de Passagem Franca/MA
 | **Nome completo** | Yuri Medeiros Bandeira |
 | **Função** | Programador / Desenvolvedor do Painel UBS Planifica |
 | **Repositório** | https://github.com/ymedeiros228/painel-ubs-planifica |
-| **Data da entrega** | 04 de agosto de 2026 |
+| **Data da entrega** | 05 de agosto de 2026 |
 
 **Assinatura:**
 
@@ -453,10 +453,10 @@ PlanificaSUS · Passagem Franca/MA
 
 | Item | Detalhe |
 |------|---------|
-| **Validade** | Este termo vale como registro de entrega da versão 3.1.1 |
+| **Validade** | Este termo vale como registro de entrega da versão 3.1.2 |
 | **Backup** | A pasta Desktop **Backup UBS Planifica** faz parte da operação diária |
 | **Suporte** | Dúvidas de uso: seções 3 a 9 deste manual |
-| **Versão do documento** | 1.0 — 04/08/2026 |
+| **Versão do documento** | 1.0 — 05/08/2026 |
 
 </div>
 
