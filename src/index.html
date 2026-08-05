@@ -1414,13 +1414,15 @@ async function ensureOtMatch(otName){
 }
 
 async function upsertActionRecord({ubs, otMatch, actionText, status, editKey, date}){
+  const prev = editKey ? actions.find(a => a.key === editKey) : null;
   const record = {
     ubs,
     otKey: otMatch.key,
     otName: otMatch.name,
     action: actionText,
     status,
-    date: date || new Date().toISOString()
+    // Em edição, preserva a data original a menos que uma nova seja passada
+    date: date || (prev && prev.date) || new Date().toISOString()
   };
   let key = editKey;
   if(!key){
@@ -1463,12 +1465,17 @@ async function saveBatch(){
   } finally {
     setBackupSchedulePaused(false);
   }
-  await flushBackupNow();
+  const batchFlush = await flushBackupNow();
+  const batchOk = !!(batchFlush && batchFlush.ok);
 
   scheduleRenderAll();
   hideActionUI();
   clearChips();
-  addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
+  if(!batchOk){
+    addMsg(`${entries.length} ação(ões) atualizadas na tela, mas o backup em arquivo falhou. Tente Ctrl+S.`, 'bot');
+  } else {
+    addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
+  }
   addChip('Novo cadastro', () => startNewCadastro());
   addChip('Dashboard', () => showPage('dashboard'));
   addChip('Mesma UBS, outro OT', () => {
@@ -1532,19 +1539,34 @@ function confirmEntry(){
 async function saveEntry(){
   const otMatch = await ensureOtMatch(draft.otName);
   const status = statusKeyFromLabel(draft.status);
+  const prev = draft.editKey ? actions.find(a => a.key === draft.editKey) : null;
   await upsertActionRecord({
     ubs: draft.ubs,
     otMatch,
     actionText: draft.action,
     status,
-    editKey: draft.editKey
+    editKey: draft.editKey,
+    date: draft.date || (prev && prev.date) || undefined
   });
   // Garante mirror + status "Salvo às" mesmo se só houver localStorage
-  try{ await flushBackupNow(); }catch(_e){}
+  let flushRes = null;
+  let flushErr = null;
+  try{ flushRes = await flushBackupNow(); }catch(e){ flushErr = e; }
+  const flushOk = !flushErr && !!(flushRes && flushRes.ok);
   scheduleRenderAll();
   hideActionUI();
-  addMsg(draft.editKey ? 'Registro atualizado e salvo.' : 'Ação salva.', 'bot');
   clearChips();
+  if(!flushOk){
+    addMsg('O registro foi atualizado na tela, mas o backup em arquivo falhou. Tente Ctrl+S ou Dashboard → Exportar.', 'bot');
+    addChip('Tentar salvar de novo', () => {
+      flushBackupNow().then((res) => {
+        if(res && res.ok) addMsg('Backup gravado com sucesso.', 'bot');
+        else addMsg('Ainda não foi possível gravar o backup.', 'bot');
+      }).catch(() => addMsg('Ainda não foi possível gravar o backup.', 'bot'));
+    }, 'status-ok');
+  } else {
+    addMsg(draft.editKey ? 'Registro atualizado e salvo.' : 'Ação salva.', 'bot');
+  }
   addChip('Novo cadastro', () => startNewCadastro());
   addChip('Editar outro', () => askEditPick());
   addChip('Dashboard', () => showPage('dashboard'));
@@ -1583,6 +1605,7 @@ function startEditFromHistory(record){
     action: record.action,
     editKey: record.key,
     currentStatus: record.status,
+    date: record.date,
     classifications: {},
     checked: {}
   };
@@ -2180,6 +2203,8 @@ async function deleteActionWithUndo(key){
   if(!rec) return;
   actions = actions.filter(a => a.key !== key);
   try{ await safeDelete(key, false); }catch(e){}
+  // Persistência imediata: exclusão não pode ficar só no debounce
+  try{ await flushBackupNow(); }catch(_e){}
   scheduleRenderAll();
   showUndoToast('Cadastro excluído', async () => {
     const payload = {
@@ -2194,6 +2219,7 @@ async function deleteActionWithUndo(key){
       actions.push({ key: rec.key, ...payload });
     }
     await safeSet(rec.key, JSON.stringify(payload), false);
+    try{ await flushBackupNow(); }catch(_e){}
     scheduleRenderAll();
   });
 }
