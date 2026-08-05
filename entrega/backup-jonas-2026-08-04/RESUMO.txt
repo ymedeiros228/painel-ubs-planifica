@@ -1,0 +1,36 @@
+BACKUP JONAS — sessão 04/08/2026 (tarde)
+==========================================
+
+Fonte: pasta Backup UBS Planifica (zip enviado)
+Atualizado em: 2026-08-04T21:30:13.675Z
+UBS: UBS ALTA LEITE
+Total de ações: 46
+Eixos (ots) na lista: 12
+
+Por status:
+  concluida:     25
+  atrasada:      20
+  nao_concluida:  1
+
+Cobertura vs banco Planifica (OTs trabalhados):
+  OT I  — 20/20 (completo)
+  OT II — 6/7  (falta 1 no cadastro, não é perda do zip)
+  OT III — 12/14 (faltam 2 no cadastro, não é perda do zip)
+  OT IV — 8/8  (completo)
+
+Ações do modelo ainda NÃO cadastradas (trabalho pendente, não sumiram do backup):
+  OT II: Checar as questões disparadoras, que estão no Guia Orientador(Apendice 8 da pag. 62 a 66), sobre a Segurança do Paciente
+  OT III: Replicar a OT para os profissionais da UBS
+  OT III: Cadastrar 100% das pessoas e domicílios no e-SUS
+
+OTs sem nenhuma ação ainda: V, VI, VII, VIII, IX, X, XI, XII
+
+Como restaurar na versão nova:
+  1) Preferível: copiar esta pasta inteira para
+     Área de Trabalho\Backup UBS Planifica\
+     (substituindo os JSON) e abrir o app → Restaurar se pedir
+  2) Ou: Dashboard → Importar → painel-dados-ultimo-com-dados.json
+  3) Portable: manter painel-ubs-dados ao lado do .exe;
+     se pasta nova/vazia, use Importar com este JSON
+
+Arquivos neste pacote = espelho completo da pasta de backup.

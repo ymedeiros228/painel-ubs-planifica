@@ -84,6 +84,15 @@
   .modal-body{margin:0 0 10px;color:var(--ink-soft);font-size:14px;line-height:1.5;}
   .modal-path{margin:0 0 18px;font-family:var(--mono);font-size:11px;color:var(--stone);word-break:break-all;line-height:1.4;}
   .modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+  .modal-input-wrap{margin:0 0 16px;}
+  .modal-input-wrap label{display:block;font-size:12.5px;font-weight:700;color:var(--stone);margin:0 0 6px;}
+  .modal-input-wrap input{
+    width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:11px 12px;
+    font-size:14px;font-family:var(--body);background:#fff;color:var(--ink);
+  }
+  .modal-input-wrap input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
+  .modal-error{display:none;margin:-8px 0 12px;font-size:12.5px;color:var(--alert);font-weight:650;}
+  .modal-error.show{display:block;}
 
   .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;}
   @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
@@ -102,7 +111,7 @@
   .msg.bot{background:#fff;color:var(--ink-soft);align-self:flex-start;border:1px solid var(--line);border-bottom-left-radius:4px;}
   .msg.user{background:var(--navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
   .chat-input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:#EEF3FB;}
-  .chat-input input,.ot-add-row input,.detail-select select{
+  .chat-input input,.ot-add-row input,.detail-select select,.modal-input-wrap input{
     flex:1;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
     font-family:var(--body);background:#fff;color:var(--ink);
   }
@@ -127,6 +136,31 @@
   .chip.status-pend{border-left-color:var(--alert);color:var(--alert);background:var(--alert-dim);}
   .chip.chip-wide{width:100%;white-space:normal;line-height:1.4;font-weight:500;}
   .empty-note{color:var(--stone);font-size:13.5px;padding:8px 2px;line-height:1.45;}
+  .edit-pick-panel{display:flex;flex-direction:column;gap:8px;padding:0 14px 12px;}
+  .edit-pick-panel .edit-search{
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;
+    font-family:var(--body);background:#fff;color:var(--ink);width:100%;
+  }
+  .edit-pick-panel .edit-search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.18);}
+  .edit-pick-list{max-height:280px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  .edit-pick-item{
+    display:block;width:100%;text-align:left;border:none;border-bottom:1px solid var(--line);
+    background:#fff;padding:11px 12px;cursor:pointer;font-family:var(--body);
+  }
+  .edit-pick-item:last-child{border-bottom:none;}
+  .edit-pick-item:hover{background:var(--blue-tint);}
+  .edit-pick-item:focus{outline:2px solid var(--accent);outline-offset:-2px;}
+  .edit-pick-item .ep-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:4px;}
+  .edit-pick-item .ep-ubs{font-weight:750;font-size:13px;color:var(--navy-3);}
+  .edit-pick-item .ep-st{font-family:var(--mono);font-size:10px;font-weight:650;padding:2px 7px;border-radius:6px;text-transform:uppercase;}
+  .edit-pick-item .ep-st.concluida{background:var(--sage-dim);color:var(--sage);}
+  .edit-pick-item .ep-st.nao_concluida{background:var(--amber-dim);color:var(--amber);}
+  .edit-pick-item .ep-st.atrasada{background:var(--alert-dim);color:var(--alert);}
+  .edit-pick-item .ep-action{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+  .edit-pick-item .ep-ot{font-size:11.5px;color:var(--stone);margin-top:3px;}
+  .edit-pick-meta{font-size:12px;color:var(--stone);padding:0 2px;}
+  .nav-btn.active-mode{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .nav-btn.active-mode:hover{background:var(--navy-2);}
 
   .ot-manager-body{padding:14px 14px 16px;}
   .ot-add-row{display:flex;gap:8px;margin-bottom:10px;}
@@ -285,8 +319,18 @@
   .edit-btn,.del-btn-tbl{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 9px;cursor:pointer;font-weight:700;transition:background .15s var(--ease);}
   .edit-btn{color:var(--navy-2);} .edit-btn:hover{background:var(--blue-tint);}
   .del-btn-tbl{color:var(--alert);} .del-btn-tbl:hover{background:var(--alert-dim);}
-  .ot-item .ot-actions{display:flex;gap:2px;flex-shrink:0;}
-  .ot-item .edit-ot{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;font-weight:700;padding:2px 5px;}
+  .ot-item .ot-actions{display:flex;gap:4px;flex-shrink:0;align-items:center;}
+  .ot-item .edit-ot,.ot-item .del-btn{
+    background:#fff;border:1px solid var(--line);border-radius:8px;cursor:pointer;
+    width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;padding:0;line-height:1;transition:background .12s,border-color .12s,color .12s;
+  }
+  .ot-item .edit-ot{color:var(--navy-2);}
+  .ot-item .edit-ot:hover{background:var(--blue-tint);border-color:var(--accent);color:var(--navy-3);}
+  .ot-item .del-btn{color:var(--stone);}
+  .ot-item .del-btn:hover{color:var(--alert);border-color:#FCA5A5;background:var(--alert-dim);}
+  .ot-item .edit-ot:focus-visible,.ot-item .del-btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .ot-item .edit-ot svg,.ot-item .del-btn svg{width:15px;height:15px;pointer-events:none;}
 
   .top-nav{display:flex;gap:4px;margin:0 0 8px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-card);width:fit-content;flex-wrap:wrap;}
   .page-tab{border:none;background:transparent;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:750;font-family:var(--display);color:var(--stone);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s var(--ease),color .15s var(--ease);}
@@ -357,6 +401,23 @@
       <div class="modal-actions">
         <button type="button" class="nav-btn" id="recoverSkipBtn">Começar vazio</button>
         <button type="button" class="nav-btn primary" id="recoverApplyBtn">Restaurar backup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de texto (substitui window.prompt — NÃO existe no Electron) -->
+  <div id="promptModal" class="modal-backdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="promptTitle">
+      <h3 id="promptTitle">Editar</h3>
+      <p id="promptBody" class="modal-body"></p>
+      <div class="modal-input-wrap">
+        <label id="promptLabel" for="promptInput">Valor</label>
+        <input id="promptInput" type="text" autocomplete="off" />
+      </div>
+      <p id="promptError" class="modal-error" role="alert"></p>
+      <div class="modal-actions">
+        <button type="button" class="nav-btn" id="promptCancelBtn">Cancelar</button>
+        <button type="button" class="nav-btn primary" id="promptOkBtn">Salvar</button>
       </div>
     </div>
   </div>
@@ -437,7 +498,7 @@
       <select id="ubsGapOtFilter"><option value="">Todos</option></select>
     </div>
     <div class="filter-toggles">
-      <button type="button" class="toggle" id="gapShowDoneToggle" title="Incluir ações concluídas nas pendências">Incluir concluídas</button>
+      <button type="button" class="toggle" id="gapShowDoneToggle" title="Incluir ações concluídas nas pendências">Mostrar concluídas também</button>
       <button type="button" class="toggle" id="filterToggle" title="Mostrar só o que não está concluído no histórico">Só pendentes</button>
     </div>
   </div>
@@ -531,7 +592,7 @@
 <script>
 const OT_PREFIX = 'ot:';
 const ACTION_PREFIX = 'action:';
-const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.1';
+const APP_VERSION = (window.painelApp && window.painelApp.version) || '3.1.2';
 const hasDesktopBackup = !!(window.painelApp && window.painelApp.backup);
 
 // Persistência local (app desktop / navegador) — localStorage + backup JSON no Electron
@@ -570,6 +631,113 @@ let lastBackupInfo = null;
 let lastSavedAt = null;
 let saveState = 'idle'; // idle | saving | ok | err
 let pendingRecover = null;
+let backupSchedulePaused = false; // true durante salvamentos em lote
+let editPickQuery = '';
+let editPickCache = [];
+let renderAllTimer = null;
+let promptResolver = null;
+
+/** Electron NÃO implementa window.prompt — usamos modal HTML. */
+function appPrompt(opts){
+  const options = typeof opts === 'string' ? { message: opts } : (opts || {});
+  const title = options.title || 'Editar';
+  const message = options.message || '';
+  const label = options.label || 'Valor';
+  const defaultValue = options.defaultValue != null ? String(options.defaultValue) : '';
+  const okText = options.okText || 'Salvar';
+  const cancelText = options.cancelText || 'Cancelar';
+  const validate = typeof options.validate === 'function' ? options.validate : null;
+
+  return new Promise((resolve) => {
+    const modal = document.getElementById('promptModal');
+    const titleEl = document.getElementById('promptTitle');
+    const bodyEl = document.getElementById('promptBody');
+    const labelEl = document.getElementById('promptLabel');
+    const input = document.getElementById('promptInput');
+    const errEl = document.getElementById('promptError');
+    const okBtn = document.getElementById('promptOkBtn');
+    const cancelBtn = document.getElementById('promptCancelBtn');
+    if(!modal || !input || !okBtn || !cancelBtn){
+      // Fallback extremo (não deve ocorrer)
+      resolve(null);
+      return;
+    }
+
+    // Cancela prompt anterior se reentrante
+    if(promptResolver){
+      const prev = promptResolver;
+      promptResolver = null;
+      prev(null);
+    }
+    promptResolver = resolve;
+
+    titleEl.textContent = title;
+    bodyEl.textContent = message;
+    bodyEl.style.display = message ? '' : 'none';
+    labelEl.textContent = label;
+    input.value = defaultValue;
+    okBtn.textContent = okText;
+    cancelBtn.textContent = cancelText;
+    if(errEl){
+      errEl.textContent = '';
+      errEl.classList.remove('show');
+    }
+    modal.hidden = false;
+
+    const cleanup = (value) => {
+      modal.hidden = true;
+      input.onkeydown = null;
+      okBtn.onclick = null;
+      cancelBtn.onclick = null;
+      modal.onclick = null;
+      const res = promptResolver;
+      promptResolver = null;
+      if(res) res(value);
+    };
+
+    const trySubmit = () => {
+      const raw = input.value;
+      const trimmed = raw.trim();
+      if(validate){
+        const err = validate(trimmed, raw);
+        if(err){
+          if(errEl){
+            errEl.textContent = err;
+            errEl.classList.add('show');
+          }
+          input.focus();
+          input.select();
+          return;
+        }
+      }
+      cleanup(trimmed);
+    };
+
+    okBtn.onclick = (e) => { e.preventDefault(); trySubmit(); };
+    cancelBtn.onclick = (e) => { e.preventDefault(); cleanup(null); };
+    modal.onclick = (e) => { if(e.target === modal) cleanup(null); };
+    input.onkeydown = (e) => {
+      if(e.key === 'Enter'){ e.preventDefault(); trySubmit(); }
+      if(e.key === 'Escape'){ e.preventDefault(); cleanup(null); }
+    };
+    setTimeout(() => {
+      try{
+        input.focus();
+        input.select();
+      }catch(_e){}
+    }, 40);
+  });
+}
+
+function setBackupSchedulePaused(paused){
+  backupSchedulePaused = !!paused;
+}
+
+function currentPageName(){
+  const active = document.querySelector('.page.active');
+  if(!active || !active.id) return 'cadastro';
+  return active.id.replace(/^page-/, '') || 'cadastro';
+}
 
 function formatTimeHm(isoOrDate){
   try{
@@ -694,6 +862,7 @@ async function flushBackupNow(){
 }
 
 function scheduleBackup(){
+  if(backupSchedulePaused) return;
   if(persistTimer) clearTimeout(persistTimer);
   if(hasDesktopBackup){
     saveState = 'saving';
@@ -702,13 +871,14 @@ function scheduleBackup(){
   persistTimer = setTimeout(() => {
     persistTimer = null;
     persistInFlight = flushBackupNow();
-  }, 120);
+  }, 180);
 }
 
 async function safeSet(key, value, shared=false){
   if(!hasStorage) return null;
   try{
-    // Espelho imediato no localStorage; a gravação oficial é o JSON (scheduleBackup)
+    // Espelho imediato no localStorage (síncrono); JSON formal via scheduleBackup
+    try{ localStorage.setItem(key, String(value)); }catch(_e){}
     const r = await window.storage.set(key, value, shared);
     scheduleBackup();
     return r;
@@ -721,6 +891,7 @@ async function safeGet(key, shared=false){
 async function safeDelete(key, shared=false){
   if(!hasStorage) return null;
   try{
+    try{ localStorage.removeItem(key); }catch(_e){}
     const r = await window.storage.delete(key, shared);
     scheduleBackup();
     return r;
@@ -796,11 +967,11 @@ async function addOt(name){
   await safeSet(key, name, false);
   ots.push({key, name});
   renderOtList();
-  renderAll();
+  scheduleRenderAll();
 }
 
-otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
-otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
+if(otAddBtn) otAddBtn.onclick = () => { addOt(otInput.value); otInput.value=''; };
+if(otInput) otInput.addEventListener('keydown', e => { if(e.key==='Enter'){ addOt(otInput.value); otInput.value=''; }});
 
 async function seedDefaultOts(){
   // Só preenche eixos se a lista estiver vazia. Não grava sozinho —
@@ -814,47 +985,87 @@ async function seedDefaultOts(){
 }
 
 function renderOtList(){
+  if(!otListEl) return;
   otListEl.innerHTML = '';
   if(ots.length === 0){
     otListEl.innerHTML = '<p class="empty-note">Nenhum eixo cadastrado.</p>';
     return;
   }
+  // contagem por OT com um único passe (sem filter N vezes)
+  const countByOt = new Map();
+  actions.forEach(a => {
+    const k = a.otName || '';
+    countByOt.set(k, (countByOt.get(k) || 0) + 1);
+  });
+  const frag = document.createDocumentFragment();
   ots.forEach(o=>{
     const row = document.createElement('div');
     row.className = 'ot-item';
-    const n = actionsForOt(o.name).length;
+    const n = countByOt.get(o.name) || 0;
     const bank = findOtBankEntry(o.name);
     const code = bank ? bank.label : (o.name.split('—')[0] || 'OT').trim();
     const nameOnly = bank ? (bank.name || o.name) : o.name.replace(/^OT\s+[IVXLC]+\s*—\s*/i, '');
     row.innerHTML = `<div class="ot-main">
-        <span class="ot-code">${code}</span>
+        <span class="ot-code"></span>
         <span class="ot-name"></span>
         <span class="ot-meta">${n > 0 ? n + ' ações' : 'sem modelo'}</span>
       </div>
       <div class="ot-actions">
-        <button type="button" class="edit-ot" data-key="${o.key}" title="Editar eixo">✎</button>
-        <button type="button" class="del-btn" data-key="${o.key}" title="Excluir eixo">✕</button>
+        <button type="button" class="edit-ot" data-key="${o.key}" title="Editar nome do eixo" aria-label="Editar eixo ${code}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button type="button" class="del-btn" data-key="${o.key}" title="Excluir eixo" aria-label="Excluir eixo ${code}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
       </div>`;
+    row.querySelector('.ot-code').textContent = code;
     row.querySelector('.ot-name').textContent = nameOnly || o.name;
-    otListEl.appendChild(row);
+    frag.appendChild(row);
   });
+  otListEl.appendChild(frag);
+
   otListEl.querySelectorAll('.del-btn').forEach(btn=>{
-    btn.onclick = async () => {
+    btn.onclick = async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
       const key = btn.getAttribute('data-key');
-      if(!confirm('Excluir este eixo? Os cadastros de ações dele permanecem no histórico.')) return;
+      const ot = ots.find(o => o.key === key);
+      const label = ot ? ot.name : 'este eixo';
+      if(!confirm('Excluir o eixo?\n\n' + label + '\n\nOs cadastros de ações dele permanecem no histórico.')) return;
       await safeDelete(key, false);
       ots = ots.filter(o=>o.key!==key);
       renderOtList();
-      renderAll();
+      scheduleRenderAll();
     };
   });
+
   otListEl.querySelectorAll('.edit-ot').forEach(btn=>{
-    btn.onclick = async () => {
+    btn.onclick = async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
       const key = btn.getAttribute('data-key');
       const ot = ots.find(o=>o.key===key);
-      if(!ot) return;
-      const novo = prompt('Novo nome do eixo (OT):', ot.name);
-      if(novo == null) return;
+      if(!ot){
+        alert('Eixo não encontrado. Recarregue o painel e tente de novo.');
+        return;
+      }
+      // Nunca use window.prompt no Electron — não funciona
+      const novo = await appPrompt({
+        title: 'Editar eixo (OT)',
+        message: 'Altere o nome do eixo. Os cadastros ligados a este OT serão atualizados.',
+        label: 'Nome do eixo',
+        defaultValue: ot.name,
+        okText: 'Salvar nome',
+        validate: (trimmed) => {
+          if(!trimmed) return 'Informe um nome para o eixo.';
+          if(trimmed === ot.name) return null; // sem mudança: allow but handler exits
+          if(ots.some(o => o.key !== key && o.name.toLowerCase() === trimmed.toLowerCase())){
+            return 'Já existe um eixo com esse nome.';
+          }
+          return null;
+        }
+      });
+      if(novo == null) return; // cancelou
       const name = novo.trim();
       if(!name || name === ot.name) return;
       if(ots.some(o => o.key !== key && o.name.toLowerCase() === name.toLowerCase())){
@@ -862,17 +1073,29 @@ function renderOtList(){
         return;
       }
       const oldName = ot.name;
-      await safeSet(key, name, false);
-      ot.name = name;
-      for(const a of actions.filter(x => x.otKey === key || x.otName === oldName)){
-        a.otName = name;
-        a.otKey = key;
-        await safeSet(a.key, JSON.stringify({
-          ubs:a.ubs, otKey:a.otKey, otName:a.otName, action:a.action, status:a.status, date:a.date
-        }), false);
+      setBackupSchedulePaused(true);
+      try{
+        await safeSet(key, name, false);
+        ot.name = name;
+        for(const a of actions.filter(x => x.otKey === key || x.otName === oldName)){
+          a.otName = name;
+          a.otKey = key;
+          await safeSet(a.key, JSON.stringify({
+            ubs:a.ubs, otKey:a.otKey, otName:a.otName, action:a.action, status:a.status, date:a.date
+          }), false);
+        }
+      } finally {
+        setBackupSchedulePaused(false);
       }
+      await flushBackupNow();
       renderOtList();
-      renderAll();
+      scheduleRenderAll();
+      // Feedback no chat se estiver no cadastro
+      try{
+        if(currentPageName() === 'cadastro' && chatBody){
+          addMsg(`Eixo renomeado: "${oldName}" → "${name}".`, 'bot');
+        }
+      }catch(_e){}
     };
   });
 }
@@ -923,7 +1146,8 @@ function setChipRowMode(mode){
 }
 
 function updateNavButtons(){
-  btnBack.disabled = step === 'ubs' || step === 'idle' || step === 'edit_pick';
+  if(btnBack) btnBack.disabled = step === 'ubs' || step === 'idle' || step === 'edit_pick';
+  if(btnEditMode) btnEditMode.classList.toggle('active-mode', step === 'edit_pick');
 }
 
 function resetCadastro(clearChat=true){
@@ -932,6 +1156,8 @@ function resetCadastro(clearChat=true){
   clearChips();
   if(clearChat) chatBody.innerHTML = '';
   step = 'ubs';
+  editPickQuery = '';
+  editPickCache = [];
   updateNavButtons();
 }
 
@@ -1160,7 +1386,12 @@ function confirmBatch(){
   addMsg(lines, 'bot');
   clearChips();
   setChipRowMode('status');
-  addChip('Confirmar e salvar', () => saveBatch(), 'status-ok');
+  addChip('Confirmar e salvar', () => {
+    saveBatch().catch((err) => {
+      console.error('saveBatch', err);
+      addMsg('Não foi possível salvar o lote. Tente de novo.', 'bot');
+    });
+  }, 'status-ok');
   addChip('Voltar e ajustar', () => {
     step = 'action_select';
     clearChips();
@@ -1183,13 +1414,15 @@ async function ensureOtMatch(otName){
 }
 
 async function upsertActionRecord({ubs, otMatch, actionText, status, editKey, date}){
+  const prev = editKey ? actions.find(a => a.key === editKey) : null;
   const record = {
     ubs,
     otKey: otMatch.key,
     otName: otMatch.name,
     action: actionText,
     status,
-    date: date || new Date().toISOString()
+    // Em edição, preserva a data original a menos que uma nova seja passada
+    date: date || (prev && prev.date) || new Date().toISOString()
   };
   let key = editKey;
   if(!key){
@@ -1208,30 +1441,41 @@ async function saveBatch(){
   const entries = Object.entries(draft.classifications || {});
   const classifiedSet = new Set(entries.map(([a]) => a));
 
-  for(const [actionText, status] of entries){
-    await upsertActionRecord({
-      ubs: draft.ubs,
-      otMatch,
-      actionText,
-      status
-    });
-  }
+  setBackupSchedulePaused(true);
+  try{
+    for(const [actionText, status] of entries){
+      await upsertActionRecord({
+        ubs: draft.ubs,
+        otMatch,
+        actionText,
+        status
+      });
+    }
 
-  // o que não ficou classificado neste salvamento volta a ser "não inserida" (remove do banco)
-  const toRemove = actions.filter(a =>
-    a.ubs === draft.ubs &&
-    a.otName === otMatch.name &&
-    !classifiedSet.has(a.action)
-  );
-  for(const a of toRemove){
-    try{ await safeDelete(a.key, false); }catch(e){}
+    // o que não ficou classificado neste salvamento volta a ser "não inserida" (remove do banco)
+    const toRemove = actions.filter(a =>
+      a.ubs === draft.ubs &&
+      a.otName === otMatch.name &&
+      !classifiedSet.has(a.action)
+    );
+    for(const a of toRemove){
+      try{ await safeDelete(a.key, false); }catch(e){}
+    }
+    actions = actions.filter(a => !(a.ubs === draft.ubs && a.otName === otMatch.name && !classifiedSet.has(a.action)));
+  } finally {
+    setBackupSchedulePaused(false);
   }
-  actions = actions.filter(a => !(a.ubs === draft.ubs && a.otName === otMatch.name && !classifiedSet.has(a.action)));
+  const batchFlush = await flushBackupNow();
+  const batchOk = !!(batchFlush && batchFlush.ok);
 
-  renderAll();
+  scheduleRenderAll();
   hideActionUI();
   clearChips();
-  addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
+  if(!batchOk){
+    addMsg(`${entries.length} ação(ões) atualizadas na tela, mas o backup em arquivo falhou. Tente Ctrl+S.`, 'bot');
+  } else {
+    addMsg(`${entries.length} ação(ões) salvas. As demais deste OT/UBS ficam como Não inserida.`, 'bot');
+  }
   addChip('Novo cadastro', () => startNewCadastro());
   addChip('Dashboard', () => showPage('dashboard'));
   addChip('Mesma UBS, outro OT', () => {
@@ -1245,42 +1489,87 @@ async function saveBatch(){
   updateNavButtons();
 }
 
+function statusKeyFromLabel(labelOrKey){
+  if(!labelOrKey) return 'nao_concluida';
+  const s = String(labelOrKey).toLowerCase().trim();
+  if(s === 'concluida' || s.startsWith('conclu')) return 'concluida';
+  if(s === 'atrasada' || s.startsWith('atras')) return 'atrasada';
+  if(s === 'nao_concluida' || s.includes('não conclu') || s.includes('nao conclu')) return 'nao_concluida';
+  return 'nao_concluida';
+}
+
 function askStatusSingle(){
   step = 'status_single';
   hideActionUI();
-  addMsg(`Ação: "${draft.action}". Qual o status?`, 'bot');
+  const current = draft.editKey
+    ? (STATUS_LABEL[statusKeyFromLabel(draft.currentStatus)] || draft.currentStatus || null)
+    : null;
+  if(current){
+    addMsg(`Editando: "${draft.action}". Status atual: ${current}. Escolha o novo status.`, 'bot');
+  } else {
+    addMsg(`Ação: "${draft.action}". Qual o status?`, 'bot');
+  }
   clearChips();
   setChipRowMode('status');
-  addChip('Concluída', () => { draft.status = 'Concluída'; confirmEntry(); }, 'status-ok');
-  addChip('Não concluída', () => { draft.status = 'Não concluída'; confirmEntry(); }, 'status-partial');
-  addChip('Atrasada', () => { draft.status = 'Atrasada'; confirmEntry(); }, 'status-pend');
+  addChip('Concluída', () => { draft.status = 'concluida'; confirmEntry(); }, 'status-ok');
+  addChip('Não concluída', () => { draft.status = 'nao_concluida'; confirmEntry(); }, 'status-partial');
+  addChip('Atrasada', () => { draft.status = 'atrasada'; confirmEntry(); }, 'status-pend');
+  if(draft.editKey){
+    addChip('Cancelar edição', () => { addMsg('Edição cancelada.', 'bot'); startNewCadastro(); });
+  }
   updateNavButtons();
 }
 
 function confirmEntry(){
   step = 'confirm';
-  addMsg(`Confirma? UBS: ${draft.ubs} | OT: ${draft.otName} | Ação: "${draft.action}" | Status: ${draft.status}`, 'bot');
+  const statusLabel = STATUS_LABEL[statusKeyFromLabel(draft.status)] || draft.status;
+  addMsg(`Confirma? UBS: ${draft.ubs} | OT: ${draft.otName} | Ação: "${draft.action}" | Status: ${statusLabel}`, 'bot');
   clearChips();
-  addChip('Salvar', () => saveEntry());
+  setChipRowMode('status');
+  addChip('Salvar', () => {
+    saveEntry().catch((err) => {
+      console.error('saveEntry', err);
+      addMsg('Não foi possível salvar. Tente de novo.', 'bot');
+    });
+  }, 'status-ok');
   addChip('Cancelar', () => { addMsg('Cancelado.', 'bot'); startNewCadastro(); });
   updateNavButtons();
 }
 
 async function saveEntry(){
   const otMatch = await ensureOtMatch(draft.otName);
-  const status = draft.status === 'Concluída' ? 'concluida' : (draft.status === 'Atrasada' ? 'atrasada' : 'nao_concluida');
+  const status = statusKeyFromLabel(draft.status);
+  const prev = draft.editKey ? actions.find(a => a.key === draft.editKey) : null;
   await upsertActionRecord({
     ubs: draft.ubs,
     otMatch,
     actionText: draft.action,
     status,
-    editKey: draft.editKey
+    editKey: draft.editKey,
+    date: draft.date || (prev && prev.date) || undefined
   });
-  renderAll();
+  // Garante mirror + status "Salvo às" mesmo se só houver localStorage
+  let flushRes = null;
+  let flushErr = null;
+  try{ flushRes = await flushBackupNow(); }catch(e){ flushErr = e; }
+  const flushOk = !flushErr && !!(flushRes && flushRes.ok);
+  scheduleRenderAll();
   hideActionUI();
-  addMsg(draft.editKey ? 'Registro atualizado.' : 'Ação salva.', 'bot');
   clearChips();
+  if(!flushOk){
+    addMsg('O registro foi atualizado na tela, mas o backup em arquivo falhou. Tente Ctrl+S ou Dashboard → Exportar.', 'bot');
+    addChip('Tentar salvar de novo', () => {
+      flushBackupNow().then((res) => {
+        if(res && res.ok) addMsg('Backup gravado com sucesso.', 'bot');
+        else addMsg('Ainda não foi possível gravar o backup.', 'bot');
+      }).catch(() => addMsg('Ainda não foi possível gravar o backup.', 'bot'));
+    }, 'status-ok');
+  } else {
+    addMsg(draft.editKey ? 'Registro atualizado e salvo.' : 'Ação salva.', 'bot');
+  }
   addChip('Novo cadastro', () => startNewCadastro());
+  addChip('Editar outro', () => askEditPick());
+  addChip('Dashboard', () => showPage('dashboard'));
   step = 'idle';
   updateNavButtons();
 }
@@ -1292,15 +1581,22 @@ function handleGapItemClick(ubs, otName, item){
     ubs, otName,
     action: item.action,
     editKey: item.key || null,
+    currentStatus: item.statusKey || null,
     classifications: {},
     checked: {}
   };
-  addMsg(`Editando: "${item.action}" — ${otName} (${ubs}).`, 'bot');
+  addMsg(item.key
+    ? `Editando: "${item.action}" — ${otName} (${ubs}).`
+    : `Registrando: "${item.action}" — ${otName} (${ubs}).`, 'bot');
   askStatusSingle();
-  document.querySelector('.chat-body').scrollIntoView({behavior:'smooth', block:'center'});
+  chatBody.scrollTop = 0;
 }
 
 function startEditFromHistory(record){
+  if(!record || !record.key){
+    addMsg('Registro inválido para edição.', 'bot');
+    return;
+  }
   showPage('cadastro');
   resetCadastro(true);
   draft = {
@@ -1308,38 +1604,126 @@ function startEditFromHistory(record){
     otName: record.otName,
     action: record.action,
     editKey: record.key,
+    currentStatus: record.status,
+    date: record.date,
     classifications: {},
     checked: {}
   };
-  addMsg(`Editando registro: "${record.action}" (${record.ubs}). Escolha o novo status.`, 'bot');
+  addMsg(`Editando registro: "${record.action}" (${record.ubs}).`, 'bot');
   askStatusSingle();
-  document.querySelector('.chat-body').scrollIntoView({behavior:'smooth', block:'center'});
+  chatBody.scrollTop = 0;
+  try{ chatInput && chatInput.blur(); }catch(e){}
+}
+
+function renderEditPickList(){
+  const q = (editPickQuery || '').trim().toLowerCase();
+  let list = editPickCache;
+  if(q){
+    list = list.filter(a => {
+      const blob = [a.ubs, a.otName, a.action, STATUS_LABEL[a.status] || a.status]
+        .filter(Boolean).join(' ').toLowerCase();
+      return blob.includes(q);
+    });
+  }
+  const meta = document.getElementById('editPickMeta');
+  const listEl = document.getElementById('editPickList');
+  if(meta){
+    meta.textContent = list.length
+      ? `${list.length} registro(s)${q ? ' encontrados' : ' — toque em um para editar'}`
+      : (q ? 'Nenhum registro para esta busca.' : 'Nenhum cadastro no histórico.');
+  }
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  if(!list.length){
+    listEl.innerHTML = `<p class="empty-note" style="padding:12px;">Nada para editar${q ? ' com esse filtro' : ''}.</p>`;
+    return;
+  }
+  const max = 80;
+  const frag = document.createDocumentFragment();
+  list.slice(0, max).forEach(a => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'edit-pick-item';
+    btn.setAttribute('data-key', a.key);
+    const st = a.status || 'nao_concluida';
+    const stLabel = STATUS_LABEL[st] || st;
+    btn.innerHTML = `
+      <div class="ep-top">
+        <span class="ep-ubs"></span>
+        <span class="ep-st ${st}"></span>
+      </div>
+      <div class="ep-action"></div>
+      <div class="ep-ot"></div>
+    `;
+    btn.querySelector('.ep-ubs').textContent = a.ubs || '—';
+    btn.querySelector('.ep-st').textContent = stLabel;
+    btn.querySelector('.ep-action').textContent = a.action || '—';
+    btn.querySelector('.ep-ot').textContent = a.otName || '';
+    btn.onclick = () => startEditFromHistory(a);
+    frag.appendChild(btn);
+  });
+  listEl.appendChild(frag);
+  if(list.length > max){
+    const more = document.createElement('p');
+    more.className = 'empty-note';
+    more.style.padding = '10px 12px';
+    more.textContent = `Mostrando ${max} de ${list.length}. Use a busca para refinar.`;
+    listEl.appendChild(more);
+  }
 }
 
 function askEditPick(){
+  showPage('cadastro');
   step = 'edit_pick';
   hideActionUI();
   clearChips();
   chatBody.innerHTML = '';
+  editPickQuery = '';
+  editPickCache = [...actions].sort((a,b)=> new Date(b.date)-new Date(a.date));
+  updateNavButtons();
+
   if(actions.length === 0){
     addMsg('Não há cadastros no histórico para editar. Faça um novo cadastro primeiro.', 'bot');
     addChip('Novo cadastro', () => startNewCadastro());
-    updateNavButtons();
+    addChip('Dashboard', () => showPage('dashboard'));
     return;
   }
-  addMsg('Qual registro deseja editar? Escolha abaixo ou use Editar/Excluir na tabela do histórico.', 'bot');
-  const recent = [...actions].sort((a,b)=> new Date(b.date)-new Date(a.date)).slice(0,12);
-  recent.forEach(a=>{
-    const label = `${a.ubs} · ${STATUS_LABEL[a.status]||a.status} · ${a.action.slice(0,60)}${a.action.length>60?'…':''}`;
-    addChip(label, () => startEditFromHistory(a), 'chip-wide');
-  });
-  updateNavButtons();
+
+  addMsg('Escolha o registro que deseja editar. Use a busca se a lista for grande.', 'bot');
+  actionPanel.style.display = 'block';
+  actionPanel.innerHTML = `
+    <div class="edit-pick-panel">
+      <input type="search" class="edit-search" id="editPickSearch" placeholder="Buscar por UBS, OT, ação ou status…" autocomplete="off" />
+      <div class="edit-pick-meta" id="editPickMeta"></div>
+      <div class="edit-pick-list" id="editPickList"></div>
+    </div>
+  `;
+  renderEditPickList();
+  const search = document.getElementById('editPickSearch');
+  if(search){
+    search.value = '';
+    search.oninput = () => {
+      editPickQuery = search.value || '';
+      renderEditPickList();
+    };
+    setTimeout(() => { try{ search.focus(); }catch(e){} }, 30);
+  }
+  addChip('Cancelar', () => startNewCadastro());
+  addChip('Ir ao histórico', () => showPage('dashboard'));
 }
 
 function submitUserText(raw){
   const text = raw.trim();
   if(!text) return;
   addMsg(text, 'user');
+  if(step === 'edit_pick'){
+    editPickQuery = text;
+    const search = document.getElementById('editPickSearch');
+    if(search) search.value = text;
+    renderEditPickList();
+    addMsg('Filtrei a lista pelo que você digitou. Toque em um registro para editar.', 'bot');
+    return;
+  }
   if(step === 'ubs'){
     draft.ubs = text;
     askOt();
@@ -1359,26 +1743,22 @@ function submitUserText(raw){
     draft.checked[text] = true;
     draft.classifications[text] = draft.classifications[text] || null;
     addMsg(`Ação personalizada adicionada à lista: "${text}". Marque-a e classifique o status.`, 'bot');
-    // if no status yet, leave null until classified
     if(!draft.classifications[text]) delete draft.classifications[text];
     draft.checked[text] = true;
     renderActionChecklist(actionsForOt(draft.otName));
   } else if(step === 'status_single'){
-    const norm = text.toLowerCase();
-    if(norm.startsWith('conclu')) draft.status = 'Concluída';
-    else if(norm.startsWith('atras')) draft.status = 'Atrasada';
-    else draft.status = 'Não concluída';
+    draft.status = statusKeyFromLabel(text);
     confirmEntry();
   } else {
     addMsg('Use "Novo cadastro" para começar, ou "Editar" para alterar um registro.', 'bot');
   }
 }
 
-sendBtn.onclick = () => { submitUserText(chatInput.value); chatInput.value=''; };
-chatInput.addEventListener('keydown', e => { if(e.key==='Enter'){ submitUserText(chatInput.value); chatInput.value=''; }});
-btnNew.onclick = () => startNewCadastro();
-btnBack.onclick = () => goBack();
-btnEditMode.onclick = () => askEditPick();
+if(sendBtn) sendBtn.onclick = () => { submitUserText(chatInput.value); chatInput.value=''; };
+if(chatInput) chatInput.addEventListener('keydown', e => { if(e.key==='Enter'){ submitUserText(chatInput.value); chatInput.value=''; }});
+if(btnNew) btnNew.onclick = () => startNewCadastro();
+if(btnBack) btnBack.onclick = () => goBack();
+if(btnEditMode) btnEditMode.onclick = () => askEditPick();
 
 // ---------- aggregation helpers ----------
 function pct(done, total){ return total === 0 ? 0 : Math.round((done/total)*100); }
@@ -1457,15 +1837,29 @@ function onDashboardFilterChange(){
   renderTable();
 }
 
-function renderAll(){
-  renderUbsSelect();
-  renderOtFilterSelect();
-  updateFilterHint();
-  renderStats();
-  renderOtChart();
-  renderUbsChart();
-  renderUbsOtDetail();
-  renderTable();
+function scheduleRenderAll(){
+  if(renderAllTimer) clearTimeout(renderAllTimer);
+  renderAllTimer = setTimeout(() => {
+    renderAllTimer = null;
+    renderAll();
+  }, 40);
+}
+
+function renderAll(forceDashboard){
+  // Dashboard pesado só quando a aba está aberta (evita travar o cadastro)
+  const onDashboard = forceDashboard === true || currentPageName() === 'dashboard';
+  if(onDashboard){
+    renderUbsSelect();
+    renderOtFilterSelect();
+    updateFilterHint();
+    renderStats();
+    renderOtChart();
+    renderUbsChart();
+    renderUbsOtDetail();
+    renderTable();
+  }
+  updatePersistBanner();
+  updateSaveStatus();
 }
 
 function renderStats(){
@@ -1478,8 +1872,12 @@ function renderStats(){
   const naoConcluida = list.filter(a=>a.status==='nao_concluida').length;
   const atrasada = list.filter(a=>a.status==='atrasada').length;
 
-  // "Faltam no plano" respeita filtros de UBS/OT
-  const activeUbs = filterUbs ? [filterUbs] : [...ubsSet];
+  // Índice O(1) de ações registradas — evita .find em loop (fonte de lentidão)
+  const registeredCombo = new Set(
+    actions.map(a => a.ubs + '\0' + a.otName + '\0' + a.action)
+  );
+
+  const activeUbs = filterUbs ? [filterUbs] : (ubsSet.size ? [...ubsSet] : []);
   const otScope = filterOt
     ? ots.filter(o => o.name === filterOt)
     : ots;
@@ -1488,26 +1886,24 @@ function renderStats(){
     otScope.forEach(otRec=>{
       const entry = findOtBankEntry(otRec.name);
       if(!entry) return;
-      const registeredActionsForCombo = new Set(
-        actions.filter(a=>a.ubs===ubs && a.otName===otRec.name).map(a=>a.action)
-      );
       entry.actions.forEach(actionText=>{
-        if(!registeredActionsForCombo.has(actionText)) naoInserida++;
+        if(!registeredCombo.has(ubs + '\0' + otRec.name + '\0' + actionText)) naoInserida++;
       });
     });
   });
 
-  document.getElementById('statUbs').textContent = filterUbs
+  const el = (id) => document.getElementById(id);
+  if(el('statUbs')) el('statUbs').textContent = filterUbs
     ? ((list.length > 0 || naoInserida > 0) ? 1 : 0)
     : ubsSet.size;
-  document.getElementById('statOt').textContent = filterOt
+  if(el('statOt')) el('statOt').textContent = filterOt
     ? 1
     : (filterUbs ? Math.max(otSet.size, otScope.filter(o => findOtBankEntry(o.name)).length) : ots.length);
-  document.getElementById('statTotal').textContent = totalActions;
-  document.getElementById('statDone').textContent = done;
-  document.getElementById('statPartial').textContent = naoConcluida;
-  document.getElementById('statNaoInserida').textContent = naoInserida;
-  document.getElementById('statPend').textContent = atrasada;
+  if(el('statTotal')) el('statTotal').textContent = totalActions;
+  if(el('statDone')) el('statDone').textContent = done;
+  if(el('statPartial')) el('statPartial').textContent = naoConcluida;
+  if(el('statNaoInserida')) el('statNaoInserida').textContent = naoInserida;
+  if(el('statPend')) el('statPend').textContent = atrasada;
 }
 
 function renderOtChart(){
@@ -1580,17 +1976,24 @@ function classifyGapItem(match, actionText){
 
 function computeGapForUbs(ubs){
   const registered = actions.filter(a=>a.ubs===ubs);
+  // mapa O(1): otName + action -> record
+  const byOtAction = new Map();
+  registered.forEach(r => {
+    byOtAction.set(r.otName + '\0' + r.action, r);
+  });
   const groups = [];
   const seenOtNames = new Set();
   OT_BANK.forEach(entry=>{
     // only include OTs that are still registered in the manager (user may have deleted one)
     if(!ots.some(o=>o.name===entry.fullLabel)) return;
     seenOtNames.add(entry.fullLabel);
+    const covered = new Set();
     const items = entry.actions.map(actionText=>{
-      const match = registered.find(r=>r.otName===entry.fullLabel && r.action===actionText);
+      const match = byOtAction.get(entry.fullLabel + '\0' + actionText);
+      if(match) covered.add(actionText);
       return classifyGapItem(match, actionText);
     });
-    registered.filter(r=>r.otName===entry.fullLabel && !entry.actions.includes(r.action))
+    registered.filter(r=>r.otName===entry.fullLabel && !covered.has(r.action) && !entry.actions.includes(r.action))
       .forEach(r=> items.push(classifyGapItem(r, r.action)));
     groups.push({otLabel: entry.fullLabel, items});
   });
@@ -1698,7 +2101,7 @@ function renderUbsOtDetail(){
 
 function renderTable(){
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
+  if(!tbody) return;
   let list = [...filteredActions()].sort((a,b)=> new Date(b.date) - new Date(a.date));
   if(showOnlyPending) list = list.filter(a=>a.status!=='concluida');
   const q = (historyQuery || '').trim().toLowerCase();
@@ -1719,14 +2122,20 @@ function renderTable(){
     nao_concluida: `<span class="stamp partial">${ICO.warn}NÃO CONCLUÍDA</span>`,
     atrasada: `<span class="stamp pending">${ICO.alert}ATRASADA</span>`
   };
-  list.forEach(a=>{
+  const frag = document.createDocumentFragment();
+  // Limite de render: histórico grande sem virtualização ainda precisa ser rápido
+  const maxRows = 300;
+  const visible = list.slice(0, maxRows);
+  visible.forEach(a=>{
     const tr = document.createElement('tr');
     const dt = new Date(a.date);
-    const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const dtStr = Number.isNaN(dt.getTime())
+      ? '—'
+      : (dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
     const stamp = STAMP_HTML[a.status] || STAMP_HTML.nao_concluida;
     tr.innerHTML = `
-      <td>${a.ubs}</td>
-      <td><span class="ot-tag">${a.otName}</span></td>
+      <td></td>
+      <td><span class="ot-tag"></span></td>
       <td></td>
       <td>${stamp}</td>
       <td class="date-cell">${dtStr}</td>
@@ -1737,9 +2146,18 @@ function renderTable(){
         </div>
       </td>
     `;
-    tr.children[2].textContent = a.action;
-    tbody.appendChild(tr);
+    tr.children[0].textContent = a.ubs || '';
+    tr.children[1].querySelector('.ot-tag').textContent = a.otName || '';
+    tr.children[2].textContent = a.action || '';
+    frag.appendChild(tr);
   });
+  tbody.innerHTML = '';
+  tbody.appendChild(frag);
+  if(list.length > maxRows){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="6" style="text-align:center;color:var(--stone);padding:14px;">Mostrando ${maxRows} de ${list.length}. Use a busca para filtrar.</td>`;
+    tbody.appendChild(tr);
+  }
   tbody.querySelectorAll('.del-btn-tbl').forEach(btn=>{
     btn.onclick = async () => {
       const key = btn.getAttribute('data-key');
@@ -1751,6 +2169,7 @@ function renderTable(){
       const key = btn.getAttribute('data-key');
       const rec = actions.find(a=>a.key===key);
       if(rec) startEditFromHistory(rec);
+      else alert('Registro não encontrado. Atualize a tela e tente de novo.');
     };
   });
 }
@@ -1784,7 +2203,9 @@ async function deleteActionWithUndo(key){
   if(!rec) return;
   actions = actions.filter(a => a.key !== key);
   try{ await safeDelete(key, false); }catch(e){}
-  renderAll();
+  // Persistência imediata: exclusão não pode ficar só no debounce
+  try{ await flushBackupNow(); }catch(_e){}
+  scheduleRenderAll();
   showUndoToast('Cadastro excluído', async () => {
     const payload = {
       ubs: rec.ubs,
@@ -1798,7 +2219,8 @@ async function deleteActionWithUndo(key){
       actions.push({ key: rec.key, ...payload });
     }
     await safeSet(rec.key, JSON.stringify(payload), false);
-    renderAll();
+    try{ await flushBackupNow(); }catch(_e){}
+    scheduleRenderAll();
   });
 }
 
@@ -1821,7 +2243,7 @@ if(historySearchEl){
 function showPage(name){
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + name));
   document.querySelectorAll('.page-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-page') === name));
-  if(name === 'dashboard') renderAll();
+  if(name === 'dashboard') renderAll(true);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 document.querySelectorAll('.page-tab').forEach(tab=>{
@@ -2251,7 +2673,7 @@ function bindBackupButtons(){
       await flushBackupNow();
       dataSourceLabel = 'importação manual';
       renderOtList();
-      renderAll();
+      renderAll(true);
       updatePersistBanner();
       updateSaveStatus();
       alert(`Backup importado. Agora há ${actions.length} ação(ões).`);

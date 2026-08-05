@@ -1,0 +1,16 @@
+BACKUP AUTOMÁTICO — Painel UBS Planifica
+========================================
+
+Esta pasta é atualizada sozinha a cada alteração no app.
+
+Arquivo principal:     painel-dados.json  (estado atual)
+Último com dados:      painel-dados-ultimo-com-dados.json
+Cópia anterior:        painel-dados-anterior.json
+
+Se o app abrir vazio:
+1. Se aparecer “Backup encontrado”, clique em Restaurar
+2. Ou Dashboard → Importar → prefira
+   painel-dados-ultimo-com-dados.json
+
+Mantenha o .exe e a pasta painel-ubs-dados juntos.
+Pode copiar esta pasta inteira para pen drive.

@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('painelApp', {
   isDesktop: true,
-  version: '3.1.1',
+  version: '3.1.2',
   backup: {
     getInfo: () => ipcRenderer.invoke('backup:getInfo'),
     load: () => ipcRenderer.invoke('backup:load'),

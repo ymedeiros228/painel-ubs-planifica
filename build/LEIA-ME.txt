@@ -1,5 +1,5 @@
 PAINEL UBS PLANIFICA — Passagem Franca (MA)
-Versão 3.1.1 · uso: Jonas / equipe UBS
+Versão 3.1.2 · uso: Jonas / equipe UBS
 ============================================
 
 Como usar (Portable)
@@ -7,11 +7,22 @@ Como usar (Portable)
 1. Extraia o ZIP numa pasta FIXA
    Ex.: Documentos\PainelUBS
    (não rode direto de Downloads)
-2. Abra: Painel UBS Planifica-3.1.1-Portable.exe
+2. Abra: Painel UBS Planifica-3.1.2-Portable.exe
 3. Mantenha o .exe e a pasta "painel-ubs-dados" juntos
 4. Na Área de Trabalho aparece a pasta:
    "Backup UBS Planifica"
    — ela atualiza sozinha a cada alteração
+
+Dados da sessão (04/08/2026 — tarde)
+------------------------------------
+O pacote de entrega inclui:
+  painel-dados-ultimo-com-dados.zip
+  (46 ações · UBS ALTA LEITE)
+
+Guarde esse ZIP (pen drive). Se o app abrir vazio:
+  Dashboard → Importar → painel-dados-ultimo-com-dados.json
+Ou copie a pasta backup-jonas-2026-08-04 para:
+  Área de Trabalho\Backup UBS Planifica\
 
 O que o app já faz por você
 --------------------------
@@ -29,6 +40,7 @@ Se algo sumir
    Área de Trabalho\Backup UBS Planifica\
      painel-dados-ultimo-com-dados.json
      (ou painel-dados.json / painel-dados-anterior.json)
+3. Ou use o ZIP de dados que veio na entrega
 
 Dicas
 -----
